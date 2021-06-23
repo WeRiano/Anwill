@@ -1,0 +1,3 @@
+[submodule "Anwill/vendor/Willog"]
+	path = Anwill/vendor/Willog
+	url = https://github.com/WeRiano/Willog
