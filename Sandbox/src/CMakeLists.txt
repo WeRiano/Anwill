@@ -1,5 +1,3 @@
-add_executable(Sandbox)
-target_sources(Sandbox PRIVATE Sandbox.cpp)
-
-#target_include_directories(Sandbox PRIVATE Anwill)
-#target_link_libraries(Sandbox PRIVATE Anwill)
+add_executable(Sandbox Sandbox.cpp)
+target_include_directories(Sandbox PUBLIC ${PROJECT_SOURCE_DIR}/Anwill/src)
+target_link_libraries(Sandbox PUBLIC Anwill)
