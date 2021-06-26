@@ -9,7 +9,6 @@ public:
     {
         std::cout << "Hello Anwill!" << std::endl;
     }
-
 };
 
 Anwill::App* Anwill::CreateApp()

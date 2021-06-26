@@ -6,10 +6,17 @@ namespace Anwill {
 
     App::App()
     {
-        WindowSettings ws;
-        // ws.width =
+        WindowSettings ws {};
+        // ws.width
         // ...
-        Window::Create(ws);
+        m_Window = Window::Create(ws);
     }
 
+    void App::Run()
+    {
+        while(m_Running)
+        {
+            //if(m_Window->OnMsg)
+        }
+    }
 }
