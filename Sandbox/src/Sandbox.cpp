@@ -7,12 +7,13 @@ class Sandbox : public Anwill::App
 public:
     Sandbox()
     {
-        std::cout << "Hello Anwill!" << std::endl;
+
     }
 };
 
 Anwill::App* Anwill::CreateApp()
 {
+    // Define graphics API, Window Settings and more
     return new Sandbox();
 }
 

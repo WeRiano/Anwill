@@ -1,9 +1,7 @@
-#include <memory>
-
 #include "Window.h"
 
 #ifdef AW_PLATFORM_WINDOWS
-#include "platform/WinWindow.h"
+#include "platform/Windows/WinWindow.h"
 #endif
 
 namespace Anwill {
