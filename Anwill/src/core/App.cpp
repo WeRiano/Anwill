@@ -5,12 +5,10 @@
 #include "gfx/Renderer.h"
 #include "platform/OpenGL/OpenGLBase.h"
 
-#include <windows.h> // TODO: TEMP, REMOVE
-
 namespace Anwill {
 
     App::App()
-        : m_Running(true)
+        : m_Running(true), m_Minimized(false)
     {
         // TODO: Renderer has to be initialized before GraphicsContext because of API def. Fix?
         Renderer::Init(Anwill::OpenGL);
@@ -20,7 +18,6 @@ namespace Anwill {
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowClose);
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowResize);
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowFocus);
-        SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowLostFocus);
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowMoved);
 
     }
@@ -29,7 +26,7 @@ namespace Anwill {
     {
         while(m_Running)
         {
-            Sleep(10); // TODO: TEMP, REMOVE
+            m_LayerStack.Update();
             GLCall(glClear(GL_COLOR_BUFFER_BIT));
             GLCall(glClearColor(0.3f, 0.7f, 1.0f, 1.0f));
             m_Window->Update();
@@ -38,21 +35,29 @@ namespace Anwill {
         m_Window->Terminate();
     }
 
-    void App::OnEvent(std::unique_ptr<Event>& event)
+    void App::OnEvent(std::unique_ptr<Event>& e)
     {
-        EventHandler handler(*event);
+        EventHandler handler(*e);
         handler.Handle<WindowCloseEvent>(AW_BIND_EVENT_FN(OnWindowClose));
         handler.Handle<WindowResizeEvent>(AW_BIND_EVENT_FN(OnWindowResize));
+        handler.Handle<WindowFocusEvent>(AW_BIND_EVENT_FN(OnWindowFocus));
     }
 
-    void App::OnWindowClose(WindowCloseEvent& wce)
+    void App::OnWindowClose(WindowCloseEvent& e)
     {
         m_Running = false;
     }
 
-    void App::OnWindowResize(WindowResizeEvent& wre)
+    void App::OnWindowResize(WindowResizeEvent& e)
     {
-        AW_INFO("Resized window to width {0} and height {1}", wre.GetNewWidth(), wre.GetNewHeight());
-        GLCall(glViewport(0, 0, wre.GetNewWidth(), wre.GetNewHeight())); // TODO: Renderer call
+        AW_INFO("Resized Window to width {0} and height {1}.", e.GetNewWidth(), e.GetNewHeight());
+        GLCall(glViewport(0, 0, e.GetNewWidth(), e.GetNewHeight())); // TODO: Move to renderer
+    }
+
+    void App::OnWindowFocus(WindowFocusEvent e)
+    {
+        m_Minimized = !e.IsInFocus();
+        if(m_Minimized) { AW_INFO("Application mininized."); }
+        else { AW_INFO("Application in focus."); }
     }
 }

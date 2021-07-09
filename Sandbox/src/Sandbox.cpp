@@ -1,13 +1,13 @@
 #include <iostream>
 
-#include "Anwill.h"
+#include "Layer2D.h"
 
 class Sandbox : public Anwill::App
 {
 public:
     Sandbox()
     {
-
+        AddLayer<Layer2D>(144);
     }
 };
 

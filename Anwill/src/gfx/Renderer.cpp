@@ -11,8 +11,7 @@ namespace Anwill {
     {
         s_API = api;
 
-        // TODO: Create graphics context
-        // Setup global graphics API settings (glBlend for example ...)
+        // TODO: Setup global graphics API settings (glBlend and stuff ... global settings)
     }
 
     GraphicsAPI Renderer::GetAPI()

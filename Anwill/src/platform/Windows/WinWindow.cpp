@@ -116,6 +116,16 @@ namespace Anwill {
     LRESULT WinWindow::WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     {
         switch(uMsg) {
+            case WM_SETFOCUS: {
+                WindowFocusEvent focus(true);
+                SystemEvents::Add(focus);
+                break;
+            }
+            case WM_KILLFOCUS: {
+                WindowFocusEvent noFocus(false);
+                SystemEvents::Add(noFocus);
+                break;
+            }
             case WM_SIZE: {
                 UINT width = LOWORD(lParam);
                 UINT height = HIWORD(lParam);

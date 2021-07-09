@@ -23,4 +23,16 @@ namespace Anwill {
     private:
         unsigned int m_NewWidth, m_NewHeight;
     };
+
+    class WindowFocusEvent : public Event
+    {
+    public:
+        WindowFocusEvent(bool inFocus) : m_InFocus(inFocus) {}
+        inline static EventType GetEventTypeStatic() { return EventType::WindowFocus; }
+        inline EventType GetEventType() const override { return EventType::WindowFocus; }
+        inline bool IsInFocus() { return m_InFocus; }
+
+    private:
+        bool m_InFocus;
+    };
 }
