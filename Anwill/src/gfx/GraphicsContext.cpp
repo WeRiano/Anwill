@@ -8,7 +8,7 @@ namespace Anwill {
     {
         switch(Renderer::GetAPI())
         {
-            case OpenGL:
+            case GraphicsAPI::API::OpenGL:
                 #ifdef AW_PLATFORM_WINDOWS
                 return std::make_unique<OpenGLContext>(static_cast<HWND*>(window));
                 #endif

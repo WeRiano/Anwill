@@ -1,21 +1,27 @@
-#include "glad.h"
+#include <glad.h>
 
 #include "GraphicsContext.h"
 #include "Renderer.h"
 
 namespace Anwill {
 
-    GraphicsAPI Renderer::s_API;
+    GraphicsAPI::API Renderer::s_APIName;
+    std::unique_ptr<GraphicsAPI> Renderer::s_API;
 
-    void Renderer::Init(GraphicsAPI api)
+    void Renderer::Init()
     {
-        s_API = api;
+        s_API = GraphicsAPI::Create(s_APIName);
 
         // TODO: Setup global graphics API settings (glBlend and stuff ... global settings)
     }
 
-    GraphicsAPI Renderer::GetAPI()
+    void Renderer::SetAPI(GraphicsAPI::API api)
     {
-        return s_API;
+        s_APIName = api;
+    }
+
+    GraphicsAPI::API Renderer::GetAPI()
+    {
+        return s_APIName;
     }
 }

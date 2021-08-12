@@ -1,0 +1,30 @@
+#include "platform/OpenGL/OpenGLIndexBuffer.h"
+#include "core/Assert.h"
+
+namespace Anwill {
+
+    OpenGLIndexBuffer::OpenGLIndexBuffer(const unsigned int* indices, unsigned int count)
+    {
+        AW_ASSERT(sizeof(unsigned int) == sizeof(GLuint),
+                  "size of GLuint =/= size of regular unsigned int");
+
+        glGenBuffers(1, &m_ID);
+        glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+        glBufferData(GL_ARRAY_BUFFER, count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+    }
+
+    OpenGLIndexBuffer::~OpenGLIndexBuffer()
+    {
+        glDeleteBuffers(1, &m_ID);
+    }
+
+    void OpenGLIndexBuffer::Bind() const
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+    }
+
+    void OpenGLIndexBuffer::Unbind() const
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+}

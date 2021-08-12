@@ -1,9 +1,7 @@
+#include <glad.h>
+
 #include "OpenGLContext.h"
 #include "core/Log.h"
-#include "OpenGLBase.h"
-
-#include <string>
-#include <format>
 
 namespace Anwill {
 
@@ -37,14 +35,15 @@ namespace Anwill {
         m_rc = wglCreateContext(m_dc);
         wglMakeCurrent(m_dc, m_rc);
         int status = gladLoadGL();
+        AW_INFO("Loading GLAD ...");
         if (!status)
         {
             AW_FATAL("Glad failed to load!");
         }
         RECT rect;
         GetWindowRect(*hwnd, &rect);
-        GLCall(glViewport(0, 0, rect.right - rect.left, rect.bottom - rect.top)); // TODO: Move? Give window settings?
-        AW_INFO("OpenGL version: {0}", (const char*) glGetString(GL_VERSION));
+        glViewport(0, 0, rect.right - rect.left, rect.bottom - rect.top); // TODO: Move? Give window settings?
+        AW_INFO("Glad loaded! OpenGL version: {0}", (const char*) glGetString(GL_VERSION));
         #endif
     }
 

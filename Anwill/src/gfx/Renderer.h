@@ -1,19 +1,20 @@
 #pragma once
 
-namespace Anwill {
+#include <memory>
 
-    enum GraphicsAPI
-    {
-        OpenGL = 1
-    };
+#include "GraphicsAPI.h"
+
+namespace Anwill {
 
     class Renderer
     {
     public:
-        static void Init(GraphicsAPI api);
+        static void Init();
 
-        static GraphicsAPI GetAPI();
+        static void SetAPI(GraphicsAPI::API api);
+        static GraphicsAPI::API GetAPI();
     private:
-        static GraphicsAPI s_API; // This should be an enum or something
+        static GraphicsAPI::API s_APIName;
+        static std::unique_ptr<GraphicsAPI> s_API;
     };
 }

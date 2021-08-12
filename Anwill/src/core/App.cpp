@@ -1,9 +1,10 @@
 #include "App.h"
 
+#include <glad.h>
+
 #include "core/Log.h"
 #include "core/Window.h"
 #include "gfx/Renderer.h"
-#include "platform/OpenGL/OpenGLBase.h"
 
 namespace Anwill {
 
@@ -11,9 +12,12 @@ namespace Anwill {
         : m_Running(true), m_Minimized(false)
     {
         // TODO: Renderer has to be initialized before GraphicsContext because of API def. Fix?
-        Renderer::Init(Anwill::OpenGL);
-        WindowSettings ws {1600, 900};
+        Renderer::SetAPI(GraphicsAPI::API::OpenGL); // TODO: PARAMETER IS RETARDED FOR USER TO SET!!!!
+
+        WindowSettings ws {1600, 900}; // TODO: Import from Sandbox (?)
         m_Window = Window::Create(ws);
+
+        Renderer::Init();
 
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowClose);
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowResize);
@@ -27,8 +31,10 @@ namespace Anwill {
         while(m_Running)
         {
             m_LayerStack.Update();
-            GLCall(glClear(GL_COLOR_BUFFER_BIT));
-            GLCall(glClearColor(0.3f, 0.7f, 1.0f, 1.0f));
+            glClear(GL_COLOR_BUFFER_BIT);
+            glClearColor(-0.3f, 0.7f, 1.0f, 1.0f);
+            unsigned int k = 10;
+            glCreateBuffers(-10, &k);
             m_Window->Update();
             SystemEvents::Pop();
         }
@@ -51,7 +57,7 @@ namespace Anwill {
     void App::OnWindowResize(WindowResizeEvent& e)
     {
         AW_INFO("Resized Window to width {0} and height {1}.", e.GetNewWidth(), e.GetNewHeight());
-        GLCall(glViewport(0, 0, e.GetNewWidth(), e.GetNewHeight())); // TODO: Move to renderer
+        glViewport(0, 0, e.GetNewWidth(), e.GetNewHeight()); // TODO: Move to renderer
     }
 
     void App::OnWindowFocus(WindowFocusEvent e)
