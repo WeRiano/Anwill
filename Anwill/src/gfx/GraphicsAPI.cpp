@@ -11,8 +11,10 @@ namespace Anwill {
             case API::OpenGL:
                 return std::make_unique<OpenGLGraphicsAPI>();
             default:
-                AW_ASSERT(false, "No graphics not supported)");
+                AW_ASSERT(false, "No graphics API not supported");
                 break;
         }
     }
+
+
 }

@@ -9,9 +9,7 @@ namespace Anwill {
         switch(Renderer::GetAPI())
         {
             case GraphicsAPI::API::OpenGL:
-                #ifdef AW_PLATFORM_WINDOWS
-                return std::make_unique<OpenGLContext>(static_cast<HWND*>(window));
-                #endif
+                return std::make_unique<OpenGLContext>(static_cast<GLFWwindow*>(window));
         }
         return nullptr;
     }

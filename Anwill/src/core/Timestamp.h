@@ -15,7 +15,8 @@ namespace Anwill {
                 : m_time(GetTime())
         {}
 
-        Timestamp(long long time) :m_time(time) {}
+        Timestamp(long long time)
+            : m_time(time) {}
 
         Timestamp& operator=(long long time) {
             this->m_time = time;

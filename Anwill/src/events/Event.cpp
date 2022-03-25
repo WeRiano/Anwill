@@ -18,7 +18,7 @@ namespace Anwill
             for (unsigned int j = 0; j < m_Subs[type].size(); j++) {
                 m_Subs[type][j](m_Q[m_Head]);
             }
-            //m_Q[m_Head] = nullptr; // Dont have to do this ... data is left but hidden
+            //m_Q[m_Head] = nullptr; // Dont have to do this ... data is left but hidden. TODO: But memory??
             m_Head++;
             m_Head = m_Head % s_Max;
         }

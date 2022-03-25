@@ -15,7 +15,7 @@ namespace Anwill {
     {
         glGenBuffers(1, &m_ID);
         glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
     }
 
     OpenGLVertexBuffer::~OpenGLVertexBuffer()
@@ -25,7 +25,9 @@ namespace Anwill {
 
     void OpenGLVertexBuffer::DynamicUpdate(const float* data, unsigned int size) const
     {
+        Bind();
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+        Unbind();
     }
 
     void OpenGLVertexBuffer::Bind() const

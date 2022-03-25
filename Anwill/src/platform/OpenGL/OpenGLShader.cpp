@@ -25,6 +25,25 @@ namespace Anwill {
         AttachLinkAndValidateShader(vertID, fragID);
     }
 
+    void OpenGLShader::Bind() const
+    {
+        glUseProgram(m_ID);
+    }
+
+    void OpenGLShader::Unbind() const
+    {
+        glUseProgram(0);
+    }
+
+    void OpenGLShader::SetUniformMat4f(Mat4f mat, const std::string& name)
+    {
+        Bind();
+        int location = GetUniformLocation(name);
+        // Count is always 1 for now, generalize when we actually need a vector of mat4fs
+        glUniformMatrix4fv(location, 1, GL_FALSE, mat.GetInternal());
+        Unbind();
+    }
+
     unsigned int OpenGLShader::CompileShader(unsigned int glShaderType, const std::string& shaderSrc)
     {
         unsigned int id = glCreateShader(glShaderType);
@@ -76,5 +95,22 @@ namespace Anwill {
         // Delete the individual shaders after we have linked them to the program
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
+    }
+
+    int OpenGLShader::GetUniformLocation(const std::string& name)
+    {
+        int location;
+            if (m_LocationCache.contains(name))
+        {
+            location = m_LocationCache[name];
+        } else
+        {
+            location = glGetUniformLocation(m_ID, name.c_str());
+            if (location == -1)
+            {
+                AW_ERROR("OpenGL failed to retrieve the location of the following uniform: {0}", name);
+            }
+        }
+        return location;
     }
 }

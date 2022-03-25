@@ -3,7 +3,8 @@
 #include <functional>
 #include <array>
 
-#define AW_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+#define AW_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) \
+{ return this->fn(std::forward<decltype(args)>(args)...); }
 
 namespace Anwill {
 
@@ -26,6 +27,9 @@ namespace Anwill {
         bool m_Handled;
     };
 
+    // This exists so that you do not have to switch or if spam event type in your callback that you pass when you
+    // subscribe, if you decide to handle all functions in a single "OnEvent" func. But why not just subscribe directly
+    // with your EventHandler funcs??
     class EventHandler
     {
     public:

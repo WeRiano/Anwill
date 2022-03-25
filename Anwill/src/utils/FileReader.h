@@ -14,7 +14,7 @@ namespace Anwill {
          *
          * @param filepath - Path to the file to load
          * @param breakpoints - Gathers everything after a breakpoint substring is located
-         *        (including the breakpoint) to the next breakpoint or until the end of
+         *        (excluding the breakpoint) to the next breakpoint or until the end of
          *        the file. The gathered text is then put into a string and appended to
          *        @result.
          *        The breakpoints are used in order, so if a breakpoint isn't located,
@@ -24,8 +24,8 @@ namespace Anwill {
          *         when it is empty.
          */
         static std::vector<std::string>
-                LoadFileToStrVec(const std::string& filepath,
-                                 std::vector<std::string> breakpoints);
+        LoadFileToStrVec(const std::string& filepath,
+                         std::vector<std::string> breakpoints);
     };
 
 }

@@ -59,13 +59,15 @@ namespace Anwill {
 
     class VertexArray
     {
+    public:
         /**
          * @return new and "empty" Vertex Array. Use AddBuffer().
          */
         static std::shared_ptr<VertexArray> Create();
 
         virtual void AddBuffer(const VertexBuffer& vertexBuffer, const BufferLayout& layout) = 0;
-
+        virtual void Bind() const = 0;
+        virtual void Unbind() const = 0;
     private:
         unsigned int m_ID;
     };

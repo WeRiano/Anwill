@@ -13,6 +13,7 @@ namespace Anwill {
 
         static void SetAPI(GraphicsAPI::API api);
         static GraphicsAPI::API GetAPI();
+        static void ClearBuffers();
     private:
         static GraphicsAPI::API s_APIName;
         static std::unique_ptr<GraphicsAPI> s_API;

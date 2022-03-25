@@ -12,7 +12,7 @@ namespace Anwill {
     class App
     {
     public:
-        App();
+        App(const WindowSettings ws);
 
         void Run();
 
@@ -38,6 +38,7 @@ namespace Anwill {
         void OnWindowClose(WindowCloseEvent& e);
         void OnWindowResize(WindowResizeEvent& e);
         void OnWindowFocus(WindowFocusEvent e);
+        void OnWindowMove(WindowMoveEvent e);
         // TODO: More callbacks
         // TODO: App Update / Render events?
     };

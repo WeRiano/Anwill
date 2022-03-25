@@ -13,5 +13,7 @@ namespace Anwill {
         };
 
         static std::unique_ptr<GraphicsAPI> Create(API api);
+
+        virtual void ClearBuffers() = 0;
     };
 }

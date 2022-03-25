@@ -1,5 +1,3 @@
-#include <glad.h>
-
 #include "GraphicsContext.h"
 #include "Renderer.h"
 
@@ -23,5 +21,10 @@ namespace Anwill {
     GraphicsAPI::API Renderer::GetAPI()
     {
         return s_APIName;
+    }
+
+    void Renderer::ClearBuffers()
+    {
+        s_API->ClearBuffers();
     }
 }

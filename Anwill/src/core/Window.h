@@ -9,7 +9,9 @@ namespace Anwill {
 
     struct WindowSettings
     {
-        unsigned int width, height;
+        unsigned int width = 1280;
+        unsigned int height = 720;
+        const char* title = "Anwill Engine";
     };
 
     class Window
@@ -19,6 +21,8 @@ namespace Anwill {
 
         virtual void Update() = 0;
         virtual void Terminate() = 0;
+        virtual unsigned int GetWidth() = 0;
+        virtual unsigned int GetHeight() = 0;
     };
 
 }

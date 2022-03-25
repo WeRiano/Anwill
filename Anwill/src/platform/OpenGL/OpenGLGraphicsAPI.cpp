@@ -1,7 +1,6 @@
 #include <glad.h>
 
 #include "platform/OpenGL/OpenGLGraphicsAPI.h"
-#include "core/Log.h"
 #include "core/Assert.h"
 
 namespace Anwill {
@@ -36,6 +35,17 @@ namespace Anwill {
         glDebugMessageCallback(OpenGLMessageCallback, nullptr);
         AW_INFO("OpenGL debug output enabled!");
 
+        // TODO: This stuff for 3D renderer.
+        //glClearDepthf(0.01f);                                 // Depth Buffer Setup
+        //glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
+        //glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
+
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+    }
+
+    void OpenGLGraphicsAPI::ClearBuffers()
+    {
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // TODO: Make SetClearColor
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 }

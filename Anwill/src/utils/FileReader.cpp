@@ -1,8 +1,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "core/Log.h"
 #include "FileReader.h"
+#include "core/Assert.h"
 
 namespace Anwill {
 
@@ -20,7 +20,7 @@ namespace Anwill {
             }
             file.close();
         } else {
-            AW_FATAL("Could not load the following file: {0}", filepath);
+            AW_ERROR("Could not load the following file: {0}", filepath);
         }
         return result;
     }
@@ -47,6 +47,7 @@ namespace Anwill {
                 if(breakpoints.size() > bpIndex and
                    line.find(breakpoints[bpIndex]) != std::string::npos)
                 {
+                    std::getline(file, line);
                     bpIndex++;
                     if(!foundFirst)
                     {

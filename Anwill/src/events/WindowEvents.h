@@ -24,6 +24,19 @@ namespace Anwill {
         unsigned int m_NewWidth, m_NewHeight;
     };
 
+    class WindowMoveEvent : public Event
+    {
+    public:
+        WindowMoveEvent(int newXPos, int newYPos) : m_NewXPos(newXPos), m_NewYPos(newYPos) {}
+        inline static EventType GetEventTypeStatic() { return EventType::WindowMoved; }
+        inline EventType GetEventType() const override { return EventType::WindowMoved; }
+        inline int GetNewXPos() { return m_NewXPos; }
+        inline int GetNewYPos() { return m_NewYPos; }
+
+    private:
+        int m_NewXPos, m_NewYPos;
+    };
+
     class WindowFocusEvent : public Event
     {
     public:

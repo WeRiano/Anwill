@@ -1,3 +1,6 @@
 [submodule "Anwill/vendor/Willog"]
 	path = Anwill/vendor/Willog
 	url = https://github.com/WeRiano/Willog
+[submodule "Anwill/vendor/glfw"]
+	path = Anwill/vendor/glfw
+	url = https://github.com/glfw/glfw.git

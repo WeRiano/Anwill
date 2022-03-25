@@ -35,19 +35,26 @@ namespace Anwill {
     void OpenGLVertexArray::AddBuffer(const VertexBuffer& buffer,
                                       const BufferLayout& layout)
     {
+
+        Bind();
+        buffer.Bind();
+
         const auto& elements = layout.GetElements();
         for (unsigned int i = 0; i < elements.size(); i++)
         {
             const auto& element = elements[i];
-            glEnableVertexAttribArray(i);
             glVertexAttribPointer(i,
                                   element.count,
                                   ShaderDataTypeToOpenGLType(element.type),
                                   element.normalized,
                                   layout.GetStride(), (const void*) element.offset);
+            glEnableVertexAttribArray(i);
         }
         /* TODO: Check for data type and call different glVertexAttribPointers?? Passing matrices
                  to the vertex shader?? (not by uniform) */
+
+        Unbind();
+        buffer.Unbind();
     }
 
     void OpenGLVertexArray::Bind() const

@@ -8,5 +8,7 @@ namespace Anwill {
     {
     public:
         OpenGLGraphicsAPI();
+
+        void ClearBuffers();
     };
 }

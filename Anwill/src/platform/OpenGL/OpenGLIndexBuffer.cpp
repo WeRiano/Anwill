@@ -4,6 +4,7 @@
 namespace Anwill {
 
     OpenGLIndexBuffer::OpenGLIndexBuffer(const unsigned int* indices, unsigned int count)
+        : m_Count(count)
     {
         AW_ASSERT(sizeof(unsigned int) == sizeof(GLuint),
                   "size of GLuint =/= size of regular unsigned int");
@@ -26,5 +27,10 @@ namespace Anwill {
     void OpenGLIndexBuffer::Unbind() const
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    unsigned int OpenGLIndexBuffer::GetCount() const
+    {
+        return m_Count;
     }
 }
