@@ -12,7 +12,7 @@ namespace Anwill {
     class App
     {
     public:
-        App(const WindowSettings ws);
+        App(const WindowSettings& ws);
 
         void Run();
 

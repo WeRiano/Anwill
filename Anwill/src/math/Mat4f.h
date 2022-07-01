@@ -1,34 +1,44 @@
 #pragma once
 
 #include <string>
+
+#include "Vec2f.h"
+#include "Vec3f.h"
 #undef far
 #undef near
 
-namespace Anwill {
+namespace Anwill { namespace Math {
+
+    // TODO: Implementation should probably differ based on Graphics::API?? Not sure how much so we wait with
+    //       that until we get there #DirectX
 
     // Column major (it do go down, like so:)
     // -------------
-    // x.x x.y x.z 0
-    // y.x y.y y.z 0
-    // z.x z.y z.z 0
+    // x.x x.y x.z transX
+    // y.x y.y y.z transY
+    // z.x z.y z.z transZ
     // p.x p.y p.z 1
     // -------------
-    // { x.x, y.x, z.x, p.x, x.y, y.y, z.y, p.y, x.z, y.z, z.z, p.z, transX, transY, transZ, 1 }.
+    // { x.x, y.x, z.x, p.x, x.y, y.y, z.y, p.y, x.z, y.z, z.z, p.z, transX, transY, transZ, 1 }
     // -------------
     class Mat4f
     {
     private:
         float m_Mat[4 * 4];
 
-        Mat4f() : m_Mat() {}
     public:
         static Mat4f Identity();
         static Mat4f Orthographic(float left, float right, float bottom, float top, float near, float far);
 
-        Mat4f operator*(const Mat4f&);
+        Mat4f operator*(const Mat4f &) const;
+
+        const float* GetInternal() const;
+        void Translate(float x, float y);
+        void Translate(const Vec2f& vec);
+        void Translate(float x, float y, float z);
+        void Translate(const Vec3f& vec);
         //Mat4f Rotate(const float deg);
 
-        const float* GetInternal();
         std::string ToString();
     };
-}
+}}

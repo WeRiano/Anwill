@@ -35,13 +35,37 @@ namespace Anwill {
         glUseProgram(0);
     }
 
-    void OpenGLShader::SetUniformMat4f(Mat4f mat, const std::string& name)
+    void OpenGLShader::SetUniformMat4f(const Math::Mat4f& mat4f, const std::string& name)
     {
-        Bind();
+        //Bind();
         int location = GetUniformLocation(name);
-        // Count is always 1 for now, generalize when we actually need a vector of mat4fs
-        glUniformMatrix4fv(location, 1, GL_FALSE, mat.GetInternal());
-        Unbind();
+        // TODO: Count is always 1 for now, generalize when we actually need a vector of mat4fs
+        glUniformMatrix4fv(location, 1, GL_FALSE, mat4f.GetInternal());
+        //Unbind();
+    }
+
+    void OpenGLShader::SetUniformVec1f(const float val, const std::string &name)
+    {
+        int location = GetUniformLocation(name);
+        glUniform1fv(location, 1, &val);
+    }
+
+    void OpenGLShader::SetUniformVec2f(const Math::Vec2f& vec2f, const std::string &name)
+    {
+        float temp[2] = {
+                vec2f.GetX(), vec2f.GetY()
+        };
+        int location = GetUniformLocation(name);
+        glUniform2fv(location, 1, temp);
+    }
+
+    void OpenGLShader::SetUniformVec3f(const Math::Vec3f &vec3f, const std::string &name)
+    {
+        float temp[3] = {
+                vec3f.GetX(), vec3f.GetY(), vec3f.GetZ()
+        };
+        int location = GetUniformLocation(name);
+        glUniform3fv(location, 1, temp);
     }
 
     unsigned int OpenGLShader::CompileShader(unsigned int glShaderType, const std::string& shaderSrc)
@@ -109,6 +133,9 @@ namespace Anwill {
             if (location == -1)
             {
                 AW_ERROR("OpenGL failed to retrieve the location of the following uniform: {0}", name);
+            } else
+            {
+                m_LocationCache[name] = location;
             }
         }
         return location;

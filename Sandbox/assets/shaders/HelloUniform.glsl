@@ -3,11 +3,12 @@
 
 layout(location = 0) in vec2 v_Pos;
 
-uniform mat4 u_ProjMat;
+uniform mat4 u_ViewProjMat;
+uniform mat4 u_Transform;
 
 void main()
 {
-    gl_Position = u_ProjMat * vec4(v_Pos, 0.0f, 1.0f);
+    gl_Position = u_ViewProjMat * u_Transform * vec4(v_Pos, 0.0f, 1.0f);
 }
 
 #shadertype fragment

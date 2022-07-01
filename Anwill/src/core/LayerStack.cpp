@@ -9,7 +9,8 @@ namespace Anwill
         {
             Timestamp last = m_Stack[i]->GetLastUpdate();
             Timestamp now = Timestamp();
-            if (now - last >= m_Stack[i]->GetUpdateDelta()) {
+            long long int delta = m_Stack[i]->GetUpdateDelta();
+            if (now - last >= delta || delta == 0) {
                 m_Stack[i]->Update(now);
             }
         }

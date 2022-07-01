@@ -33,19 +33,41 @@ namespace Anwill {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
         AW_INFO("OpenGL debug output enabled!");
 
+        //glEnable(GL_BLEND);
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // TODO: This stuff for 3D renderer.
-        //glClearDepthf(0.01f);                                 // Depth Buffer Setup
+        //glClearDepthf(0.0f);                                 // Depth Buffer Setup
         //glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
         //glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
-
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
     }
 
-    void OpenGLGraphicsAPI::ClearBuffers()
+    void OpenGLGraphicsAPI::SetClearColor(const Math::Vec3f& color) const
     {
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // TODO: Make SetClearColor
+        glClearColor(color.GetX(), color.GetY(), color.GetZ(), 1.0f);
+    }
+
+    void OpenGLGraphicsAPI::ClearBuffers() const
+    {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    void OpenGLGraphicsAPI::Draw(const Mesh &mesh)
+    {
+        mesh.Bind();
+        glDrawElements(GL_TRIANGLES, mesh.GetIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
+        mesh.Unbind();
+    }
+
+    void OpenGLGraphicsAPI::Draw(const std::shared_ptr<VertexArray>& vertexArray,
+                                 const std::shared_ptr<IndexBuffer>& indexBuffer)
+    {
+        vertexArray->Bind();
+        indexBuffer->Bind();
+        glDrawElements(GL_TRIANGLES, indexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+        vertexArray->Unbind();
+        indexBuffer->Unbind();
     }
 }

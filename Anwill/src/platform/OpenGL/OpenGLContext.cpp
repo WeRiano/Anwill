@@ -8,6 +8,7 @@ namespace Anwill {
     OpenGLContext::OpenGLContext(GLFWwindow* window)
     {
         glfwMakeContextCurrent(window);
+        glfwSwapInterval(0); // VSYNC off
 
         int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
         if (!status) {
@@ -16,7 +17,6 @@ namespace Anwill {
             AW_INFO("Glad loaded! OpenGL version: {0}", (const char*) glGetString(GL_VERSION));
             int width, height;
             glfwGetWindowSize(window, &width, &height);
-            std::cout << width << ", " << height << std::endl;
             glViewport(0, 0, width, height);
         }
     }

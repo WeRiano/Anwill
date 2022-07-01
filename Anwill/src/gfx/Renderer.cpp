@@ -5,6 +5,7 @@ namespace Anwill {
 
     GraphicsAPI::API Renderer::s_APIName;
     std::unique_ptr<GraphicsAPI> Renderer::s_API;
+    Renderer::SceneData Renderer::s_SceneData;
 
     void Renderer::Init()
     {
@@ -23,8 +24,44 @@ namespace Anwill {
         return s_APIName;
     }
 
+    void Renderer::SetClearColor(const Math::Vec3f& color)
+    {
+        s_API->SetClearColor(color);
+    }
+
     void Renderer::ClearBuffers()
     {
         s_API->ClearBuffers();
+    }
+
+    void Renderer::BeginScene(const Camera& camera)
+    {
+        s_SceneData = SceneData();
+        s_SceneData.ViewProjMat = camera.GetViewProj();
+    }
+
+    void Renderer::Submit(const std::shared_ptr<Shader> &shader, const Mesh &mesh, const Math::Mat4f& transform)
+    {
+        shader->Bind();
+        shader->SetUniformMat4f(transform, "u_Transform");
+        shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        s_API->Draw(mesh);
+
+        shader->Unbind();
+    }
+
+    void Renderer::Submit(const std::shared_ptr<Shader>& shader,
+                          const std::shared_ptr<VertexArray>& vertexArray,
+                          const std::shared_ptr<IndexBuffer>& indexBuffer,
+                          const Math::Mat4f& transform)
+    {
+        shader->Bind();
+        shader->SetUniformMat4f(transform, "u_Transform");
+        shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        s_API->Draw(vertexArray, indexBuffer);
+
+        shader->Unbind();
     }
 }

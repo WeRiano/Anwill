@@ -1,0 +1,28 @@
+#pragma once
+
+#include "math/Mat4f.h"
+
+namespace Anwill {
+
+    class Camera
+    {
+    public:
+        Math::Mat4f GetViewProj() const;
+        void SetProjMat(const Math::Mat4f&& projMat);
+    protected:
+        Math::Mat4f m_ViewMat;
+        Math::Mat4f m_ProjMat; // This depends on derived type
+    };
+
+    class OrthographicCamera : public Camera
+    {
+    public:
+        OrthographicCamera(float width, float height);
+
+        // positive x values means moving the camera to the right, and vise-versa
+        // positive y values means moving the camera up, and vise-versa
+        void Move(float x, float y);
+
+        Math::Vec2f GetPos() const;
+    };
+}

@@ -11,10 +11,10 @@ namespace Anwill {
     enum EventType
     {
         None = 0,
-        WindowClose, WindowResize, WindowFocus, /*WindowLostFocus,*/ WindowMoved,
+        WindowClose, WindowResize, WindowFocus, /*WindowLostFocus,*/ WindowMove,
         AppTick, AppUpdate, AppRender,
-        KeyPressed, KeyReleased, KeyTyped,
-        MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
+        KeyPress, KeyRelease, KeyRepeat, /* KeyTyped <-- WTF IS THIS? */
+        MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll,
         EventTypeMax // Used to count the number of different events!
     };
 

@@ -18,7 +18,7 @@
 
 namespace Anwill {
 
-    App::App(const WindowSettings ws)
+    App::App(const WindowSettings& ws)
         : m_Running(true), m_Minimized(false)
     {
         m_Window = Window::Create(ws);
@@ -28,61 +28,22 @@ namespace Anwill {
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowClose);
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowResize);
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowFocus);
-        SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowMoved);
+        SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowMove);
 
     }
 
     void App::Run()
     {
-        /*
-        float vertices[] = {
-
-                500.0f, 500.0f,  // top right
-                500.0f, 100.0f,  // bottom right
-                100.0f, 100.0f,  // bottom left
-                100.0f, 500.0f,  // top left
-        };
-
-        unsigned int indices[] = {
-                0, 1, 3,
-                1, 2, 3
-        };
-
-        auto vb = VertexBuffer::Create(vertices, sizeof(vertices));
-        auto ib = IndexBuffer::Create(indices, 6);
-
-        auto elements = {
-                BufferElement(ShaderDataType::Float2)
-        };
-
-        auto bufferLayout = BufferLayout(elements);
-        auto va = VertexArray::Create();
-        va->AddBuffer(*vb.get(), bufferLayout);
-        auto shader = Shader::Create("assets/shaders/HelloUniform.glsl");
-
-        Mat4f ortho = Mat4f::Orthographic(0.0f, (float)m_Window->GetWidth(),
-                                          0.0f, (float)m_Window->GetHeight(),
-                                          -1.0f, 1.0f);
-        //std::cout << ortho.ToString() << std::endl;
-
-        shader->SetUniformMat4f(ortho, "u_ProjMat");
-
-        shader->Bind();
-        vb->Bind();
-        va->Bind();
-        ib->Bind();
-        */
-
         while(m_Running)
         {
-            m_LayerStack.Update();
-
             Renderer::ClearBuffers();
 
-            //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-            //glDrawArrays(GL_TRIANGLES, 0, 6);
+            m_LayerStack.Update();
 
-            SystemEvents::Pop();
+            for(unsigned int i = 0; i < 2; i++)
+            {
+                SystemEvents::Pop();
+            }
 
             m_Window->Update();
         }

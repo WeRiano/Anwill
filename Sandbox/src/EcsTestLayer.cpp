@@ -11,17 +11,27 @@ EcsTestLayer::EcsTestLayer(const unsigned int ups)
         AW_INFO("Entity ID: {}", m_Entities[i]);
     }
 
-    Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[0],
-                                                     0, 13.0f, Anwill::TestObject(-1));
+    Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[0],0, 13.0f);
     Anwill::Ecs::AddComponent<Anwill::CameraComponent>(m_Entities[0], 4);
+    Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[1],0, 42.0f);
+    Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[2],0, 42.0f);
+    Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[3],0, 42.0f);
+    Anwill::Ecs::DeleteComponent<Anwill::MeshComponent>(m_Entities[2]);
+    Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[4],0, 42.0f);
 }
 
 void EcsTestLayer::Update(const Anwill::Timestamp& timestamp)
 {
     Layer::Update(timestamp);
-    AW_INFO("{0}", timestamp.GetSeconds());
     Anwill::Ecs::ForEach<Anwill::MeshComponent, Anwill::CameraComponent>([](Anwill::EntityID id,
-                                                                            auto& mesh,
-                                                                            auto& camera){
+                                                                            Anwill::MeshComponent& mesh,
+                                                                            Anwill::CameraComponent& camera) {
+        std::cout << id << std::endl;
     });
+    Anwill::Ecs::ForEach<Anwill::MeshComponent>([](Anwill::EntityID id,
+                                                                            Anwill::MeshComponent& mesh) {
+        std::cout << id << std::endl;
+    });
+
+
 }

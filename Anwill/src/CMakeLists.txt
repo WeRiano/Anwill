@@ -12,4 +12,4 @@ add_subdirectory(utils)
 add_library(Anwill INTERFACE)
 target_link_libraries(Anwill INTERFACE Core Ecs Events Math Platform Graphics Utils)
 
-# TODO: "Optimize" PUBLIC usage?? Is it really necessary everywhere?
+# TODO: "Optimize" PUBLIC usage?? Is it really necessary everywhere? Does it even make a difference if it is everywhere?

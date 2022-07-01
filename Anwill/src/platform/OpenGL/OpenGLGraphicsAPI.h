@@ -9,6 +9,11 @@ namespace Anwill {
     public:
         OpenGLGraphicsAPI();
 
-        void ClearBuffers();
+        void SetClearColor(const Math::Vec3f& color) const override;
+        void ClearBuffers() const override;
+
+        void Draw(const Mesh& mesh) override;
+        void Draw(const std::shared_ptr<VertexArray>& vertexArray,
+                  const std::shared_ptr<IndexBuffer>& indexBuffer) override;
     };
 }

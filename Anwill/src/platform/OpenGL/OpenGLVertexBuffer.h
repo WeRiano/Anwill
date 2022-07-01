@@ -8,6 +8,7 @@ namespace Anwill {
     {
     public:
         OpenGLVertexBuffer(const float* data, unsigned int size);
+
         /***
          * Use for creation of a dynamic buffer (that will use DynamicUpdate())
          * @param size

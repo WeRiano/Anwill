@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Component.h"
-
 namespace Anwill {
 
     class TestObject
@@ -14,31 +12,36 @@ namespace Anwill {
         int m_i;
     };
 
-    struct MeshComponent : public Component {
+    struct MeshComponent {
         int i;
         float f;
-        TestObject obj;
-        MeshComponent(int i, float f, TestObject obj)
-            : i(i), f(f), obj(obj)
+        MeshComponent()
+            : i(0), f(0.0f)
+        {}
+        MeshComponent(int i, float f)
+            : i(i), f(f)
         {}
 
-        void Identify() override {
+        void Identify() {
             std::cout << "MeshComponent" << std::endl;
         }
     };
 
-    struct CameraComponent : public Component {
+    struct CameraComponent {
         int x, y, z;
+        CameraComponent()
+            : x(0), y(0), z(0)
+        {}
         CameraComponent(int k)
             : x(0), y(k), z(0)
         {}
 
-        void Identify() override {
+        void Identify() {
             std::cout << "CameraComponent" << std::endl;
         }
     };
 
-    struct TransformComponent : public Component {
+    struct TransformComponent {
 
     };
 }

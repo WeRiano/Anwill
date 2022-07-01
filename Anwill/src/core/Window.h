@@ -17,7 +17,7 @@ namespace Anwill {
     class Window
     {
     public:
-        static std::unique_ptr<Window> Create(WindowSettings ws);
+        static std::unique_ptr<Window> Create(const WindowSettings& ws);
 
         virtual void Update() = 0;
         virtual void Terminate() = 0;

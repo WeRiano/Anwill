@@ -8,66 +8,120 @@
 #include <vector>
 
 #include "EcsDef.h"
-#include "Component.h"
+#include "ComponentContainer.h"
+#include "core/Log.h"
+#include "core/Assert.h"
 
 namespace Anwill {
 
     class ComponentManager
     {
     public:
-        ComponentManager() {}
+        ComponentManager()
+            : m_IDCounter(0)
+        {}
+
+        template <class C>
+        void RegisterComponent()
+        {
+            ComponentID id = CreateID();
+            m_IDs[std::type_index(typeid(C))] = id;
+            m_Containers[id] = std::make_shared<ComponentContainer<C>>();
+        }
 
         template <class C, typename... Args>
         void AddComponent(EntityID entityID, Args&&... args)
         {
-            std::shared_ptr<Component> ptr = std::make_shared<C>(std::forward<Args>(args)...);
             ComponentID id = GetTypeID<C>();
-            m_CompIndexMap[entityID][id] = 0;
-            m_Components[id][GetComponentArrayIndex(id, entityID)] = ptr;
-            AW_INFO("ECS: {0} component added to entity {1}.", id.name(), entityID);
-        }
-
-        template<std::size_t N, class... Comps>
-        bool PopulateTuple(std::tuple<Comps*...>& tuple,
-                           EntityID entityID,
-                           const std::vector<std::type_index>& indices) {
-            auto* c = m_Components[indices[N]][entityID].get();
-            if (c == nullptr) {
-                return false;
-            }
-            std::get<N>(tuple) = (std::tuple_element_t<N, std::tuple<Comps*...>>)c;
-            if constexpr (N < sizeof...(Comps) - 1) {
-                return PopulateTuple<N + 1, Comps...>(tuple, entityID, indices);
-            } else {
-                return true;
+            if (m_Containers[id] == nullptr) {
+                AW_ERROR("Tried to add a {0} component to the ECS but such a component has not yet been registered.",
+                         typeid(C).name());
+            } else
+            {
+                std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
+                container->AddComponent(entityID, std::forward<Args>(args)...);
+                AW_INFO("ECS: {0} component added to entity {1}.", typeid(C).name(), entityID);
             }
         }
 
-        unsigned int GetComponentArrayIndex(ComponentID componentID, EntityID entityID) {
-            return m_CompIndexMap[entityID][componentID];
-        }
-
-        template <class... Comps>
-        bool GetComponents(EntityID entityID, std::tuple<Comps*...>& result)
+        template <class C>
+        void DeleteComponent(EntityID entityID)
         {
-            auto compIndices = GetTypeIDs<Comps...>();
-            return PopulateTuple<0, Comps...>(result, entityID, compIndices);
+            ComponentID id = GetTypeID<C>();
+            if (m_Containers[id] == nullptr) {
+                AW_ERROR("Tried to remove a {0} component from the ECS but such a component has not yet been registered.",
+                         typeid(C).name());
+            } else {
+                std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
+                container->DeleteComponent(entityID);
+                AW_INFO("ECS: {0} component removed from entity {1}.", typeid(C).name(), entityID);
+            }
         }
 
-    private:
-        std::unordered_map<ComponentID, std::array<std::shared_ptr<Component>, AW_MAX_COMPONENTS>> m_Components;
-        std::unordered_map<EntityID, std::unordered_map<ComponentID, unsigned int>> m_CompIndexMap;
+        template <size_t CompNr, class... Comps>
+        void GetComponentsInOrder(const std::vector<EntityID>& entityIDs,
+                                  const std::vector<ComponentID>& compIDs,
+                                  std::vector<std::tuple<Comps*...>>& result)
+        {
+            // For efficiency, we should grab the components in TYPE order:
+            // (Grab all components of type A for entity x1, x2, ..., xn)
+            // (Grab all components of type B for entity x1, x2, ..., xn)
+            // (...)
+            using C = std::tuple_element_t<CompNr, std::tuple<Comps...>>;
+            const ComponentID& id = compIDs[CompNr];
+            std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
+            unsigned int count = 0;
+            for(const auto& entityID : entityIDs)
+            {
+                C& c = container->GetComponent(entityID);
+                std::get<CompNr>(result[count]) = &c;
+                count++;
+            }
+            if constexpr (CompNr < sizeof...(Comps) - 1)
+            {
+                GetComponentsInOrder<CompNr + 1, Comps...>(entityIDs, compIDs, result);
+            }
+        }
 
         template <class C>
         ComponentID GetTypeID()
         {
-            return std::type_index(typeid(C));
+            return m_IDs[std::type_index(typeid(C))];
         }
 
-        template <class... Comps>
-        std::vector<ComponentID> GetTypeIDs()
+        template <class C, class... Comps>
+        void GetTypeIDs(std::vector<ComponentID>& result)
         {
-            return { std::type_index(typeid(Comps))... };
+            result.emplace_back(m_IDs[std::type_index(typeid(C))]);
+            if constexpr (sizeof...(Comps) > 0)
+            {
+                GetTypeIDs<Comps...>(result);
+            }
+        }
+
+    private:
+        std::unordered_map<ComponentID, std::shared_ptr<IContainer>> m_Containers;
+        std::unordered_map<std::type_index, ComponentID> m_IDs;
+
+        unsigned int m_IDCounter;
+
+        ComponentID CreateID()
+        {
+            m_IDCounter++;
+            if(m_IDCounter > AW_MAX_TYPE_COMPONENTS) {
+                AW_FATAL("Cannot register another component. Maximum type amount of {0} reached.",
+                         AW_MAX_TYPE_COMPONENTS);
+            }
+            return m_IDCounter;
+        }
+
+        template<class C>
+        std::shared_ptr<ComponentContainer<C>> GetComponentContainer()
+        {
+            ComponentID& id = m_IDs[std::type_index(typeid(C))];
+            AW_ASSERT(m_Containers[id] != nullptr,
+                      "Attempted to access a component container of a type that has not been registered.");
+            return std::static_pointer_cast<ComponentContainer<C>>(m_Containers[m_IDs[std::type_index(typeid(C))]]);
         }
     };
 

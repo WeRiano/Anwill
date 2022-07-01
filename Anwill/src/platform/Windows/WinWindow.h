@@ -11,7 +11,7 @@ namespace Anwill {
     class WinWindow : public Window
     {
     public:
-        WinWindow(const WindowSettings ws);
+        WinWindow(const WindowSettings& ws);
 
         void Update() override;
         void Terminate() override;
@@ -20,7 +20,7 @@ namespace Anwill {
 
 
     private:
-        void Init(const WindowSettings ws);
+        void Init(const WindowSettings& ws);
 
         std::unique_ptr<GraphicsContext> m_gc;
         GLFWwindow* m_Window;

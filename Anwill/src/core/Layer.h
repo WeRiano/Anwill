@@ -8,7 +8,7 @@ namespace Anwill {
     {
     public:
         Layer(const unsigned int ups)
-                : m_UpdateDelta(1000000/ups), m_LastUpdate(Timestamp())
+                : m_UpdateDelta(ups == 0 ? 0 : 1000000/ups), m_LastUpdate(Timestamp())
         {}
 
         virtual void Update(const Timestamp& timestamp) {

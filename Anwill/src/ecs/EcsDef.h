@@ -1,15 +1,19 @@
 #pragma once
 
 #include <typeindex>
+#include <bitset>
 
-// Components are bigger in memory so they will be the limit
-#define AW_MAX_COMPONENTS 200000
-#define AW_MAX_ENTITIES AW_MAX_COMPONENTS
+#define AW_MAX_ENTITIES 10000              // Maximum number of (unique) entities
+#define AW_MAX_COMPONENTS AW_MAX_ENTITIES  // Maximum number of component instances for one type of component
+#define AW_MAX_TYPE_COMPONENTS 100         // Maximum number of different types of components
 
 namespace Anwill {
-    typedef long EntityID;
+    // A signature which identifies what components an entity has.
+    typedef std::bitset<AW_MAX_TYPE_COMPONENTS> CompSig;
 
-    // This is a type id. We don't need complete unique IDs for components(?), since they are linked to a entity
-    // which has some unique ID
-    typedef std::type_index ComponentID;
+    // Unique entity id. A long on the interval [0, AW_MAX_ENTITIES).
+    typedef unsigned long EntityID;
+
+    // This is a unique type/family id. An int on the interval [1, AW_MAX_TYPE_COMPONENTS].
+    typedef unsigned int ComponentID;
 }

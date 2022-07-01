@@ -68,8 +68,6 @@ namespace Anwill {
         virtual void AddBuffer(const VertexBuffer& vertexBuffer, const BufferLayout& layout) = 0;
         virtual void Bind() const = 0;
         virtual void Unbind() const = 0;
-    private:
-        unsigned int m_ID;
     };
 
 }

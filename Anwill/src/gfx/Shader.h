@@ -16,7 +16,11 @@ namespace Anwill {
         virtual void Unbind() const = 0;
 
         // Uniforms
-        virtual void SetUniformMat4f(Mat4f mat, const std::string& name) = 0;
+        virtual void SetUniformMat4f(const Math::Mat4f& mat4f, const std::string& name) = 0;
+        virtual void SetUniformVec1f(const float val, const std::string& name) = 0;
+        virtual void SetUniformVec2f(const Math::Vec2f& vec2f, const std::string& name) = 0;
+        virtual void SetUniformVec3f(const Math::Vec3f& vec3f, const std::string& name) = 0;
+
     };
 
 }

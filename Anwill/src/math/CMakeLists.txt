@@ -1,5 +1,5 @@
 add_library(Math STATIC
-        MAt4f.cpp
+        Mat4f.cpp Vec3f.cpp Vec2f.cpp PLine2D.cpp
         )
 
 target_link_libraries(Math PUBLIC

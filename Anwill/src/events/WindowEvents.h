@@ -28,8 +28,8 @@ namespace Anwill {
     {
     public:
         WindowMoveEvent(int newXPos, int newYPos) : m_NewXPos(newXPos), m_NewYPos(newYPos) {}
-        inline static EventType GetEventTypeStatic() { return EventType::WindowMoved; }
-        inline EventType GetEventType() const override { return EventType::WindowMoved; }
+        inline static EventType GetEventTypeStatic() { return EventType::WindowMove; }
+        inline EventType GetEventType() const override { return EventType::WindowMove; }
         inline int GetNewXPos() { return m_NewXPos; }
         inline int GetNewYPos() { return m_NewYPos; }
 

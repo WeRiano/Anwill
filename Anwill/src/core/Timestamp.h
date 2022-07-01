@@ -99,6 +99,8 @@ namespace Anwill {
     private:
         long long m_time; /// Microseconds
 
+
+        // TODO: THIS IS BAD, PLACE IMPLEMENTATION IN PLATFORM FOLDER!
         static long long GetTime() {
             #ifdef AW_PLATFORM_WINDOWS
             LARGE_INTEGER counts_now, freq;
