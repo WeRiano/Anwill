@@ -21,8 +21,9 @@ namespace Anwill {
 
         virtual void Update() = 0;
         virtual void Terminate() = 0;
-        virtual unsigned int GetWidth() = 0;
-        virtual unsigned int GetHeight() = 0;
+        virtual void* GetNativeWindow() const = 0;
+        virtual unsigned int GetWidth() const = 0;
+        virtual unsigned int GetHeight() const = 0;
     };
 
 }

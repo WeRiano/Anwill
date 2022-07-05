@@ -1,6 +1,6 @@
-#include "Layer2D.h"
+#include "RendererHelloWorld"
 
-Layer2D::Layer2D(const unsigned int ups)
+RendererHelloWorld::RendererHelloWorld(const unsigned int ups)
     : Layer(ups), m_Camera(800.0f, 600.0f)
 {
     float vertices[] = {
@@ -31,7 +31,7 @@ Layer2D::Layer2D(const unsigned int ups)
     Anwill::Renderer::SetClearColor({0.1f, 0.1f, 0.1f});
 }
 
-void Layer2D::Update(const Anwill::Timestamp& timestamp)
+void RendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
     Layer::Update(timestamp);
 

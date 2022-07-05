@@ -62,9 +62,15 @@ void main()
     float rightDot = dot(u_LookDir, rightFovDirVec);
     float fragDot = dot(u_LookDir, fragDirVec);
 
+    float dist = length(gl_FragCoord.xy - (u_PlayerPos + u_CamPos));
+    float attA = 0.000007f;
+    float attB = 0.0014f;
+    float attC = 1.0f;
+    float attenuation = 1.0f / (attC + attB * dist + attA * (dist * dist));
+
     if ( (fragDot > leftDot && fragDot > rightDot) && !wallColl() ) {
-        color = vec4(0.9f, 0.9f, 0.5f, 1.0f);
+        color = vec4(0.9f, 0.9f, 0.5f, 1.0f) * attenuation; // Light
     } else {
-        color = vec4(0.2f, 0.2f, 0.2f, 1.0f);
+        color = vec4(0.1f, 0.1f, 0.1f, 1.0f); // Darkness
     }
 }

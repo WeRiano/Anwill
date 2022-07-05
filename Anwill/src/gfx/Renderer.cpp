@@ -14,14 +14,19 @@ namespace Anwill {
         // TODO: Setup global graphics API settings (glBlend and stuff ... global settings)
     }
 
+    GraphicsAPI::API Renderer::GetAPI()
+    {
+        return s_APIName;
+    }
+
     void Renderer::SetAPI(GraphicsAPI::API api)
     {
         s_APIName = api;
     }
 
-    GraphicsAPI::API Renderer::GetAPI()
+    void Renderer::SetViewport(float x, float y, float width, float height)
     {
-        return s_APIName;
+        s_API->SetViewport(x, y, width, height);
     }
 
     void Renderer::SetClearColor(const Math::Vec3f& color)

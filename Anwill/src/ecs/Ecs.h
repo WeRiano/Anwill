@@ -16,10 +16,13 @@ namespace Anwill {
     public:
         Ecs();
 
-        static void Initialize();
+        static void Init();
 
         // Add an entity to the system and returns its unique ID;
         static EntityID CreateEntity();
+
+        // Remove an entity from the system and all its components, freeing its ID.
+        static void RemoveEntity(EntityID entityID);
 
         // Register a component (type) to the ECS. A component which has not been registered can not be used.
         template <class C>

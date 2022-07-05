@@ -1,5 +1,5 @@
 add_library(Core STATIC
-        App.cpp Window.cpp LayerStack.cpp Log.cpp
+        App.cpp Window.cpp LayerStack.cpp Log.cpp Input.cpp
         )
 
 target_include_directories(Core PUBLIC

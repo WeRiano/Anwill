@@ -7,7 +7,7 @@
 #undef far
 #undef near
 
-namespace Anwill { namespace Math {
+namespace Anwill::Math {
 
     // TODO: Implementation should probably differ based on Graphics::API?? Not sure how much so we wait with
     //       that until we get there #DirectX
@@ -30,15 +30,16 @@ namespace Anwill { namespace Math {
         static Mat4f Identity();
         static Mat4f Orthographic(float left, float right, float bottom, float top, float near, float far);
 
-        Mat4f operator*(const Mat4f &) const;
+        Mat4f operator*(const Mat4f&) const;
+        Vec3f operator*(const Vec3f&) const;
 
         const float* GetInternal() const;
         void Translate(float x, float y);
         void Translate(const Vec2f& vec);
         void Translate(float x, float y, float z);
         void Translate(const Vec3f& vec);
-        //Mat4f Rotate(const float deg);
+        Mat4f RotateZ(const float deg) const;
 
         std::string ToString();
     };
-}}
+}

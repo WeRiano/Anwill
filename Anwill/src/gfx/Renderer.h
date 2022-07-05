@@ -18,9 +18,11 @@ namespace Anwill {
     public:
         static void Init();
 
-        static void SetAPI(GraphicsAPI::API api);
         static GraphicsAPI::API GetAPI();
+        static void SetAPI(GraphicsAPI::API api);
 
+        // Static entrypoints for GraphicAPI responsibilities
+        static void SetViewport(float x, float y, float width, float height);
         static void SetClearColor(const Math::Vec3f& color);
         static void ClearBuffers();
 

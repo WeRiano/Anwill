@@ -1,4 +1,9 @@
-add_executable(Sandbox Sandbox.cpp Layer2D.cpp EcsTestLayer.cpp TPS.cpp TPSCalcs.cpp)
+add_executable(Sandbox Sandbox.cpp
+
+        Tests/Renderer/RendererHelloWorld.cpp Tests/EcsTest/EcsTestLayer.cpp
+        Tests/PhysicsTest/PhyDelta.cpp Tests/PhysicsTest/PhyExist.cpp
+
+        SmallerProjects/TopDownShadow/TPS.cpp SmallerProjects/TopDownShadow/TPSCalcs.cpp)
 
 target_include_directories(Sandbox PUBLIC
         ${PROJECT_SOURCE_DIR}/Anwill/src

@@ -4,10 +4,10 @@
 
 #include "Anwill.h"
 
-class Layer2D : public Anwill::Layer
+class RendererHelloWorld : public Anwill::Layer
 {
 public:
-    Layer2D(const unsigned int ups);
+    RendererHelloWorld(const unsigned int ups);
 
     virtual void Update(const Anwill::Timestamp &timestamp) override;
 

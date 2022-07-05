@@ -8,10 +8,21 @@ namespace Anwill::Math {
         Vec3f();
         Vec3f(float x, float y, float z);
 
+        Vec3f operator+(const Vec3f& other) const;
+        void operator+=(const Vec3f& other);
+        void operator*=(const float s);
+        Vec3f operator/(const float d) const;
+
+        void Move(float deltaX, float deltaY, float deltaZ);
+        void Normalize();
+        float GetLength() const;
         float GetX() const;
         float GetY() const;
         float GetZ() const;
     private:
         float m_X, m_Y, m_Z;
     };
+
+    Vec3f operator*(const Vec3f& lhs, const float rhs);
+    Vec3f operator*(const float lhs, const Vec3f& rhs);
 }

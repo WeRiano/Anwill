@@ -9,6 +9,7 @@ namespace Anwill {
     public:
         OpenGLGraphicsAPI();
 
+        void SetViewport(float x, float y, float width, float height) const override;
         void SetClearColor(const Math::Vec3f& color) const override;
         void ClearBuffers() const override;
 

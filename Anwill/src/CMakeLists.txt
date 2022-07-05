@@ -6,10 +6,11 @@ add_subdirectory(ecs)
 add_subdirectory(events)
 add_subdirectory(platform)
 add_subdirectory(math)
+add_subdirectory(physics)
 add_subdirectory(gfx)
 add_subdirectory(utils)
 
 add_library(Anwill INTERFACE)
-target_link_libraries(Anwill INTERFACE Core Ecs Events Math Platform Graphics Utils)
+target_link_libraries(Anwill INTERFACE Core Ecs Events Math Physics Platform Graphics Utils)
 
 # TODO: "Optimize" PUBLIC usage?? Is it really necessary everywhere? Does it even make a difference if it is everywhere?

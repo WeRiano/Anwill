@@ -27,14 +27,19 @@ namespace Anwill {
         glfwTerminate();
     }
 
-    unsigned int WinWindow::GetWidth()
+    void* WinWindow::GetNativeWindow() const
+    {
+        return m_Window;
+    }
+
+    unsigned int WinWindow::GetWidth() const
     {
         int width;
         glfwGetWindowSize(m_Window, &width, nullptr);
         return width;
     }
 
-    unsigned int WinWindow::GetHeight()
+    unsigned int WinWindow::GetHeight() const
     {
         int height;
         glfwGetWindowSize(m_Window, nullptr, &height);

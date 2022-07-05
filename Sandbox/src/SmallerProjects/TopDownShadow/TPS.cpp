@@ -33,12 +33,12 @@ TPS::TPS(const unsigned int ups, float chunkWidth, float chunkHeight, unsigned i
 
     m_ShadowShader->Bind();
     m_PlayerShader->SetUniformVec2f(m_Camera.GetPos(), "u_CamPos");
-    m_ShadowShader->SetUniformVec1f(29.0f, "u_FoVAngleDeg");
+    m_ShadowShader->SetUniformVec1f(35.0f, "u_FoVAngleDeg");
     m_ShadowShader->Unbind();
 
     unsigned int eID = Anwill::Ecs::CreateEntity();
-    Anwill::Ecs::AddComponent<PlayerComponent>(eID);
-    Anwill::Ecs::ForEach<PlayerComponent>([this](Anwill::EntityID id, PlayerComponent& comp) {
+    Anwill::Ecs::AddComponent<EntityComponent>(eID);
+    Anwill::Ecs::ForEach<EntityComponent>([this](Anwill::EntityID id, EntityComponent& comp) {
         comp.camPos = m_Camera.GetPos();
     });
 
@@ -51,7 +51,7 @@ void TPS::Update(const Anwill::Timestamp& timestamp)
 
     Anwill::Renderer::BeginScene(m_Camera);
 
-    Anwill::Ecs::ForEach<PlayerComponent>([this](Anwill::EntityID id, PlayerComponent& comp) {
+    Anwill::Ecs::ForEach<EntityComponent>([this](Anwill::EntityID id, EntityComponent& comp) {
         //AW_TRACE("Player pos: {0}, {1}", comp.pos.GetX(), comp.pos.GetY());
         m_PlayerTransform.Translate(comp.playerPos);
 

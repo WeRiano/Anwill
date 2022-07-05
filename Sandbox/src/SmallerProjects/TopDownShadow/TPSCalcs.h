@@ -2,7 +2,7 @@
 
 #include "Anwill.h"
 
-struct PlayerComponent {
+struct EntityComponent {
     Anwill::Math::Vec2f playerPos, dir, camPos;
 };
 
@@ -15,7 +15,5 @@ public:
 
 private:
     void OnEvent(std::unique_ptr<Anwill::Event>& e);
-    void MovePlayer(Anwill::KeyPressEvent& e);
-    void MovePlayer(Anwill::KeyRepeatEvent& e);
     void ChangePlayerLookDir(Anwill::MouseMoveEvent& e);
 };

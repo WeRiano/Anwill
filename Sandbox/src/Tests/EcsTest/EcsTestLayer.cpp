@@ -3,7 +3,6 @@
 EcsTestLayer::EcsTestLayer(const unsigned int ups)
         : Layer(ups)
 {
-    Anwill::Ecs::Initialize();
 
     for(unsigned int i = 0; i < m_Entities.size(); i++)
     {
@@ -11,6 +10,7 @@ EcsTestLayer::EcsTestLayer(const unsigned int ups)
         AW_INFO("Entity ID: {}", m_Entities[i]);
     }
 
+    /*
     Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[0],0, 13.0f);
     Anwill::Ecs::AddComponent<Anwill::CameraComponent>(m_Entities[0], 4);
     Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[1],0, 42.0f);
@@ -18,6 +18,7 @@ EcsTestLayer::EcsTestLayer(const unsigned int ups)
     Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[3],0, 42.0f);
     Anwill::Ecs::DeleteComponent<Anwill::MeshComponent>(m_Entities[2]);
     Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[4],0, 42.0f);
+     */
 }
 
 void EcsTestLayer::Update(const Anwill::Timestamp& timestamp)

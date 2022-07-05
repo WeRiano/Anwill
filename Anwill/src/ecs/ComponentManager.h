@@ -58,6 +58,17 @@ namespace Anwill {
             }
         }
 
+        inline void DeleteComponent(EntityID entityID, ComponentID componentID) {
+            if (m_Containers[componentID] == nullptr) {
+                AW_ERROR("Tried to remove a component with id {0} from the ECS but such a component has not yet been registered.",
+                         componentID);
+            } else {
+                auto container = m_Containers[componentID];
+                container->DeleteComponent(entityID);
+                AW_INFO("ECS: A component with id {0} removed from entity {1}.", componentID, entityID);
+            }
+        }
+
         template <size_t CompNr, class... Comps>
         void GetComponentsInOrder(const std::vector<EntityID>& entityIDs,
                                   const std::vector<ComponentID>& compIDs,

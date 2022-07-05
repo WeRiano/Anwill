@@ -64,6 +64,11 @@ namespace Anwill {
         return result;
     }
 
+    CompSig EntityManager::GetEntityComponents(EntityID entityID)
+    {
+        return m_CompSigs[entityID];
+    }
+
     bool EntityManager::HasComponents(const EntityID& entityID,
                                       const std::vector<ComponentID>& compIDs) {
         AW_ASSERT(m_AliveEntities.contains(entityID), "Entity does not exist.");

@@ -19,6 +19,7 @@ namespace Anwill {
 
         static std::unique_ptr<GraphicsAPI> Create(API api);
 
+        virtual void SetViewport(float x, float y, float width, float height) const = 0;
         virtual void SetClearColor(const Math::Vec3f& color) const = 0;
         virtual void ClearBuffers() const = 0;
         virtual void Draw(const Mesh& mesh) = 0;

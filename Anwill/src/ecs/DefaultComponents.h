@@ -1,30 +1,13 @@
 #pragma once
 
+#include "gfx/Mesh.h"
+
 namespace Anwill {
 
-    class TestObject
-    {
-    public:
-        TestObject(int i)
-            : m_i(i)
-        {}
-
-        int m_i;
-    };
-
     struct MeshComponent {
-        int i;
-        float f;
         MeshComponent()
-            : i(0), f(0.0f)
         {}
-        MeshComponent(int i, float f)
-            : i(i), f(f)
-        {}
-
-        void Identify() {
-            std::cout << "MeshComponent" << std::endl;
-        }
+        Mesh mesh;
     };
 
     struct CameraComponent {

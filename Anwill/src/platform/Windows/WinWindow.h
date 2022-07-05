@@ -15,8 +15,9 @@ namespace Anwill {
 
         void Update() override;
         void Terminate() override;
-        unsigned int GetWidth() override;
-        unsigned int GetHeight() override;
+        void* GetNativeWindow() const override;
+        unsigned int GetWidth() const override;
+        unsigned int GetHeight() const override;
 
 
     private:

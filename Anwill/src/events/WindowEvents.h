@@ -17,8 +17,8 @@ namespace Anwill {
         WindowResizeEvent(unsigned int newWidth, unsigned int newHeight) : m_NewWidth(newWidth), m_NewHeight(newHeight) {}
         inline static EventType GetEventTypeStatic() { return EventType::WindowResize; }
         inline EventType GetEventType() const override { return EventType::WindowResize; }
-        inline unsigned int GetNewWidth() { return m_NewWidth; }
-        inline unsigned int GetNewHeight() { return m_NewHeight; }
+        inline unsigned int GetNewWidth() const { return m_NewWidth; }
+        inline unsigned int GetNewHeight() const { return m_NewHeight; }
 
     private:
         unsigned int m_NewWidth, m_NewHeight;
@@ -30,8 +30,8 @@ namespace Anwill {
         WindowMoveEvent(int newXPos, int newYPos) : m_NewXPos(newXPos), m_NewYPos(newYPos) {}
         inline static EventType GetEventTypeStatic() { return EventType::WindowMove; }
         inline EventType GetEventType() const override { return EventType::WindowMove; }
-        inline int GetNewXPos() { return m_NewXPos; }
-        inline int GetNewYPos() { return m_NewYPos; }
+        inline int GetNewXPos() const { return m_NewXPos; }
+        inline int GetNewYPos() const { return m_NewYPos; }
 
     private:
         int m_NewXPos, m_NewYPos;
@@ -43,7 +43,7 @@ namespace Anwill {
         WindowFocusEvent(bool inFocus) : m_InFocus(inFocus) {}
         inline static EventType GetEventTypeStatic() { return EventType::WindowFocus; }
         inline EventType GetEventType() const override { return EventType::WindowFocus; }
-        inline bool IsInFocus() { return m_InFocus; }
+        inline bool IsInFocus() const { return m_InFocus; }
 
     private:
         bool m_InFocus;

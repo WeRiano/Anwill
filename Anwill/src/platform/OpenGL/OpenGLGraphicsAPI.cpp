@@ -44,6 +44,11 @@ namespace Anwill {
         //glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
     }
 
+    void OpenGLGraphicsAPI::SetViewport(float x, float y, float width, float height) const
+    {
+        glViewport(x, y, width, height);
+    }
+
     void OpenGLGraphicsAPI::SetClearColor(const Math::Vec3f& color) const
     {
         glClearColor(color.GetX(), color.GetY(), color.GetZ(), 1.0f);

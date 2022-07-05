@@ -7,7 +7,7 @@ namespace Anwill {
         Willog::Init();
 
         Willog::SetLogLevel(Willog::LogLevel::ALL);
-        Willog::ShowFP();
+        Willog::ShowFN();
         Willog::ShowLine();
     }
 

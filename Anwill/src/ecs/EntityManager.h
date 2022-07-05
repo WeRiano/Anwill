@@ -32,6 +32,9 @@ namespace Anwill {
         // Return all entities that have all the given components.
         std::vector<EntityID> GetEntitiesWithComponents(const std::vector<ComponentID>& comps);
 
+        // Return all components of a given entity.
+        CompSig GetEntityComponents(EntityID entityID);
+
     private:
         std::set<EntityID> m_AliveEntities;
         std::array<CompSig, AW_MAX_ENTITIES> m_CompSigs;

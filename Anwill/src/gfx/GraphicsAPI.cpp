@@ -12,7 +12,7 @@ namespace Anwill {
                 return std::make_unique<OpenGLGraphicsAPI>();
             default:
                 AW_ASSERT(false, "No graphics API not supported");
-                break;
+                return nullptr;
         }
     }
 

@@ -1,5 +1,5 @@
 add_library(Windows STATIC
-        WinWindow.cpp
+        WinWindow.cpp WinInput.cpp
         )
 
 target_include_directories(Windows PUBLIC

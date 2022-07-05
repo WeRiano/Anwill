@@ -10,13 +10,12 @@ namespace Anwill {
         : m_EntityManager(), m_ComponentManager()
     {}
 
-    void Ecs::Initialize()
+    void Ecs::Init()
     {
         if (s_Instance == nullptr)
         {
             s_Instance = std::make_unique<Ecs>();
 
-            // TODO: Iterate? Lots of work for something so trivial ...
             s_Instance->RegisterComponent<MeshComponent>();
             s_Instance->RegisterComponent<CameraComponent>();
             s_Instance->RegisterComponent<TransformComponent>();
@@ -31,4 +30,25 @@ namespace Anwill {
         return s_Instance->m_EntityManager.CreateEntity();
     }
 
+    void Ecs::RemoveEntity(EntityID entityID)
+    {
+        // Get all components connected to the entity
+        CompSig sig = s_Instance->m_EntityManager.GetEntityComponents(entityID);
+        // Remove the entity
+        s_Instance->m_EntityManager.Kill(entityID);
+
+        // Remove all the components
+        const unsigned int nrComponents = sig.count();
+        unsigned int count = 0;
+        for(unsigned int compID = 0; compID < AW_MAX_TYPE_COMPONENTS; compID++)
+        {
+            if(sig[compID]) {
+                s_Instance->m_ComponentManager.DeleteComponent(entityID, compID);
+                count++;
+            }
+            if (count == nrComponents) {
+                break;
+            }
+        }
+    }
 }

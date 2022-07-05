@@ -2,18 +2,18 @@
 
 #include "core/Log.h"
 #include "core/Window.h"
+#include "core/Input.h"
+
 #include "gfx/Renderer.h"
 #include "gfx/GraphicsContext.h"
-
-// TODO: REMOVE, ONLY FOR TESTING
-#include <glad.h>
-
 #include "gfx/Shader.h"
 #include "gfx/VertexBuffer.h"
 #include "gfx/VertexArray.h"
 #include "gfx/IndexBuffer.h"
 
-#include "math/Mat4f.h"
+#include "ecs/Ecs.h"
+
+#include "utils/Random.h"
 
 
 namespace Anwill {
@@ -23,7 +23,10 @@ namespace Anwill {
     {
         m_Window = Window::Create(ws);
 
+        Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
+        Ecs::Init();
+        Random::Init();
 
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowClose);
         SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowResize);
@@ -40,6 +43,7 @@ namespace Anwill {
 
             m_LayerStack.Update();
 
+            // TODO: Dynamic event popping depending on q size and/or growth/decay
             for(unsigned int i = 0; i < 2; i++)
             {
                 SystemEvents::Pop();
@@ -48,6 +52,11 @@ namespace Anwill {
             m_Window->Update();
         }
         m_Window->Terminate();
+    }
+
+    bool App::IsMinimized() const
+    {
+        return m_Minimized;
     }
 
     void App::OnEvent(std::unique_ptr<Event>& e)
@@ -59,26 +68,26 @@ namespace Anwill {
         handler.Handle<WindowMoveEvent>(AW_BIND_EVENT_FN(OnWindowMove));
     }
 
-    void App::OnWindowClose(WindowCloseEvent& e)
+    void App::OnWindowClose(const WindowCloseEvent& e)
     {
         m_Running = false;
     }
 
-    void App::OnWindowResize(WindowResizeEvent& e)
+    void App::OnWindowResize(const WindowResizeEvent& e)
     {
         AW_INFO("Resized Window to width {0} and height {1}.", e.GetNewWidth(), e.GetNewHeight());
-        glViewport(0, 0, e.GetNewWidth(), e.GetNewHeight()); // TODO: Move to renderer or something
+        Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());
     }
 
-    void App::OnWindowFocus(WindowFocusEvent e)
+    void App::OnWindowFocus(const WindowFocusEvent& e)
     {
         m_Minimized = !e.IsInFocus();
-        if(m_Minimized) { AW_INFO("Application mininized."); }
+        if(m_Minimized) { AW_INFO("Application minimized."); }
         else { AW_INFO("Application in focus."); }
     }
 
-    void App::OnWindowMove(WindowMoveEvent e)
+    void App::OnWindowMove(const WindowMoveEvent& e)
     {
-        //AW_INFO("Window moved to coordinates {0}, {1}", e.GetNewXPos(), e.GetNewYPos());
+        AW_INFO("Window moved to coordinates {0}, {1}", e.GetNewXPos(), e.GetNewYPos());
     }
 }

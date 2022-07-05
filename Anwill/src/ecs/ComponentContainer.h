@@ -10,6 +10,7 @@ namespace Anwill {
     // This only exist so we don't have to define <C> when we define the outer map
     class IContainer {
     public:
+        virtual void DeleteComponent(const EntityID& entityID) = 0;
     };
 
     // IDK WHAT TYPE WE ARE WORKING WITH HERE WE ARE FINDING OUT LIVE ON AIR
@@ -18,9 +19,7 @@ namespace Anwill {
     public:
         ComponentContainer()
             : m_NrElements(0)
-        {
-
-        }
+        {}
 
         template <typename... Args>
         void AddComponent(const EntityID& entityID, Args&&... args)
@@ -31,9 +30,9 @@ namespace Anwill {
             m_NrElements++;
         }
 
-        // This operation is currently the expensive one because we have to plug the hole.
+        // This operation is currently the "expensive" one because we have to plug the hole.
         // I feel like deleting should not be done too often though so this is probably the best solution.
-        void DeleteComponent(const EntityID& entityID)
+        void DeleteComponent(const EntityID& entityID) override
         {
             AW_ASSERT(m_EntityToIndex.contains(entityID),
                       "Tried to delete a component from an entity that doesn't have it.");
