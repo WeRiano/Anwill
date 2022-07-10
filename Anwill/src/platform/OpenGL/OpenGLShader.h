@@ -16,6 +16,7 @@ namespace Anwill {
     {
     public:
         OpenGLShader(const std::string& filepath);
+        ~OpenGLShader();
 
         void Bind() const override;
         void Unbind() const override;

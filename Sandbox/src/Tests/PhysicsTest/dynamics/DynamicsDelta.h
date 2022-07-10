@@ -4,10 +4,10 @@
 
 #include "Anwill.h"
 
-class PhyDelta : public Anwill::Layer
+class DynamicsDelta : public Anwill::Layer
 {
 public:
-    PhyDelta(unsigned int ups, const Anwill::WindowSettings& ws);
+    DynamicsDelta(unsigned int ups, const Anwill::WindowSettings& ws);
 
     void Update(const Anwill::Timestamp& timestamp) override;
 

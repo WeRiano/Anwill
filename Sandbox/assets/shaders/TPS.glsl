@@ -1,14 +1,14 @@
 #shadertype vertex
 #version 330 core
 
-layout(location = 0) in vec2 v_Pos;
+layout(location = 0) in vec3 v_Pos;
 
 uniform mat4 u_ViewProjMat;
 uniform mat4 u_Transform;
 
 void main()
 {
-    gl_Position = u_ViewProjMat * u_Transform * vec4(v_Pos, 0.0f, 1.0f);
+    gl_Position = u_ViewProjMat * u_Transform * vec4(v_Pos, 1.0f);
 }
 
 #shadertype fragment
@@ -25,13 +25,13 @@ layout(location = 0) out vec4 color;
 uniform vec2 u_PlayerPos;
 uniform vec2 u_LookDir;
 uniform float u_FoVAngleDeg;
-uniform vec2 u_CamPos;
+uniform vec3 u_CamPos;
 uniform PLine u_WallSegs[100];
 
 bool wallColl()
 {
     vec2 p1 = u_PlayerPos;
-    vec2 p2 = vec2(gl_FragCoord.xy - u_CamPos); // This might be wrong
+    vec2 p2 = vec2(gl_FragCoord.xy - u_CamPos.xy); // This might be wrong
 
     for(int i = 0; i < MAX_WALL_SEGMENTS; i++) {
         vec2 p3 = u_WallSegs[i].p1;
@@ -55,14 +55,14 @@ void main()
     rotMat[1][0] = -sin(radians(u_FoVAngleDeg));
     rotMat[1][1] = cos(radians(u_FoVAngleDeg));
 
-    vec2 fragDirVec = normalize(vec2(gl_FragCoord.xy - (u_PlayerPos + u_CamPos)));
+    vec2 fragDirVec = normalize(vec2(gl_FragCoord.xy - (u_PlayerPos + u_CamPos.xy)));
     vec2 leftFoVDirVec = normalize(rotMat * u_LookDir);
     vec2 rightFovDirVec = normalize(rotMat * u_LookDir);
     float leftDot = dot(u_LookDir, leftFoVDirVec);
     float rightDot = dot(u_LookDir, rightFovDirVec);
     float fragDot = dot(u_LookDir, fragDirVec);
 
-    float dist = length(gl_FragCoord.xy - (u_PlayerPos + u_CamPos));
+    float dist = length(gl_FragCoord.xy - (u_PlayerPos + u_CamPos.xy));
     float attA = 0.000007f;
     float attB = 0.0014f;
     float attC = 1.0f;

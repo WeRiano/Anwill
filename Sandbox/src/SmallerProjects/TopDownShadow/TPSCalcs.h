@@ -3,7 +3,8 @@
 #include "Anwill.h"
 
 struct EntityComponent {
-    Anwill::Math::Vec2f playerPos, dir, camPos;
+    Anwill::Math::Vec2f playerPos, dir;
+    Anwill::Math::Vec3f camPos;
 };
 
 class TPSCalcs : public Anwill::Layer

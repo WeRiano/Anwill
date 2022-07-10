@@ -31,13 +31,43 @@ namespace Anwill {
         m_F = Math::Vec3f();
     }
 
+    void RBody::Move(Math::Vec3f deltaPos)
+    {
+        m_P += deltaPos;
+    }
+
+    float RBody::GetMass() const
+    {
+        return m_M;
+    }
+
     Math::Vec3f RBody::GetPosition() const
     {
         return m_P;
     }
 
+    Math::Vec3f RBody::GetVelocity() const
+    {
+        return m_V;
+    }
+
+    void RBody::SetVelocity(Math::Vec3f velocity)
+    {
+        m_V = velocity;
+    }
+
+    std::shared_ptr<Collider> RBody::GetCollider() const
+    {
+        return m_Collider;
+    }
+
     void RBody::SetGravAcc(Math::Vec3f gravAcc)
     {
         m_G = gravAcc;
+    }
+
+    bool RBody::HasCollider() const
+    {
+        return !(m_Collider == nullptr);
     }
 }

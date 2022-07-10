@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <array>
 
 #include "Vec2f.h"
 #include "Vec3f.h"
@@ -29,17 +30,26 @@ namespace Anwill::Math {
     public:
         static Mat4f Identity();
         static Mat4f Orthographic(float left, float right, float bottom, float top, float near, float far);
+        static Mat4f Translate(const Mat4f& mat, const Vec3f& vec);
+        static Mat4f RotateZ(const Mat4f& mat, float deg); // TODO: RotateX and RotateY or make 1 rot func
 
-        Mat4f operator*(const Mat4f&) const;
-        Vec3f operator*(const Vec3f&) const;
+        Mat4f();
 
+        Mat4f operator*(const Mat4f& other) const;
+        Vec2f operator*(const Vec2f& vec) const;
+        Vec3f operator*(const Vec3f& vec) const;
+
+        Vec3f GetTranslateVector() const;
+        std::array<Math::Vec2f, 2> Get2DBasisVectors() const;
+        std::array<Math::Vec3f, 3> Get3DBasisVectors() const;
         const float* GetInternal() const;
-        void Translate(float x, float y);
-        void Translate(const Vec2f& vec);
-        void Translate(float x, float y, float z);
-        void Translate(const Vec3f& vec);
-        Mat4f RotateZ(const float deg) const;
-
+        void SetRotZValues(const float rad);
+        void SetTranslateCol(const Vec2f& tVec);
+        void SetTranslateCol(const Vec3f& tVec);
+        void SetTranslateCol(float tx, float ty, float tz);
+        void SetIdentity();
         std::string ToString();
+
+    private:
     };
 }

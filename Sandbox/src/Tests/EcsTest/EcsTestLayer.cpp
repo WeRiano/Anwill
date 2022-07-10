@@ -23,6 +23,7 @@ EcsTestLayer::EcsTestLayer(const unsigned int ups)
 
 void EcsTestLayer::Update(const Anwill::Timestamp& timestamp)
 {
+    /*
     Layer::Update(timestamp);
     Anwill::Ecs::ForEach<Anwill::MeshComponent, Anwill::CameraComponent>([](Anwill::EntityID id,
                                                                             Anwill::MeshComponent& mesh,
@@ -33,6 +34,5 @@ void EcsTestLayer::Update(const Anwill::Timestamp& timestamp)
                                                                             Anwill::MeshComponent& mesh) {
         std::cout << id << std::endl;
     });
-
-
+    */
 }

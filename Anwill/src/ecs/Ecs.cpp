@@ -17,7 +17,7 @@ namespace Anwill {
             s_Instance = std::make_unique<Ecs>();
 
             s_Instance->RegisterComponent<MeshComponent>();
-            s_Instance->RegisterComponent<CameraComponent>();
+            //s_Instance->RegisterComponent<CameraComponent>();
             s_Instance->RegisterComponent<TransformComponent>();
             AW_INFO("ECS Initialized!");
         } else {
@@ -32,6 +32,10 @@ namespace Anwill {
 
     void Ecs::RemoveEntity(EntityID entityID)
     {
+        if( !s_Instance->m_EntityManager.IsAlive(entityID) )
+        {
+            return;
+        }
         // Get all components connected to the entity
         CompSig sig = s_Instance->m_EntityManager.GetEntityComponents(entityID);
         // Remove the entity

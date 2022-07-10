@@ -27,6 +27,7 @@
 
 // Physics
 #include "physics/Dynamics.h"
+#include "physics/collision/Collision.h"
 
 // Utils
 #include "utils/Random.h"

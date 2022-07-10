@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gfx/Mesh.h"
+#include "math/Mat4f.h"
 
 namespace Anwill {
 
@@ -10,21 +11,10 @@ namespace Anwill {
         Mesh mesh;
     };
 
-    struct CameraComponent {
-        int x, y, z;
-        CameraComponent()
-            : x(0), y(0), z(0)
-        {}
-        CameraComponent(int k)
-            : x(0), y(k), z(0)
-        {}
-
-        void Identify() {
-            std::cout << "CameraComponent" << std::endl;
-        }
-    };
-
     struct TransformComponent {
-
+        TransformComponent()
+            : transform(Math::Mat4f::Identity())
+        {}
+        Math::Mat4f transform;
     };
 }

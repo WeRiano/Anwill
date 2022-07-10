@@ -9,6 +9,7 @@ namespace Anwill {
     public:
         Math::Mat4f GetViewProj() const;
         void SetProjMat(const Math::Mat4f&& projMat);
+
     protected:
         Math::Mat4f m_ViewMat;
         Math::Mat4f m_ProjMat; // This depends on derived type
@@ -21,8 +22,8 @@ namespace Anwill {
 
         // positive x values means moving the camera to the right, and vise-versa
         // positive y values means moving the camera up, and vise-versa
-        void Move(float x, float y);
+        void Move(float deltaX, float deltaY);
 
-        Math::Vec2f GetPos() const;
+        Math::Vec3f GetPos() const;
     };
 }

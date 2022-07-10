@@ -14,18 +14,34 @@ namespace Anwill::Math {
 
     Vec2f Vec2f::operator*(const float s) const
     {
-        Vec2f res(m_X, m_Y);
-        res.m_X *= s;
-        res.m_Y *= s;
-        return res;
+        return {m_X * s, m_Y * s};
     }
 
     Vec2f Vec2f::operator+(const Vec2f& other) const
     {
-        Vec2f res(m_X, m_Y);
-        res.m_X += other.m_X;
-        res.m_Y += other.m_Y;
-        return res;
+        return {m_X + other.m_X, m_Y + other.m_Y};
+    }
+
+    Vec2f Vec2f::operator-(const Vec2f& other) const
+    {
+        return {m_X - other.m_X, m_Y - other.m_Y};
+    }
+
+    void Vec2f::operator+=(const Vec2f& other)
+    {
+        m_X += other.m_X;
+        m_Y += other.m_Y;
+    }
+
+    float Vec2f::ScalarProjection(Vec2f vec2f) const
+    {
+        vec2f.Normalize();
+        return DotProduct(vec2f);
+    }
+
+    float Vec2f::DotProduct(const Vec2f& other) const
+    {
+        return m_X * other.m_X + m_Y * other.m_Y;
     }
 
     void Vec2f::Move(float deltaX, float deltaY)
@@ -39,6 +55,12 @@ namespace Anwill::Math {
         float length = GetLength();
         m_X = m_X / length;
         m_Y = m_Y / length;
+    }
+
+    void Vec2f::Negate()
+    {
+        m_X = -m_X;
+        m_Y = -m_Y;
     }
 
     float Vec2f::GetLength() const

@@ -2,6 +2,8 @@
 
 namespace Anwill::Math {
 
+    class Vec3f;
+
     class Vec2f
     {
     public:
@@ -10,9 +12,14 @@ namespace Anwill::Math {
 
         Vec2f operator*(const float s) const;
         Vec2f operator+(const Vec2f& other) const;
+        Vec2f operator-(const Vec2f& other) const;
+        void operator+=(const Vec2f& other);
 
+        float ScalarProjection(Vec2f vec2f) const;
+        float DotProduct(const Vec2f& other) const;
         void Move(float deltaX, float deltaY);
         void Normalize();
+        void Negate();
         float GetLength() const;
         float GetX() const;
         float GetY() const;

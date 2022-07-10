@@ -47,6 +47,25 @@ namespace Anwill {
         }
 
         template <class... Comps>
+        static void ForEntity(EntityID entityID, const std::function<void(Comps&...)>& func)
+        {
+            std::vector<ComponentID> compIDs;
+            // First we get the ids of the given components (Comps...)
+            s_Instance->m_ComponentManager.GetTypeIDs<Comps...>(compIDs);
+
+            if(s_Instance->m_EntityManager.HasComponents(entityID, compIDs))
+            {
+
+                std::tuple<Comps* ...> comps;
+                s_Instance->m_ComponentManager.GetComponentsInOrder<0, Comps...>(entityID, compIDs, comps);
+
+                std::apply([func, entityID](Comps* ... comps) {
+                    func(*comps...);
+                }, comps);
+            }
+        }
+
+        template <class... Comps>
         static void ForEach(const std::function<void(EntityID, Comps&...)>& func)
         {
             std::vector<ComponentID> compIDs;
@@ -56,7 +75,7 @@ namespace Anwill {
             // Then we get all the entities that have such components
             auto entities = s_Instance->m_EntityManager.GetEntitiesWithComponents(compIDs);
 
-            // Since we are getting the components in a very weird fashion we populate the tuple vecto pre-emptively.
+            // Since we are getting the components in a very weird fashion we populate the tuple vector pre-emptively.
             // Probably a lot faster too since cache can focus on array.
             std::vector<std::tuple<Comps*...>> comps;
             for(unsigned int i = 0; i < entities.size(); i++)

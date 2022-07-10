@@ -2,10 +2,10 @@
 
 #include "Anwill.h"
 
-class PhyExist : public Anwill::Layer
+class DynamicsExist : public Anwill::Layer
 {
 public:
-    PhyExist(unsigned int ups);
+    DynamicsExist(unsigned int ups);
 
     void Update(const Anwill::Timestamp& timestamp) override;
 

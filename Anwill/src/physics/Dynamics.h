@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/Vec3f.h"
+#include "physics/collision/Collider.h"
 
 namespace Anwill {
 
@@ -24,11 +25,24 @@ namespace Anwill {
         // call it an 'impulse'.
         void ApplyImpulse(Math::Vec3f impulse);
         void Tick(float deltaSeconds);
+        void Move(Math::Vec3f deltaPos);
+
+        float GetMass() const;
         Math::Vec3f GetPosition() const;
+        Math::Vec3f GetVelocity() const;
+        void SetVelocity(Math::Vec3f velocity);
         void SetGravAcc(Math::Vec3f gravAcc);
+        std::shared_ptr<Collider> GetCollider() const;
+        template <class C, typename... Args>
+        void SetCollider(Args... args)
+        {
+            m_Collider = std::make_shared<C>(std::forward<Args>(args)...);
+        }
+        bool HasCollider() const;
 
     private:
         float m_M;
         Math::Vec3f m_P, m_V, m_F, m_G; // position, velocity, (temporary) net force and gravitational acceleration
+        std::shared_ptr<Collider> m_Collider;
     };
 }

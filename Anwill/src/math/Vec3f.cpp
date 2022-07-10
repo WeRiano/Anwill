@@ -18,6 +18,11 @@ namespace Anwill::Math {
         return res;
     }
 
+    Vec3f Vec3f::operator-(const Vec3f& other) const
+    {
+        return {m_X - other.m_X, m_Y - other.m_Y, m_Z - other.m_Z};
+    }
+
     void Vec3f::operator+=(const Vec3f& other)
     {
         m_X += other.m_X;
@@ -37,6 +42,11 @@ namespace Anwill::Math {
         return {m_X / d, m_Y / d, m_Z / d};
     }
 
+    Vec3f operator-(const Vec3f rhs)
+    {
+        return {-rhs.GetX(), -rhs.GetY(), -rhs.GetZ()};
+    }
+
     Vec3f operator*(const Vec3f& lhs, const float rhs)
     {
         return {lhs.GetX() * rhs, lhs.GetY() * rhs, lhs.GetZ() * rhs};
@@ -45,6 +55,18 @@ namespace Anwill::Math {
     Vec3f operator*(const float lhs, const Vec3f& rhs)
     {
         return {rhs.GetX() * lhs, rhs.GetY() * lhs, rhs.GetZ() * lhs};
+    }
+
+    float Vec3f::DotProduct(const Vec3f& other) const
+    {
+        return m_X * other.m_X + m_Y * other.m_Y + m_Z * other.m_Z;
+    }
+
+    Vec3f Vec3f::CrossProduct(const Vec3f& other) const
+    {
+        return {m_Y * other.m_Z - m_Z * other.m_Y,
+                m_Z * other.m_X - m_X * other.m_Z,
+                m_X * other.m_Y - m_Y * other.m_X};
     }
 
     void Vec3f::Move(float deltaX, float deltaY, float deltaZ)
@@ -60,6 +82,13 @@ namespace Anwill::Math {
         m_X = m_X / length;
         m_Y = m_Y / length;
         m_Z = m_Z / length;
+    }
+
+    void Vec3f::Negate()
+    {
+        m_X = -m_X;
+        m_Y = -m_Y;
+        m_Z = -m_Z;
     }
 
     float Vec3f::GetLength() const

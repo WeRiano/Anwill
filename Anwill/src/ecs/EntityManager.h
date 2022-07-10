@@ -35,13 +35,13 @@ namespace Anwill {
         // Return all components of a given entity.
         CompSig GetEntityComponents(EntityID entityID);
 
+        // Check if a specific component type is linked to a unique entity.
+        bool HasComponents(const EntityID& entityID, const std::vector<ComponentID>& comps);
+
     private:
         std::set<EntityID> m_AliveEntities;
         std::array<CompSig, AW_MAX_ENTITIES> m_CompSigs;
         std::queue<EntityID> m_AvailableIDs;
-
-        // Check if a specific component type is linked to a unique entity.
-        bool HasComponents(const EntityID& entityID, const std::vector<ComponentID>& comps);
 
         // Generate a new unique valid entity id.
         EntityID GenerateID();

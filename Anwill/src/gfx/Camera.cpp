@@ -23,15 +23,13 @@ namespace Anwill {
         m_ViewMat = Math::Mat4f::Identity();
     }
 
-    void OrthographicCamera::Move(float x, float y)
+    void OrthographicCamera::Move(float deltaX, float deltaY)
     {
-        float camX = m_ViewMat.GetInternal()[12];
-        float camY = m_ViewMat.GetInternal()[13];
-        m_ViewMat.Translate(-(camX + x), -(camY + y), 0.0f);
+        m_ViewMat = Math::Mat4f::Translate(m_ViewMat, {-deltaX, -deltaY, 0.0f});
     }
 
-    Math::Vec2f OrthographicCamera::GetPos() const
+    Math::Vec3f OrthographicCamera::GetPos() const
     {
-        return {m_ViewMat.GetInternal()[12], m_ViewMat.GetInternal()[13]};
+        return m_ViewMat.GetTranslateVector();
     }
 }

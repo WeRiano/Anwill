@@ -70,6 +70,28 @@ namespace Anwill {
         }
 
         template <size_t CompNr, class... Comps>
+        void GetComponentsInOrder(const EntityID& entityID,
+                                  const std::vector<ComponentID>& compIDs,
+                                  std::tuple<Comps*...>& result)
+        {
+            // For efficiency, we should grab the components in TYPE order:
+            // (Grab all components of type A for entity x1, x2, ..., xn)
+            // (Grab all components of type B for entity x1, x2, ..., xn)
+            // (...)
+            using C = std::tuple_element_t<CompNr, std::tuple<Comps...>>;
+            const ComponentID& id = compIDs[CompNr];
+            std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
+
+            C& c = container->GetComponent(entityID);
+            std::get<CompNr>(result) = &c;
+
+            if constexpr (CompNr < sizeof...(Comps) - 1)
+            {
+                GetComponentsInOrder<CompNr + 1, Comps...>(entityID, compIDs, result);
+            }
+        }
+
+        template <size_t CompNr, class... Comps>
         void GetComponentsInOrder(const std::vector<EntityID>& entityIDs,
                                   const std::vector<ComponentID>& compIDs,
                                   std::vector<std::tuple<Comps*...>>& result)

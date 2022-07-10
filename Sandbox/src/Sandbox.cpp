@@ -1,8 +1,9 @@
 #include <iostream>
 
 #include "Tests/Renderer/RendererHelloWorld"
-#include "Tests/PhysicsTest/PhyDelta.h"
-#include "Tests/PhysicsTest/PhyExist.h"
+#include "Tests/PhysicsTest/dynamics/DynamicsDelta.h"
+#include "Tests/PhysicsTest/dynamics/DynamicsExist.h"
+#include "Tests/PhysicsTest/collision/CollisionPoints.h"
 #include "Tests/EcsTest/EcsTestLayer.h"
 #include "SmallerProjects/TopDownShadow/TPS.h"
 #include "SmallerProjects/TopDownShadow/TPSCalcs.h"
@@ -17,11 +18,13 @@ public:
 
         //AddLayer<EcsTestLayer>(144);
 
-        AddLayer<TPSCalcs>(30);
-        AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
+        //AddLayer<TPSCalcs>(30);
+        //AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
 
-        //AddLayer<PhyDelta>(0, ws);
-        //AddLayer<PhyExist>(10);
+        //AddLayer<DynamicsExist>(10);
+        //AddLayer<DynamicsDelta>(0, ws);
+
+        AddLayer<CollisionPoints>(0, ws);
     }
 };
 

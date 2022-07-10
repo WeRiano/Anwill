@@ -25,6 +25,11 @@ namespace Anwill {
         AttachLinkAndValidateShader(vertID, fragID);
     }
 
+    OpenGLShader::~OpenGLShader()
+    {
+        //glDeleteProgram(m_ID);
+    }
+
     void OpenGLShader::Bind() const
     {
         glUseProgram(m_ID);

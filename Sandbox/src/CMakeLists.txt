@@ -1,7 +1,8 @@
 add_executable(Sandbox Sandbox.cpp
 
         Tests/Renderer/RendererHelloWorld.cpp Tests/EcsTest/EcsTestLayer.cpp
-        Tests/PhysicsTest/PhyDelta.cpp Tests/PhysicsTest/PhyExist.cpp
+        Tests/PhysicsTest/dynamics/DynamicsDelta.cpp Tests/PhysicsTest/dynamics/DynamicsExist.cpp
+        Tests/PhysicsTest/collision/CollisionPoints.cpp
 
         SmallerProjects/TopDownShadow/TPS.cpp SmallerProjects/TopDownShadow/TPSCalcs.cpp)
 
