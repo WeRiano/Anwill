@@ -1,0 +1,145 @@
+#include <limits>
+
+#include "PolygonCollider.h"
+#include "CircleCollider.h"
+
+namespace Anwill {
+
+    PolygonCollider::PolygonCollider(std::vector<Math::Vec2f> vertices)
+        : m_Vertices(std::move(vertices))
+    {}
+
+    PolygonCollider::PolygonCollider(const std::vector<Math::Vec3f>& vertices)
+    {
+        for(unsigned int i = 0; i < vertices.size(); i++)
+        {
+            m_Vertices.emplace_back(vertices[i].GetX(), vertices[i].GetY());
+        }
+    }
+
+    bool PolygonCollider::CollisionCheck(const Math::Mat4f& thisTransform,
+                                         const Collider* collider,
+                                         const Math::Mat4f& otherTransform,
+                                         CollisionData& colData) const
+    {
+        return collider->CollisionCheck(otherTransform, this, thisTransform, colData);
+    }
+
+    bool PolygonCollider::CollisionCheck(const Math::Mat4f& thisTransform,
+                                         const PolygonCollider* polyCollider,
+                                         const Math::Mat4f& otherTransform,
+                                         CollisionData& colData) const
+    {
+        return (SATCollision(polyCollider, thisTransform, otherTransform, colData) and
+            polyCollider->SATCollision(this, otherTransform, thisTransform, colData));
+    }
+
+    bool PolygonCollider::CollisionCheck(const Math::Mat4f& thisTransform,
+                                         const CircleCollider* circleCollider,
+                                         const Math::Mat4f& otherTransform,
+                                         CollisionData& colData) const
+    {
+        return (SATCollision(circleCollider, thisTransform, otherTransform, colData) and
+                circleCollider->SATCollision(this, otherTransform, thisTransform, colData));
+    }
+
+    Math::Vec2f PolygonCollider::GetClosestVertex(const Math::Vec2f& point, const Math::Mat4f& transform) const
+    {
+        Math::Vec2f closest = transform * m_Vertices[0];
+        float closestLength = (point - (transform * m_Vertices[0])).GetLength();
+        for(unsigned int i = 1; i < m_Vertices.size(); i++)
+        {
+            Math::Vec2f temp = transform * m_Vertices[i];
+            float len = (point - temp).GetLength();
+            if (len < closestLength)
+            {
+                closest = temp;
+                closestLength = len;
+            }
+        }
+        return closest;
+    }
+
+    void PolygonCollider::ProjectPolygon(const Math::Vec2f& axis,
+                                         const Math::Mat4f& transform,
+                                         float& min, float& max) const
+    {
+        min = std::numeric_limits<float>::max();
+        max = std::numeric_limits<float>::min();
+
+        for (unsigned int i = 0; i < m_Vertices.size(); i++)
+        {
+            float projValue = (transform * m_Vertices[i]).ScalarProjection(axis);
+            if (projValue < min)
+            {
+                min = projValue;
+            }
+            if (projValue > max)
+            {
+                max = projValue;
+            }
+        }
+    }
+
+    bool PolygonCollider::SATCollision(const PolygonCollider* otherCollider,
+                                       const Math::Mat4f& thisTransform,
+                                       const Math::Mat4f& otherTransform,
+                                       CollisionData& colData) const
+    {
+        for(unsigned int i = 0; i < m_Vertices.size(); i++)
+        {
+            Math::Vec2f edge = (thisTransform * m_Vertices[i]) - (thisTransform * m_Vertices[(i + 1) % m_Vertices.size()]);
+            Math::Vec2f axis = {-edge.GetY(), edge.GetX()};
+            axis.Normalize();
+
+            float thisMin, thisMax, otherMin, otherMax;
+            ProjectPolygon(axis,thisTransform, thisMin, thisMax);
+            otherCollider->ProjectPolygon(axis, otherTransform, otherMin, otherMax);
+            if (!OverlapCheck(thisMin, thisMax, otherMin, otherMax))
+            {
+                // If there is not an overlap <=> there is a gap, we know there is not a collision
+                return false;
+            }
+
+            float axisDepth = std::min<float>(otherMax - thisMin, thisMax - otherMin);
+            if(axisDepth < colData.depth)
+            {
+                colData.depth = axisDepth;
+                colData.normal = Math::Vec3f(axis.GetX(), axis.GetY(), 0.0f);
+                colData.normal.Normalize();
+            }
+        }
+        // There is a collision according to the SAT algorithm projected onto the axes 'created' by this polygon.
+        return true;
+    }
+
+    bool PolygonCollider::SATCollision(const CircleCollider* otherCollider, const Math::Mat4f& thisTransform,
+                                       const Math::Mat4f& otherTransform, CollisionData& colData) const
+    {
+        for(unsigned int i = 0; i < m_Vertices.size(); i++)
+        {
+            Math::Vec2f edge = (thisTransform * m_Vertices[i]) - (thisTransform * m_Vertices[(i + 1) % m_Vertices.size()]);
+            Math::Vec2f axis = {-edge.GetY(), edge.GetX()};
+            axis.Normalize();
+
+            float thisMin, thisMax, otherMin, otherMax;
+            ProjectPolygon(axis,thisTransform, thisMin, thisMax);
+            otherCollider->ProjectCircle(axis, otherTransform, otherMin, otherMax);
+            if (!OverlapCheck(thisMin, thisMax, otherMin, otherMax))
+            {
+                // If there is not an overlap <=> there is a gap, we know there is not a collision
+                return false;
+            }
+
+            float axisDepth = std::min<float>(otherMax - thisMin, thisMax - otherMin);
+            if(axisDepth < colData.depth)
+            {
+                colData.depth = axisDepth;
+                colData.normal = Math::Vec3f(axis.GetX(), axis.GetY(), 0.0f);
+                colData.normal.Normalize();
+            }
+        }
+        // There is a collision according to the SAT algorithm projected onto the axes 'created' by this polygon.
+        return true;
+    }
+}

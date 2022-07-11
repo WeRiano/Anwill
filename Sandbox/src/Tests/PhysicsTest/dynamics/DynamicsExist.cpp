@@ -37,10 +37,7 @@ void DynamicsExist::SpawnObject()
             // TODO: Less hardcoded for now. Could implement a VerticesToCollider method that belongs to
             //  either Collider or Mesh, or that is independent somehow.
             auto vs = meshComponent.mesh.GetVertices();
-            rBody.SetCollider<Anwill::RectangleCollider>(Anwill::Math::Vec2f(vs[0].GetX(), vs[0].GetY()),
-                                                         Anwill::Math::Vec2f(vs[1].GetX(), vs[1].GetY()),
-                                                         Anwill::Math::Vec2f(vs[2].GetX(), vs[2].GetY()),
-                                                         Anwill::Math::Vec2f(vs[3].GetX(), vs[3].GetY()));
+            rBody.SetCollider<Anwill::PolygonCollider>(vs);
         }
     });
 }

@@ -1,4 +1,5 @@
 #include "CircleCollider.h"
+#include "PolygonCollider.h"
 
 namespace Anwill {
 
@@ -14,13 +15,11 @@ namespace Anwill {
         return collider->CollisionCheck(otherTransform, this, thisTransform, colData);
     }
 
-    bool CircleCollider::CollisionCheck(const Math::Mat4f& thisTransform,
-                                        const RectangleCollider* rectCollider,
-                                        const Math::Mat4f& otherTransform,
-                                        CollisionData& colData) const
+    bool CircleCollider::CollisionCheck(const Math::Mat4f& thisTransform, const PolygonCollider* polyCollider,
+                                        const Math::Mat4f& otherTransform, CollisionData& colData) const
     {
-        return true;
-        return false;
+        return (SATCollision(polyCollider, thisTransform, otherTransform, colData) and
+                polyCollider->SATCollision(this, otherTransform, thisTransform, colData));
     }
 
     bool CircleCollider::CollisionCheck(const Math::Mat4f& thisTransform,
@@ -42,5 +41,43 @@ namespace Anwill {
         } else {
             return false;
         }
+    }
+
+    void CircleCollider::ProjectCircle(const Math::Vec2f& axis,
+                                       const Math::Mat4f& transform,
+                                       float& min, float& max) const
+    {
+        Math::Vec2f axisCopy = axis;
+        axisCopy.Normalize();
+        min = ((transform * m_Centre) - (axisCopy * m_Radius)).ScalarProjection(axis);
+        max = ((transform * m_Centre) + (axisCopy * m_Radius)).ScalarProjection(axis);
+    }
+
+    bool CircleCollider::SATCollision(const PolygonCollider* otherCollider, const Math::Mat4f& thisTransform,
+                                      const Math::Mat4f& otherTransform, CollisionData& colData) const
+    {
+        Math::Vec2f closestPolyVertex = otherCollider->GetClosestVertex(thisTransform * m_Centre,
+                                                                        otherTransform);
+        Math::Vec2f axis = closestPolyVertex - (thisTransform * m_Centre);
+        axis.Normalize();
+
+        float thisMin, thisMax, otherMin, otherMax;
+        ProjectCircle(axis, thisTransform, thisMin, thisMax);
+        otherCollider->ProjectPolygon(axis, otherTransform, otherMin, otherMax);
+        if (!OverlapCheck(thisMin, thisMax, otherMin, otherMax))
+        {
+            // If there is not an overlap <=> there is a gap, we know there is not a collision
+            return false;
+        }
+
+        float axisDepth = std::min<float>(otherMax - thisMin, thisMax - otherMin);
+        if (axisDepth < colData.depth)
+        {
+            colData.depth = axisDepth;
+            colData.normal = Math::Vec3f(axis.GetX(), axis.GetY(), 0.0f);
+            colData.normal.Normalize();
+        }
+        // There is a collision according to the SAT algorithm projected onto the axes 'created' by this polygon.
+        return true;
     }
 }

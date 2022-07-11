@@ -14,6 +14,12 @@ namespace Anwill {
         return collider->CollisionCheck(otherTransform, this, thisTransform, colData);
     }
 
+    bool RectangleCollider::CollisionCheck(const Math::Mat4f& thisTransform, const PolygonCollider* polyCollider,
+                                           const Math::Mat4f& otherTransform, CollisionData& colData) const
+    {
+        return false;
+    }
+
     bool RectangleCollider::CollisionCheck(const Math::Mat4f& thisTransform,
                                            const RectangleCollider* rectCollider,
                                            const Math::Mat4f& otherTransform,

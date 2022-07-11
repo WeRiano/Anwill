@@ -2,8 +2,8 @@
 
 namespace Anwill {
 
-    bool Collision::CheckCollision(const RBody& body1, Math::Mat4f transform1, const RBody& body2,
-                                   Math::Mat4f transform2, CollisionData& colData)
+    bool Collision::CheckCollision(const RBody& body1, const Math::Mat4f& transform1, const RBody& body2,
+                                   const Math::Mat4f& transform2, CollisionData& colData)
     {
         if( !body1.HasCollider() or !body2.HasCollider() ) {
             return false;

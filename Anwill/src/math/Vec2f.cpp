@@ -12,11 +12,6 @@ namespace Anwill::Math {
         : m_X(x), m_Y(y)
     {}
 
-    Vec2f Vec2f::operator*(const float s) const
-    {
-        return {m_X * s, m_Y * s};
-    }
-
     Vec2f Vec2f::operator+(const Vec2f& other) const
     {
         return {m_X + other.m_X, m_Y + other.m_Y};
@@ -31,6 +26,21 @@ namespace Anwill::Math {
     {
         m_X += other.m_X;
         m_Y += other.m_Y;
+    }
+
+    Vec2f operator-(const Vec2f rhs)
+    {
+        return {rhs.GetX(), rhs.GetY()};
+    }
+
+    Vec2f operator*(const Vec2f& lhs, const float rhs)
+    {
+        return {lhs.GetX() * rhs, lhs.GetY() * rhs};
+    }
+
+    Vec2f Math::operator*(const float lhs, const Vec2f& rhs)
+    {
+        return {lhs * rhs.GetX(),lhs * rhs.GetY()};
     }
 
     float Vec2f::ScalarProjection(Vec2f vec2f) const

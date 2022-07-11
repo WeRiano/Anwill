@@ -17,7 +17,7 @@ private:
     std::shared_ptr<Anwill::Shader> m_RectShader, m_CircleShader;
     Anwill::Mesh m_Mesh;
 
-    void MovePlayer(Anwill::RBody& pBody, Anwill::Math::Mat4f& transform);
+    void MoveAndTiltPlayer(Anwill::RBody& pBody, Anwill::Math::Mat4f& transform);
     void HandleCollisions();
     void SwapShape();
 };
