@@ -2,8 +2,8 @@
 
 namespace Anwill {
 
-    bool Collision::CheckCollision(const RBody& body1, const Math::Mat4f& transform1, const RBody& body2,
-                                   const Math::Mat4f& transform2, CollisionData& colData)
+    bool CollisionTest::CheckCollision(const RBody& body1, const Math::Mat4f& transform1, const RBody& body2,
+                                       const Math::Mat4f& transform2, CollisionData& colData)
     {
         if( !body1.HasCollider() or !body2.HasCollider() ) {
             return false;
@@ -12,38 +12,37 @@ namespace Anwill {
                                                    transform2, colData);
     }
 
-    void Collision::ResolveCollision(RBody& body1, Math::Mat4f& transform1, RBody& body2, Math::Mat4f& transform2,
-                                     const CollisionData& collisionData)
+    void CollisionTest::ResolveCollision(RBody& body1, Math::Mat4f& transform1, RBody& body2, Math::Mat4f& transform2,
+                                         const CollisionData& collisionData)
     {
-        /*
-        Math::Vec3f vel1 = body1.GetVelocity();
-        vel1.Negate();
-        Math::Vec3f vel2 = body2.GetVelocity();
-        vel2.Negate();
-        float netXMomentum = body1.GetVelocity().GetX() * body1.GetMass() + body2.GetVelocity().GetX() * body2.GetMass();
-        float netYMomentum = body1.GetVelocity().GetY() * body1.GetMass() + body2.GetVelocity().GetY() * body2.GetMass();
-         */
-
         Math::Vec3f normal = collisionData.normal;
+        Math::Vec3f relVel = body2.GetVelocity() - body1.GetVelocity(); // Might have to swap
+
         if (normal.DotProduct(body1.GetPosition() - body2.GetPosition()) < 0.0f) {
             normal = -normal;
         }
 
-        body1.Move(normal * (collisionData.depth / 2.0f));
-        body2.Move(-normal * (collisionData.depth / 2.0f));
+        float e = 0.8f; // Idk
+        float j = -(1.0f + e) * relVel.DotProduct(normal);
+        j /= (1.0f / body1.GetMass()) + (1.0f / body2.GetMass());
 
-        //body1.SetVelocity(-body1.GetVelocity());
-        //body2.SetVelocity(-body2.GetVelocity());
-
-        // Since we swap body1 and body2 due to double dispatch the normal is
-
-        // A really shitty but easy "solution" perhaps
-        //body1.SetVelocity(vel1);
-        //body2.SetVelocity(vel2);
-
+        if(body1.IsStatic() and !body2.IsStatic()) {
+            body2.ApplyImpulse(j * 2.0f, normal, false);
+            body2.Move(-normal * (collisionData.depth));
+        } else if(body2.IsStatic() and !body1.IsStatic())
+        {
+            body1.ApplyImpulse(j * 2.0f, normal, true);
+            body1.Move(normal * (collisionData.depth));
+        } else if(!body1.IsStatic() and !body2.IsStatic()) {
+            body1.ApplyImpulse(j, normal, true);
+            body2.ApplyImpulse(j, normal, false);
+            body1.Move(normal * (collisionData.depth / 2.0f));
+            body2.Move(-normal * (collisionData.depth / 2.0f));
+        }
+        // Two static bodies should not be able to collide, but we account for it anyway just in case :)
     }
 
-    Math::Vec3f Collision::GetArithmeticMean(const std::vector<Math::Vec3f>& vertices, Math::Mat4f transform)
+    Math::Vec3f CollisionTest::GetArithmeticMean(const std::vector<Math::Vec3f>& vertices, Math::Mat4f transform)
     {
         Math::Vec3f sum;
         for(unsigned int i = 0; i < vertices.size(); i++)

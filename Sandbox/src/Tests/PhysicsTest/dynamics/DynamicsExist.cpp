@@ -20,7 +20,7 @@ void DynamicsExist::SpawnObject()
 {
     Anwill::EntityID newID = Anwill::Ecs::CreateEntity();
     Anwill::Ecs::AddComponent<Anwill::TransformComponent>(newID);
-    Anwill::Ecs::AddComponent<Anwill::RBody>(newID, 2.5f);
+    Anwill::Ecs::AddComponent<Anwill::RBody>(newID, 2.5f, false);
     Anwill::Ecs::AddComponent<Anwill::MeshComponent>(newID);
     Anwill::Ecs::ForEach<Anwill::RBody, Anwill::MeshComponent>([newID](Anwill::EntityID id, Anwill::RBody& rBody,
             Anwill::MeshComponent& meshComponent){
@@ -61,8 +61,8 @@ void DynamicsExist::KillObjects()
             {
                 // TODO: Dont iterate twice (I think this is currently negating the col resolvement)
                 Anwill::CollisionData data;
-                if (Anwill::Collision::CheckCollision(bodyA, transformA.transform,
-                                                      bodyB, transformB.transform, data))
+                if (Anwill::CollisionTest::CheckCollision(bodyA, transformA.transform,
+                                                          bodyB, transformB.transform, data))
                 {
                     Anwill::Ecs::RemoveEntity(idA);
                     Anwill::Ecs::RemoveEntity(idB);

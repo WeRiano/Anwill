@@ -8,7 +8,7 @@
 
 namespace Anwill {
 
-    class Collision
+    class CollisionTest
     {
     public:
         static bool CheckCollision(const RBody& body1, const Math::Mat4f& transform1,

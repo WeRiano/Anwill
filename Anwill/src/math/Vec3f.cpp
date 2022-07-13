@@ -30,6 +30,13 @@ namespace Anwill::Math {
         m_Z += other.m_Z;
     }
 
+    void Vec3f::operator-=(const Vec3f& other)
+    {
+        m_X -= other.m_X;
+        m_Y -= other.m_Y;
+        m_Z -= other.m_Z;
+    }
+
     void Vec3f::operator*=(const float s)
     {
         m_X *= s;
@@ -79,6 +86,10 @@ namespace Anwill::Math {
     void Vec3f::Normalize()
     {
         float length = GetLength();
+        if (length == 0.0f)
+        {
+            return;
+        }
         m_X = m_X / length;
         m_Y = m_Y / length;
         m_Z = m_Z / length;
@@ -89,6 +100,11 @@ namespace Anwill::Math {
         m_X = -m_X;
         m_Y = -m_Y;
         m_Z = -m_Z;
+    }
+
+    bool Vec3f::IsZero() const
+    {
+        return m_X == 0.0f and m_Y == 0.0f and m_Z == 0.0f;
     }
 
     float Vec3f::GetLength() const

@@ -13,7 +13,7 @@ namespace Anwill {
     class RBody {
     public:
         RBody();
-        RBody(float mass,
+        RBody(float mass, bool isStatic,
               Math::Vec3f position = {},
               Math::Vec3f velocity = {},
               Math::Vec3f force = {},
@@ -23,10 +23,13 @@ namespace Anwill {
         void ApplyForce(Math::Vec3f force);
         // We are applying a change in momentum == impulse, but its instantaneous so I'm not sure if its accurate to
         // call it an 'impulse'.
+        void ApplyImpulse(float j, Math::Vec3f normal, bool negative);
         void ApplyImpulse(Math::Vec3f impulse);
         void Tick(float deltaSeconds);
         void Move(Math::Vec3f deltaPos);
 
+        bool IsStatic() const;
+        void SetStatic(bool IsStatic);
         float GetMass() const;
         Math::Vec3f GetPosition() const;
         Math::Vec3f GetVelocity() const;
@@ -41,6 +44,7 @@ namespace Anwill {
         bool HasCollider() const;
 
     private:
+        bool m_Static;
         float m_M;
         Math::Vec3f m_P, m_V, m_F, m_G; // position, velocity, (temporary) net force and gravitational acceleration
         std::shared_ptr<Collider> m_Collider;

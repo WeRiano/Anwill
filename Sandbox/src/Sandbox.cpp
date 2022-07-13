@@ -3,7 +3,8 @@
 #include "Tests/Renderer/RendererHelloWorld"
 #include "Tests/PhysicsTest/dynamics/DynamicsDelta.h"
 #include "Tests/PhysicsTest/dynamics/DynamicsExist.h"
-#include "Tests/PhysicsTest/collision/CollisionPoints.h"
+#include "Tests/PhysicsTest/collision/CollisionRender.h"
+#include "Tests/PhysicsTest/collision/CollisionTest.h"
 #include "Tests/EcsTest/EcsTestLayer.h"
 #include "SmallerProjects/TopDownShadow/TPS.h"
 #include "SmallerProjects/TopDownShadow/TPSCalcs.h"
@@ -24,7 +25,8 @@ public:
         //AddLayer<DynamicsExist>(10);
         //AddLayer<DynamicsDelta>(0, ws);
 
-        AddLayer<CollisionPoints>(0, ws);
+        AddLayer<CollisionRender>(0, ws);
+        AddLayer<CollisionTest>(30, ws);
     }
 };
 

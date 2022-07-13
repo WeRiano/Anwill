@@ -11,6 +11,7 @@ namespace Anwill::Math {
         Vec3f operator+(const Vec3f& other) const;
         Vec3f operator-(const Vec3f& other) const;
         void operator+=(const Vec3f& other);
+        void operator-=(const Vec3f& other);
         void operator*=(const float s);
         Vec3f operator/(const float d) const;
 
@@ -19,6 +20,7 @@ namespace Anwill::Math {
         void Move(float deltaX, float deltaY, float deltaZ);
         void Normalize();
         void Negate();
+        bool IsZero() const;
         float GetLength() const;
         float GetX() const;
         float GetY() const;

@@ -3,17 +3,23 @@
 namespace Anwill {
 
     RBody::RBody()
-        : m_M(1.0f)
+        : m_Static(false), m_M(1.0f)
     {}
 
-    RBody::RBody(float mass, Math::Vec3f position, Math::Vec3f velocity, Math::Vec3f force, Math::Vec3f gravity)
-        : m_M(mass), m_P(position), m_V(velocity), m_F(force), m_G(gravity)
+    RBody::RBody(float mass, bool isStatic, Math::Vec3f position, Math::Vec3f velocity, Math::Vec3f force, Math::Vec3f gravity)
+        : m_Static(isStatic), m_M(mass), m_P(position), m_V(velocity), m_F(force), m_G(gravity)
     {}
 
     void RBody::ApplyForce(Math::Vec3f force)
     {
         // F = ma
         m_F += force;
+    }
+
+    // TODO: Swap parameter names perhaps
+    void RBody::ApplyImpulse(float j, Math::Vec3f normal, bool negative)
+    {
+        negative ? m_V -= (j / m_M) * normal : m_V += (j / m_M) * normal;
     }
 
     void RBody::ApplyImpulse(Math::Vec3f impulse)
@@ -34,6 +40,16 @@ namespace Anwill {
     void RBody::Move(Math::Vec3f deltaPos)
     {
         m_P += deltaPos;
+    }
+
+    bool RBody::IsStatic() const
+    {
+        return m_Static;
+    }
+
+    void RBody::SetStatic(bool IsStatic)
+    {
+        m_Static = IsStatic;
     }
 
     float RBody::GetMass() const

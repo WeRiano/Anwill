@@ -9,7 +9,8 @@ int main()
 {
     Anwill::Log::Init();
 
-    Anwill::App* app = Anwill::CreateApp(); // Smart pointer?
+    Anwill::App* app = Anwill::CreateApp();
     app->Run();
-    // TODO: app->Terminate();
+    // TODO: app->Terminate(); ?
+    delete app;
 }

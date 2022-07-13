@@ -89,7 +89,7 @@ namespace Anwill {
         for(unsigned int i = 0; i < m_Vertices.size(); i++)
         {
             Math::Vec2f edge = (thisTransform * m_Vertices[i]) - (thisTransform * m_Vertices[(i + 1) % m_Vertices.size()]);
-            Math::Vec2f axis = {-edge.GetY(), edge.GetX()};
+            Math::Vec2f axis = {-edge.GetY(), edge.GetX()}; // Vector perpendicular to the edge
             axis.Normalize();
 
             float thisMin, thisMax, otherMin, otherMax;
