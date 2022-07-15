@@ -47,7 +47,7 @@ void CollisionTest::SwapShape()
         Anwill::Ecs::ForEntity<Anwill::RBody>(CollisionRender::s_Player, [](Anwill::RBody& body) {
             body.SetCollider<Anwill::CircleCollider>(40.0f);
         });
-        CollisionRender::s_IsRound = true;
+        CollisionRender::s_PlayerIsRound = true;
     }
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::R))
     {
@@ -55,7 +55,7 @@ void CollisionTest::SwapShape()
             auto vs = CollisionRender::s_Mesh.GetVertices();
             body.SetCollider<Anwill::PolygonCollider>(vs);
         });
-        CollisionRender::s_IsRound = false;
+        CollisionRender::s_PlayerIsRound = false;
     }
 }
 
@@ -71,22 +71,18 @@ void CollisionTest::MoveAndTiltPlayer()
         }
         if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W))
         {
-            //pBody.Move({0.0f, speed, 0.0f});
             newVel += {0.0f, velMag, 0.0f};
         }
         if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::A))
         {
-            //pBody.Move({-speed, 0.0f, 0.0f});
             newVel += {-velMag, 0.0f, 0.0f};
         }
         if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::S))
         {
-            //pBody.Move({0.0f, -speed, 0.0f});
             newVel += {0.0f, -velMag, 0.0f};
         }
         if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D))
         {
-            //pBody.Move({speed, 0.0f, 0.0f});
             newVel += {velMag, 0.0f, 0.0f};
         }
         if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Space))

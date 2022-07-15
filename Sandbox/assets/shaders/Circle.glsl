@@ -29,9 +29,9 @@ void main()
         discard;
     }
 
-    if (length(temp) > (u_Radius - u_Radius/12.5))
+    if (length(temp) > (u_Radius - u_Radius/15.0f))
     {
-        color = vec4(0.3f, 0.2f, 0.5f, 1.0f);
+        color = vec4(0.439f, 0.8f, 0.843f, 1.0f);
     } else {
         color = vec4(u_Color, 1.0f);
     }

@@ -1,4 +1,4 @@
-add_library(Ecs
+add_library(Ecs STATIC
         Ecs.cpp EntityManager.cpp
         )
 

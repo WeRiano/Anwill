@@ -18,7 +18,7 @@ RendererHelloWorld::RendererHelloWorld(const unsigned int ups)
     m_VB = Anwill::VertexBuffer::Create(vertices, sizeof(vertices));
     m_IB = Anwill::IndexBuffer::Create(indices, 6);
 
-    auto elements = {
+    std::vector<Anwill::BufferElement> elements = {
            Anwill::BufferElement(Anwill::ShaderDataType::Float2)
     };
 
@@ -26,17 +26,16 @@ RendererHelloWorld::RendererHelloWorld(const unsigned int ups)
     m_VA = Anwill::VertexArray::Create();
     m_VA->AddBuffer(*m_VB.get(), bufferLayout);
 
-    m_Shader = Anwill::Shader::Create("assets/shaders/HelloUniform.glsl");
+    m_Shader = Anwill::Shader::Create("assets/shaders/RectBorder.glsl");
 
     Anwill::Renderer::SetClearColor({0.1f, 0.1f, 0.1f});
 }
 
 void RendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
-    Layer::Update(timestamp);
-
     Anwill::Renderer::BeginScene(m_Camera);
 
-    m_Camera.Move(0.001f, 0.001f);
     Anwill::Renderer::Submit(m_Shader, m_VA, m_IB, Anwill::Math::Mat4f::Identity());
+
+    Layer::Update(timestamp);
 }

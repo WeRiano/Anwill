@@ -40,6 +40,12 @@ namespace Anwill {
         glUseProgram(0);
     }
 
+    void OpenGLShader::SetUniform1i(const int val, const std::string& name)
+    {
+        int location = GetUniformLocation(name);
+        glUniform1iv(location, 1, &val);
+    }
+
     void OpenGLShader::SetUniformMat4f(const Math::Mat4f& mat4f, const std::string& name)
     {
         //Bind();
@@ -49,7 +55,7 @@ namespace Anwill {
         //Unbind();
     }
 
-    void OpenGLShader::SetUniformVec1f(const float val, const std::string &name)
+    void OpenGLShader::SetUniform1f(const float val, const std::string &name)
     {
         int location = GetUniformLocation(name);
         glUniform1fv(location, 1, &val);

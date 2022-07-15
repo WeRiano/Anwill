@@ -21,8 +21,9 @@ namespace Anwill {
         void Bind() const override;
         void Unbind() const override;
 
+        void SetUniform1i(const int val, const std::string& name) override;
         void SetUniformMat4f(const Math::Mat4f& mat4f, const std::string& name) override;
-        void SetUniformVec1f(const float val, const std::string &name) override;
+        void SetUniform1f(const float val, const std::string &name) override;
         void SetUniformVec2f(const Math::Vec2f& vec2f, const std::string &name) override;
         void SetUniformVec3f(const Math::Vec3f& vec3f, const std::string &name) override;
 

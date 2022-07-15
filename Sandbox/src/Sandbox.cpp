@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "Tests/Renderer/RendererHelloWorld"
+#include "Tests/Renderer/TextureHelloWorld.h"
 #include "Tests/PhysicsTest/dynamics/DynamicsDelta.h"
 #include "Tests/PhysicsTest/dynamics/DynamicsExist.h"
 #include "Tests/PhysicsTest/collision/CollisionRender.h"
@@ -15,7 +16,8 @@ public:
     Sandbox(const Anwill::WindowSettings& ws)
         : App(ws)
     {
-        //AddLayer<RenderHelloWorld>(0);
+        //AddLayer<RendererHelloWorld>(0);
+        //AddLayer<TextureHelloWorld>(0, ws);
 
         //AddLayer<EcsTestLayer>(144);
 

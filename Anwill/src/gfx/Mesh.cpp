@@ -2,26 +2,72 @@
 
 namespace Anwill {
 
-    Mesh Mesh::CreateRectMesh(float width, float height)
+    Mesh Mesh::CreateRectMesh(float width, float height, bool texture)
     {
-        float vertices[] = {
-            -width / 2.0f, -height / 2.0f, 0.0f,
-            -width / 2.0f, height / 2.0f, 0.0f,
-            width / 2.0f, height / 2.0f, 0.0f,
-            width / 2.0f, -height / 2.0f, 0.0f,
-        };
+        unsigned int arrLength = texture ? 5 * 4 : 3 * 4;
+        float* vertices = new float[arrLength];
+
+        if(!texture)
+        {
+            vertices[0] = -width / 2.0f;
+            vertices[1] = -height / 2.0f;
+            vertices[2] = 0.0f;
+
+            vertices[3] = -width / 2.0f;
+            vertices[4] = height / 2.0f;
+            vertices[5] = 0.0f;
+
+            vertices[6] = width / 2.0f;
+            vertices[7] = height / 2.0f;
+            vertices[8] = 0.0f;
+
+            vertices[9] = width / 2.0f;
+            vertices[10] = -height / 2.0f;
+            vertices[11] = 0.0f;
+        } else {
+            vertices[0] = -width / 2.0f;
+            vertices[1] = -height / 2.0f;
+            vertices[2] = 0.0f;
+            vertices[3] = 0.0f;
+            vertices[4] = 0.0f;
+
+            vertices[5] = -width / 2.0f;
+            vertices[6] = height / 2.0f;
+            vertices[7] = 0.0f;
+            vertices[8] = 0.0f;
+            vertices[9] = 1.0f;
+
+            vertices[10] = width / 2.0f;
+            vertices[11] = height / 2.0f;
+            vertices[12] = 0.0f;
+            vertices[13] = 1.0f;
+            vertices[14] = 1.0f;
+
+            vertices[15] = width / 2.0f;
+            vertices[16] = -height / 2.0f;
+            vertices[17] = 0.0f;
+            vertices[18] = 1.0f;
+            vertices[19] = 0.0f;
+        }
 
         unsigned int indices[] = {
             0, 1, 2,
             0, 2, 3
         };
 
-        auto elements = {
-                Anwill::BufferElement(Anwill::ShaderDataType::Float3)
+        std::vector<BufferElement> elements = {
+                BufferElement(ShaderDataType::Float3)
         };
+
+        if(texture)
+        {
+            elements.emplace_back(ShaderDataType::Float2);
+        }
         auto bufferLayout = Anwill::BufferLayout(elements);
 
-        return {vertices, sizeof(vertices), indices, 6, bufferLayout};
+        Mesh result(vertices, arrLength * sizeof(float), indices, 6, bufferLayout);
+        delete[] vertices;
+        return result;
     }
 
     // This is probably not nec, just use shader :)
@@ -42,7 +88,7 @@ namespace Anwill {
                 0, 1, 2
         };
 
-        auto elements= {
+        std::vector<BufferElement> elements = {
                 Anwill::BufferElement(Anwill::ShaderDataType::Float3)
         };
         auto bufferLayout = Anwill::BufferLayout(elements);

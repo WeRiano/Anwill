@@ -2,7 +2,7 @@
 
 #include "CollisionRender.h"
 
-bool CollisionRender::s_IsRound = false;
+bool CollisionRender::s_PlayerIsRound = false;
 Anwill::EntityID CollisionRender::s_Player;
 Anwill::Mesh CollisionRender::s_Mesh;
 
@@ -10,32 +10,35 @@ Anwill::Mesh CollisionRender::s_Mesh;
 CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_Camera(ws.width, ws.height)
 {
-    s_Player = Anwill::Ecs::CreateEntity();
+    s_Mesh = Anwill::Mesh::CreateRectMesh(80.0f, 80.0f);
 
-    m_RectShader = Anwill::Shader::Create("assets/shaders/HelloUniform.glsl");
+    m_RectShader = Anwill::Shader::Create("assets/shaders/RectBorder.glsl");
+    m_RectShader->Bind();
+    m_RectShader->SetUniformVec2f(Anwill::Math::Vec2f(80.0f, 80.0f), "u_WidthHeight");
+    m_RectShader->Unbind();
 
     m_CircleShader = Anwill::Shader::Create("assets/shaders/Circle.glsl");
     m_CircleShader->Bind();
-    m_CircleShader->SetUniformVec1f(40.0f, "u_Radius");
+    m_CircleShader->SetUniform1f(40.0f, "u_Radius");
     m_CircleShader->SetUniformVec3f(m_Camera.GetPos(), "u_CamPos");
     m_CircleShader->SetUniformVec3f(Anwill::Math::Vec3f(0.905f, 0.294f, 0.301f), "u_Color");
     m_CircleShader->Unbind();
-
-    s_Mesh = Anwill::Mesh::CreateRectMesh(80.0f, 80.0f);
 
     Anwill::Ecs::RegisterComponent<Anwill::RBody>(); // TODO: Move to engine(?)
     Anwill::Ecs::RegisterComponent<Anwill::Math::Mat4f>();
 
     float mass = 5.0f;
 
-    Anwill::Ecs::AddComponent<Anwill::RBody>(s_Player, mass, false, Anwill::Math::Vec3f(400.0f, 400.0f, 0.0f), Anwill::Math::Vec3f(), Anwill::Math::Vec3f(), Anwill::Math::Vec3f());
-    Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(s_Player);
-
     // Even are circles
     auto npc1 = Anwill::Ecs::CreateEntity(); // Rect
     auto npc2 = Anwill::Ecs::CreateEntity(); // Circle
     auto npc3 = Anwill::Ecs::CreateEntity(); // Rect
     auto npc4 = Anwill::Ecs::CreateEntity(); // Circle
+
+    s_Player = Anwill::Ecs::CreateEntity();
+
+    Anwill::Ecs::AddComponent<Anwill::RBody>(s_Player, mass, false, Anwill::Math::Vec3f(400.0f, 400.0f, 0.0f), Anwill::Math::Vec3f(), Anwill::Math::Vec3f(), Anwill::Math::Vec3f());
+    Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(s_Player);
 
     Anwill::Ecs::AddComponent<Anwill::RBody>(npc1, mass, false, Anwill::Math::Vec3f(800.0f, 600.0f, 0.0f), Anwill::Math::Vec3f(), Anwill::Math::Vec3f(), Anwill::Math::Vec3f());
     Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(npc1);
@@ -70,30 +73,30 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
     Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([this, delta](Anwill::EntityID id,
                                                                        Anwill::Math::Mat4f& transform,
                                                                        Anwill::RBody& body) {
+        bool isCircle = false;
+        if ((id == s_Player and s_PlayerIsRound) or id % 2 == 0 ) {
+            isCircle = true;
+        }
+
         auto pos = body.GetPosition();
         //transform.SetTranslateCol({0.0f, 0.0f, 0.0f});
         //transform = Anwill::Math::Mat4f::RotateZ(transform, spinAngle);
         transform.SetTranslateCol(pos);
 
-        if(body.IsStatic())
+        if(id == s_Player)
         {
-            m_CircleShader->Bind();
-            m_CircleShader->SetUniformVec3f(Anwill::Math::Vec3f(0.205f, 0.794f, 0.301f), "u_Color");
-            m_CircleShader->Unbind();
+            if(s_PlayerIsRound) {
+                Anwill::Renderer::Submit(m_CircleShader, s_Mesh, transform);
+            } else {
+                Anwill::Renderer::Submit(m_RectShader, s_Mesh, transform);
+            }
         } else {
-            m_CircleShader->Bind();
-            m_CircleShader->SetUniformVec3f(Anwill::Math::Vec3f(0.905f, 0.294f, 0.301f), "u_Color");
-            m_CircleShader->Unbind();
-        }
-        if(id == s_Player and s_IsRound)
-        {
-            Anwill::Renderer::Submit(m_CircleShader, s_Mesh, transform);
-        } else if(id == s_Player and !s_IsRound) {
-            Anwill::Renderer::Submit(m_RectShader, s_Mesh, transform);
-        } else if(id % 2 == 0) {
-            Anwill::Renderer::Submit(m_CircleShader, s_Mesh, transform);
-        } else {
-            Anwill::Renderer::Submit(m_RectShader, s_Mesh, transform);
+            if(id % 2 == 0)
+            {
+                Anwill::Renderer::Submit(m_CircleShader, s_Mesh, transform);
+            } else {
+                Anwill::Renderer::Submit(m_RectShader, s_Mesh, transform);
+            }
         }
 
         auto vel = body.GetVelocity();

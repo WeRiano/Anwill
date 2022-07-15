@@ -46,6 +46,7 @@ namespace Anwill {
     {
     public:
         BufferLayout(std::vector<BufferElement>&& elements);
+        BufferLayout(std::vector<BufferElement> elements);
 
         const std::vector<BufferElement> GetElements() const;
         const unsigned int GetStride() const;

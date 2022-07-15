@@ -26,14 +26,14 @@ TPS::TPS(const unsigned int ups, float chunkWidth, float chunkHeight, unsigned i
     m_PlayerShader = Anwill::Shader::Create("assets/shaders/Circle.glsl");
 
     m_PlayerShader->Bind();
-    m_PlayerShader->SetUniformVec1f(20.0f, "u_Radius");
+    m_PlayerShader->SetUniform1f(20.0f, "u_Radius");
     m_PlayerShader->SetUniformVec3f(m_Camera.GetPos(), "u_CamPos");
     m_PlayerShader->SetUniformVec3f(Anwill::Math::Vec3f(0.3f, 0.5f, 0.7f), "u_Color");
     m_PlayerShader->Unbind();
 
     m_ShadowShader->Bind();
     m_ShadowShader->SetUniformVec3f(m_Camera.GetPos(), "u_CamPos");
-    m_ShadowShader->SetUniformVec1f(35.0f, "u_FoVAngleDeg");
+    m_ShadowShader->SetUniform1f(35.0f, "u_FoVAngleDeg");
     m_ShadowShader->Unbind();
 
     unsigned int eID = Anwill::Ecs::CreateEntity();

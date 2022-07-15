@@ -10,7 +10,7 @@ public:
     void Update(const Anwill::Timestamp& timestamp) override;
 
 //private:
-    static bool s_IsRound;
+    static bool s_PlayerIsRound;
     static Anwill::EntityID s_Player;
     static Anwill::Mesh s_Mesh;
     Anwill::OrthographicCamera m_Camera;

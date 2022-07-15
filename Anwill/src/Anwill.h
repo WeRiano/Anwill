@@ -18,6 +18,7 @@
 #include "gfx/VertexBuffer.h"
 #include "gfx/IndexBuffer.h"
 #include "gfx/Mesh.h"
+#include "gfx/Texture.h"
 
 // Math
 #include "math/Math.h"

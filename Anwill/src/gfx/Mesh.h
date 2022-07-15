@@ -9,7 +9,7 @@ namespace Anwill {
     class Mesh
     {
     public:
-        static Mesh CreateRectMesh(float width, float height);
+        static Mesh CreateRectMesh(float width, float height, bool texture = false);
         static Mesh CreateCircleMesh();
         static Mesh CreateTriangleMesh(float leftWidth, float rightWidth, float height);
 

@@ -36,15 +36,15 @@ namespace Anwill {
         glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
         AW_INFO("OpenGL debug output enabled!");
 
-        //glEnable(GL_BLEND);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         // TODO: This stuff for 3D renderer.
         //glClearDepthf(0.0f);                                 // Depth Buffer Setup
         //glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
         //glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
     }
 
-    void OpenGLGraphicsAPI::SetViewport(float x, float y, float width, float height) const
+    void OpenGLGraphicsAPI::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const
     {
         glViewport(x, y, width, height);
     }

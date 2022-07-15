@@ -16,16 +16,10 @@ namespace Anwill {
         m_F += force;
     }
 
-    // TODO: Swap parameter names perhaps
-    void RBody::ApplyImpulse(float j, Math::Vec3f normal, bool negative)
-    {
-        negative ? m_V -= (j / m_M) * normal : m_V += (j / m_M) * normal;
-    }
-
-    void RBody::ApplyImpulse(Math::Vec3f impulse)
+    void RBody::ApplyImpulse(Math::Vec3f impulse, bool subtract)
     {
         // p = mv
-        m_V += impulse / m_M;
+        subtract ? m_V -= impulse / m_M : m_V += impulse / m_M;
     }
 
     void RBody::Tick(float deltaSeconds)

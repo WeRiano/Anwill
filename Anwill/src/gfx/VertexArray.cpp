@@ -57,6 +57,12 @@ namespace Anwill {
         CalcStrideAndOffset();
     }
 
+    BufferLayout::BufferLayout(std::vector<BufferElement> elements)
+    {
+        m_Elements = std::move(elements);
+        CalcStrideAndOffset();
+    }
+
     const std::vector<BufferElement> BufferLayout::GetElements() const
     {
         return m_Elements;

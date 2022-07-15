@@ -8,6 +8,7 @@
 #include "IndexBuffer.h"
 #include "Camera.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "math/Mat4f.h"
 #include "math/Vec3f.h"
 
@@ -22,14 +23,15 @@ namespace Anwill {
         static void SetAPI(GraphicsAPI::API api);
 
         // Static entrypoints for GraphicAPI responsibilities
-        static void SetViewport(float x, float y, float width, float height);
+        static void SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
         static void SetClearColor(const Math::Vec3f& color);
         static void ClearBuffers();
 
         static void BeginScene(const Camera& camera);
         static void Submit(const std::shared_ptr<Shader>& shader,
                            const Mesh& mesh,
-                           const Math::Mat4f& transform);
+                           const Math::Mat4f& transform,
+                           const std::shared_ptr<Texture>& texture = nullptr);
         static void Submit(const std::shared_ptr<Shader>& shader,
                            const std::shared_ptr<VertexArray>& vertexArray,
                            const std::shared_ptr<IndexBuffer>& indexBuffer,

@@ -23,8 +23,7 @@ namespace Anwill {
         void ApplyForce(Math::Vec3f force);
         // We are applying a change in momentum == impulse, but its instantaneous so I'm not sure if its accurate to
         // call it an 'impulse'.
-        void ApplyImpulse(float j, Math::Vec3f normal, bool negative);
-        void ApplyImpulse(Math::Vec3f impulse);
+        void ApplyImpulse(Math::Vec3f impulse, bool subtract = false);
         void Tick(float deltaSeconds);
         void Move(Math::Vec3f deltaPos);
 

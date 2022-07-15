@@ -2,6 +2,9 @@
 #version 330 core
 
 layout(location = 0) in vec3 v_Pos;
+layout(location = 1) in vec2 v_TexCoords;
+
+out vec2 v_FragTexCoords;
 
 uniform mat4 u_ViewProjMat;
 uniform mat4 u_Transform;
@@ -9,14 +12,19 @@ uniform mat4 u_Transform;
 void main()
 {
     gl_Position = u_ViewProjMat * u_Transform * vec4(v_Pos, 1.0f);
+    v_FragTexCoords = v_TexCoords;
 }
 
 #shadertype fragment
 #version 330 core
 
+in vec2 v_FragTexCoords;
+
 layout(location = 0) out vec4 color;
+
+uniform sampler2D u_TextureSampler;
 
 void main()
 {
-    color = vec4(0.858f, 0.552f, 0.223f, 1.0f);
+    color = texture(u_TextureSampler, v_FragTexCoords);
 }

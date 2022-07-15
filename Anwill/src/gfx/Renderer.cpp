@@ -24,7 +24,7 @@ namespace Anwill {
         s_APIName = api;
     }
 
-    void Renderer::SetViewport(float x, float y, float width, float height)
+    void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
     {
         s_API->SetViewport(x, y, width, height);
     }
@@ -45,14 +45,24 @@ namespace Anwill {
         s_SceneData.ViewProjMat = camera.GetViewProj();
     }
 
-    void Renderer::Submit(const std::shared_ptr<Shader> &shader, const Mesh &mesh, const Math::Mat4f& transform)
+    void Renderer::Submit(const std::shared_ptr<Shader> &shader,
+                          const Mesh &mesh,
+                          const Math::Mat4f& transform,
+                          const std::shared_ptr<Texture>& texture)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+        if(texture != nullptr) {
+            texture->Bind();
+            shader->SetUniform1i(0, "u_TextureSampler");
+        }
 
         s_API->Draw(mesh);
 
+        if(texture != nullptr) {
+            texture->Unbind();
+        }
         shader->Unbind();
     }
 

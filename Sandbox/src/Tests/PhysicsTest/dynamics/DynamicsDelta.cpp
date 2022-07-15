@@ -3,7 +3,7 @@
 DynamicsDelta::DynamicsDelta(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_G(0.0f, -9.81f, 0.0f), m_Camera(ws.width, ws.height)
 {
-    m_ObjShader = Anwill::Shader::Create("assets/shaders/HelloUniform.glsl");
+    m_ObjShader = Anwill::Shader::Create("assets/shaders/RectBorder.glsl");
     Anwill::Ecs::RegisterComponent<Anwill::RBody>(); // TODO: Move to engine
 }
 

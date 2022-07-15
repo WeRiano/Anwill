@@ -16,8 +16,10 @@ namespace Anwill {
                                          const CollisionData& collisionData)
     {
         Math::Vec3f normal = collisionData.normal;
-        Math::Vec3f relVel = body2.GetVelocity() - body1.GetVelocity(); // Might have to swap
+        Math::Vec3f relVel = body2.GetVelocity() - body1.GetVelocity();
 
+        // We don't know which collider found the fastest way out so the normal could be in either direction.
+        // Let's make sure it's always from 1 to 2
         if (normal.DotProduct(body1.GetPosition() - body2.GetPosition()) < 0.0f) {
             normal = -normal;
         }
@@ -26,20 +28,23 @@ namespace Anwill {
         float j = -(1.0f + e) * relVel.DotProduct(normal);
         j /= (1.0f / body1.GetMass()) + (1.0f / body2.GetMass());
 
+        Math::Vec3f impulse = normal * j;
+
         if(body1.IsStatic() and !body2.IsStatic()) {
-            body2.ApplyImpulse(j * 2.0f, normal, false);
+            body2.ApplyImpulse(impulse * 2.0f, false);
             body2.Move(-normal * (collisionData.depth));
         } else if(body2.IsStatic() and !body1.IsStatic())
         {
-            body1.ApplyImpulse(j * 2.0f, normal, true);
+            body1.ApplyImpulse(impulse * 2.0f, true);
             body1.Move(normal * (collisionData.depth));
         } else if(!body1.IsStatic() and !body2.IsStatic()) {
-            body1.ApplyImpulse(j, normal, true);
-            body2.ApplyImpulse(j, normal, false);
+            body1.ApplyImpulse(impulse, true);
+            body2.ApplyImpulse(impulse, false);
             body1.Move(normal * (collisionData.depth / 2.0f));
             body2.Move(-normal * (collisionData.depth / 2.0f));
         }
-        // Two static bodies should not be able to collide, but we account for it anyway just in case :)
+        // Two static bodies should not be able to collide, but we account for it anyway just in case we accidentally
+        // spawn them within range or something like that :)
     }
 
     Math::Vec3f CollisionTest::GetArithmeticMean(const std::vector<Math::Vec3f>& vertices, Math::Mat4f transform)
