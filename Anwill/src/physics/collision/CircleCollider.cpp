@@ -27,6 +27,8 @@ namespace Anwill {
                                         const Math::Mat4f& otherTransform,
                                         CollisionData& colData) const
     {
+        // Simple circle collision check, nothing complicated.
+
         Math::Vec2f thisCentre = thisTransform * m_Centre;
         Math::Vec2f otherCentre = otherTransform * m_Centre;
 
@@ -43,7 +45,7 @@ namespace Anwill {
         }
     }
 
-    void CircleCollider::ProjectCircle(const Math::Vec2f& axis,
+    void CircleCollider::Project(const Math::Vec2f& axis,
                                        const Math::Mat4f& transform,
                                        float& min, float& max) const
     {
@@ -62,8 +64,8 @@ namespace Anwill {
         axis.Normalize();
 
         float thisMin, thisMax, otherMin, otherMax;
-        ProjectCircle(axis, thisTransform, thisMin, thisMax);
-        otherCollider->ProjectPolygon(axis, otherTransform, otherMin, otherMax);
+        Project(axis, thisTransform, thisMin, thisMax);
+        otherCollider->Project(axis, otherTransform, otherMin, otherMax);
         if (!OverlapCheck(thisMin, thisMax, otherMin, otherMax))
         {
             // If there is not an overlap <=> there is a gap, we know there is not a collision

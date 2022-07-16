@@ -10,7 +10,7 @@ namespace Anwill {
     public:
         static std::shared_ptr<Texture> Create(const std::string& filePath);
 
-        virtual void Bind() const = 0;
+        virtual void Bind(unsigned int slot) const = 0;
         virtual void Unbind() const = 0;
     };
 }

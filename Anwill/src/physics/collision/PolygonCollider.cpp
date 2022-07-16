@@ -60,7 +60,7 @@ namespace Anwill {
         return closest;
     }
 
-    void PolygonCollider::ProjectPolygon(const Math::Vec2f& axis,
+    void PolygonCollider::Project(const Math::Vec2f& axis,
                                          const Math::Mat4f& transform,
                                          float& min, float& max) const
     {
@@ -81,7 +81,7 @@ namespace Anwill {
         }
     }
 
-    bool PolygonCollider::SATCollision(const PolygonCollider* otherCollider,
+    bool PolygonCollider::SATCollision(const Collider* otherCollider,
                                        const Math::Mat4f& thisTransform,
                                        const Math::Mat4f& otherTransform,
                                        CollisionData& colData) const
@@ -93,38 +93,8 @@ namespace Anwill {
             axis.Normalize();
 
             float thisMin, thisMax, otherMin, otherMax;
-            ProjectPolygon(axis,thisTransform, thisMin, thisMax);
-            otherCollider->ProjectPolygon(axis, otherTransform, otherMin, otherMax);
-            if (!OverlapCheck(thisMin, thisMax, otherMin, otherMax))
-            {
-                // If there is not an overlap <=> there is a gap, we know there is not a collision
-                return false;
-            }
-
-            float axisDepth = std::min<float>(otherMax - thisMin, thisMax - otherMin);
-            if(axisDepth < colData.depth)
-            {
-                colData.depth = axisDepth;
-                colData.normal = Math::Vec3f(axis.GetX(), axis.GetY(), 0.0f);
-                colData.normal.Normalize();
-            }
-        }
-        // There is a collision according to the SAT algorithm projected onto the axes 'created' by this polygon.
-        return true;
-    }
-
-    bool PolygonCollider::SATCollision(const CircleCollider* otherCollider, const Math::Mat4f& thisTransform,
-                                       const Math::Mat4f& otherTransform, CollisionData& colData) const
-    {
-        for(unsigned int i = 0; i < m_Vertices.size(); i++)
-        {
-            Math::Vec2f edge = (thisTransform * m_Vertices[i]) - (thisTransform * m_Vertices[(i + 1) % m_Vertices.size()]);
-            Math::Vec2f axis = {-edge.GetY(), edge.GetX()};
-            axis.Normalize();
-
-            float thisMin, thisMax, otherMin, otherMax;
-            ProjectPolygon(axis,thisTransform, thisMin, thisMax);
-            otherCollider->ProjectCircle(axis, otherTransform, otherMin, otherMax);
+            Project(axis,thisTransform, thisMin, thisMax);
+            otherCollider->Project(axis, otherTransform, otherMin, otherMax);
             if (!OverlapCheck(thisMin, thisMax, otherMin, otherMax))
             {
                 // If there is not an overlap <=> there is a gap, we know there is not a collision

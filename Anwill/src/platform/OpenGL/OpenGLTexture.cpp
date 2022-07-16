@@ -33,9 +33,9 @@ namespace Anwill {
         glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    void OpenGLTexture::Bind() const
+    void OpenGLTexture::Bind(unsigned int slot) const
     {
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0 + slot);
         glBindTexture(GL_TEXTURE_2D, m_ID);
     }
 

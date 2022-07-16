@@ -29,13 +29,17 @@ namespace Anwill {
 
         static void BeginScene(const Camera& camera);
         static void Submit(const std::shared_ptr<Shader>& shader,
+                           const std::shared_ptr<VertexArray>& vertexArray,
+                           const std::shared_ptr<IndexBuffer>& indexBuffer,
+                           const Math::Mat4f& transform);
+        static void Submit(const std::shared_ptr<Shader>& shader,
                            const Mesh& mesh,
                            const Math::Mat4f& transform,
                            const std::shared_ptr<Texture>& texture = nullptr);
         static void Submit(const std::shared_ptr<Shader>& shader,
-                           const std::shared_ptr<VertexArray>& vertexArray,
-                           const std::shared_ptr<IndexBuffer>& indexBuffer,
-                           const Math::Mat4f& transform);
+                           const Mesh& mesh,
+                           const Math::Mat4f& transform,
+                           const std::vector<std::shared_ptr<Texture>>& textures);
     private:
         struct SceneData {
             Math::Mat4f ViewProjMat;

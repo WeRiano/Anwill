@@ -24,7 +24,8 @@ namespace Anwill {
                             const Math::Mat4f& otherTransform,
                             CollisionData& colData) const override;
 
-        void ProjectCircle(const Math::Vec2f& axis, const Math::Mat4f& transform, float& min, float& max) const;
+        void Project(const Math::Vec2f& axis, const Math::Mat4f& transform, float& min, float& max) const override;
+
         bool SATCollision(const PolygonCollider* otherCollider,
                           const Math::Mat4f& thisTransform,
                           const Math::Mat4f& otherTransform,

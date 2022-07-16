@@ -9,7 +9,7 @@ namespace Anwill {
     public:
         OpenGLTexture(const std::string& filePath);
 
-        void Bind() const override;
+        void Bind(unsigned int slot) const override;
         void Unbind() const override;
 
     private:

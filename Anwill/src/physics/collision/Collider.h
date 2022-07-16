@@ -38,6 +38,7 @@ namespace Anwill {
                                     const Math::Mat4f& otherTransform,
                                     CollisionData& colData) const = 0;
 
+        virtual void Project(const Math::Vec2f& axis, const Math::Mat4f& transform, float& min, float& max) const = 0;
     protected:
         inline static bool OverlapCheck(float min1, float max1, float min2, float max2) {
             return !(max2 < min1 or max1 < min2);

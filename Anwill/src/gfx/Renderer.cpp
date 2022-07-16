@@ -45,8 +45,22 @@ namespace Anwill {
         s_SceneData.ViewProjMat = camera.GetViewProj();
     }
 
+    void Renderer::Submit(const std::shared_ptr<Shader>& shader,
+                          const std::shared_ptr<VertexArray>& vertexArray,
+                          const std::shared_ptr<IndexBuffer>& indexBuffer,
+                          const Math::Mat4f& transform)
+    {
+        shader->Bind();
+        shader->SetUniformMat4f(transform, "u_Transform");
+        shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        s_API->Draw(vertexArray, indexBuffer);
+
+        shader->Unbind();
+    }
+
     void Renderer::Submit(const std::shared_ptr<Shader> &shader,
-                          const Mesh &mesh,
+                          const Mesh& mesh,
                           const Math::Mat4f& transform,
                           const std::shared_ptr<Texture>& texture)
     {
@@ -54,7 +68,7 @@ namespace Anwill {
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
         if(texture != nullptr) {
-            texture->Bind();
+            texture->Bind(0);
             shader->SetUniform1i(0, "u_TextureSampler");
         }
 
@@ -67,16 +81,26 @@ namespace Anwill {
     }
 
     void Renderer::Submit(const std::shared_ptr<Shader>& shader,
-                          const std::shared_ptr<VertexArray>& vertexArray,
-                          const std::shared_ptr<IndexBuffer>& indexBuffer,
-                          const Math::Mat4f& transform)
+                          const Mesh& mesh,
+                          const Math::Mat4f& transform,
+                          const std::vector<std::shared_ptr<Texture>>& textures)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+        for(unsigned int i = 0; i < textures.size(); i++)
+        {
+            const auto& texture = textures[i];
+            if (texture != nullptr)
+            {
+                texture->Bind(i);
+                shader->SetUniform1i(i, "u_TextureSampler");
+            }
+        }
 
-        s_API->Draw(vertexArray, indexBuffer);
+        s_API->Draw(mesh);
 
+        textures[textures.size()-1]->Unbind();
         shader->Unbind();
     }
 }

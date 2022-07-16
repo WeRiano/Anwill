@@ -26,14 +26,6 @@ namespace Anwill {
                             const Math::Mat4f& otherTransform,
                             CollisionData& colData) const override;
 
-        bool SATCollision(const CircleCollider* otherCollider,
-                          const Math::Mat4f& thisTransform,
-                          const Math::Mat4f& otherTransform,
-                          CollisionData& colData) const;
-
-        // Returns the vertex closest to the given reference point
-        Math::Vec2f GetClosestVertex(const Math::Vec2f& point, const Math::Mat4f& transform) const;
-
         /**
         * Projects the polygon onto an axis.
         * @param axis for the vertices to be projected onto
@@ -41,10 +33,7 @@ namespace Anwill {
         * @param min value as a result of the projection
         * @param max value as a result of the projection
         */
-        void ProjectPolygon(const Math::Vec2f& axis, const Math::Mat4f& transform, float& min, float& max) const;
-
-    private:
-        std::vector<Math::Vec2f> m_Vertices;
+        void Project(const Math::Vec2f& axis, const Math::Mat4f& transform, float& min, float& max) const override;
 
         /**
          * @param otherCollider
@@ -54,9 +43,14 @@ namespace Anwill {
          * @return false if the two objects are not colliding according to the SAT algorithm projected onto the
          * normals of the polygons edges (defined by m_Vertices). true otherwise.
          */
-        bool SATCollision(const PolygonCollider* otherCollider,
+        bool SATCollision(const Collider* otherCollider,
                           const Math::Mat4f& thisTransform,
                           const Math::Mat4f& otherTransform,
                           CollisionData& colData) const;
+
+        // Returns the vertex closest to the given reference point
+        Math::Vec2f GetClosestVertex(const Math::Vec2f& point, const Math::Mat4f& transform) const;
+    private:
+        std::vector<Math::Vec2f> m_Vertices;
     };
 }
