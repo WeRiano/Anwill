@@ -23,8 +23,7 @@ namespace Anwill {
          * @return a vector of size equal to the size of the breakpoints param, except
          *         when it is empty.
          */
-        static std::vector<std::string>
-        LoadFileToStrVec(const std::string& filepath,
+        static std::vector<std::string> LoadFileToStrVec(const std::string& filepath,
                          std::vector<std::string> breakpoints);
     };
 

@@ -50,8 +50,8 @@ namespace Anwill {
                                   layout.GetStride(), (const void*) element.offset);
             glEnableVertexAttribArray(i);
         }
-        /* TODO: Check for data type and call different glVertexAttribPointers?? Passing matrices
-                 to the vertex shader?? (not by uniform) */
+        // TODO: Check for data type and call different glVertexAttribPointers??
+        // Passing matrices to the vertex shader?? (not by uniform)
 
         Unbind();
         buffer.Unbind();

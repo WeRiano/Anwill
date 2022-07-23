@@ -19,5 +19,19 @@ void TextureHelloWorld::Update(const Anwill::Timestamp& timestamp)
 
     Anwill::Renderer::Submit(m_Shader, m_Mesh, Anwill::Math::Mat4f::Identity(), m_Texture);
 
+    float speed = 1.0f;
+    if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W)) {
+        m_Camera.Move(0.0f, speed);
+    }
+    if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::A)) {
+        m_Camera.Move(-speed, 0.0f);
+    }
+    if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::S)) {
+        m_Camera.Move(0.0f, -speed);
+    }
+    if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D)) {
+        m_Camera.Move(speed, 0.0f);
+    }
+
     Layer::Update(timestamp);
 }

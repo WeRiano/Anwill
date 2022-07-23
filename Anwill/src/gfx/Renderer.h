@@ -9,6 +9,7 @@
 #include "Camera.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Font.h"
 #include "math/Mat4f.h"
 #include "math/Vec3f.h"
 
@@ -28,16 +29,17 @@ namespace Anwill {
         static void ClearBuffers();
 
         static void BeginScene(const Camera& camera);
+
+        static void Submit(const std::shared_ptr<Shader>& shader, Font& font,
+                           const std::string& text, const Math::Mat4f& transform);
         static void Submit(const std::shared_ptr<Shader>& shader,
                            const std::shared_ptr<VertexArray>& vertexArray,
                            const std::shared_ptr<IndexBuffer>& indexBuffer,
                            const Math::Mat4f& transform);
-        static void Submit(const std::shared_ptr<Shader>& shader,
-                           const Mesh& mesh,
+        static void Submit(const std::shared_ptr<Shader>& shader, const Mesh& mesh,
                            const Math::Mat4f& transform,
                            const std::shared_ptr<Texture>& texture = nullptr);
-        static void Submit(const std::shared_ptr<Shader>& shader,
-                           const Mesh& mesh,
+        static void Submit(const std::shared_ptr<Shader>& shader, const Mesh& mesh,
                            const Math::Mat4f& transform,
                            const std::vector<std::shared_ptr<Texture>>& textures);
     private:

@@ -10,9 +10,6 @@
 
 namespace Anwill::Math {
 
-    // TODO: Implementation should probably differ based on Graphics::API?? Not sure how much so we wait with
-    //       that until we get there #DirectX
-
     // Column major (it do go down, like so:)
     // -------------
     // x.x x.y x.z transX
@@ -20,7 +17,8 @@ namespace Anwill::Math {
     // z.x z.y z.z transZ
     // p.x p.y p.z 1
     // -------------
-    // { x.x, y.x, z.x, p.x, x.y, y.y, z.y, p.y, x.z, y.z, z.z, p.z, transX, transY, transZ, 1 }
+    // { x.x, y.x, z.x, p.x, x.y, y.y, z.y, p.y, x.z, y.z, z.z, p.z,
+    //  transX, transY, transZ, 1 }
     // -------------
     class Mat4f
     {
@@ -29,9 +27,12 @@ namespace Anwill::Math {
 
     public:
         static Mat4f Identity();
-        static Mat4f Orthographic(float left, float right, float bottom, float top, float near, float far);
+        static Mat4f Orthographic(float left, float right, float bottom, float top,
+                                  float near, float far);
         static Mat4f Translate(const Mat4f& mat, const Vec3f& vec);
-        static Mat4f RotateZ(const Mat4f& mat, float deg); // TODO: RotateX and RotateY or make 1 rot func
+        // TODO: RotateX and RotateY or make 1 rot func
+        static Mat4f Scale(const Mat4f& mat, const Vec3f& scaleVec);
+        static Mat4f RotateZ(const Mat4f& mat, float deg);
 
         Mat4f();
 

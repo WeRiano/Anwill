@@ -26,9 +26,31 @@ namespace Anwill {
             return;
         }
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free(data);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    OpenGLTexture::OpenGLTexture(const unsigned char* bitmapBuffer,
+                                 unsigned int bitmapWidth, unsigned int bitmapHeight)
+    {
+        if(!bitmapBuffer) {
+            AW_INFO("The bitmap buffer is empty!");
+        }
+
+        glGenTextures(1, &m_ID);
+        glBindTexture(GL_TEXTURE_2D, m_ID);
+
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmapWidth, bitmapHeight, 0, GL_RED,
+                     GL_UNSIGNED_BYTE, bitmapBuffer);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glBindTexture(GL_TEXTURE_2D, 0);
     }

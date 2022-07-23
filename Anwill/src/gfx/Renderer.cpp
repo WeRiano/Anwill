@@ -1,5 +1,9 @@
 #include "GraphicsContext.h"
 #include "Renderer.h"
+#include "ShaderMacros.h"
+#include "utils/Utils.h"
+
+#include <iostream>
 
 namespace Anwill {
 
@@ -10,8 +14,6 @@ namespace Anwill {
     void Renderer::Init()
     {
         s_API = GraphicsAPI::Create(s_APIName);
-
-        // TODO: Setup global graphics API settings (glBlend and stuff ... global settings)
     }
 
     GraphicsAPI::API Renderer::GetAPI()
@@ -24,7 +26,8 @@ namespace Anwill {
         s_APIName = api;
     }
 
-    void Renderer::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height)
+    void Renderer::SetViewport(unsigned int x, unsigned int y,
+                               unsigned int width, unsigned int height)
     {
         s_API->SetViewport(x, y, width, height);
     }
@@ -43,6 +46,30 @@ namespace Anwill {
     {
         s_SceneData = SceneData();
         s_SceneData.ViewProjMat = camera.GetViewProj();
+    }
+
+    void Renderer::Submit(const std::shared_ptr<Shader>& shader, Font& font,
+                          const std::string& text, const Math::Mat4f& transform)
+    {
+        shader->Bind();
+        shader->SetUniformMat4f(transform, "u_Transform");
+        shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        int batchStartXPos = 0;
+
+        std::string remainingText = text; // Everything is remaining at the start
+        while (!remainingText.empty()) {
+            auto thisStr = Utils::UniqueCharsSubstr(remainingText,
+                        *ShaderMacros::GetMacro<unsigned int>("AW_MAX_TEXTURE_SLOTS"));
+            // Prepare and draw the text
+            batchStartXPos = font.Prepare(thisStr, shader, batchStartXPos);
+            s_API->Draw(font, text);
+            // Grab the next batch
+            remainingText = remainingText.substr(thisStr.size());
+        }
+
+        font.Done();
+        shader->Unbind();
     }
 
     void Renderer::Submit(const std::shared_ptr<Shader>& shader,
@@ -68,8 +95,8 @@ namespace Anwill {
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
         if(texture != nullptr) {
-            texture->Bind(0);
             shader->SetUniform1i(0, "u_TextureSampler");
+            texture->Bind();
         }
 
         s_API->Draw(mesh);

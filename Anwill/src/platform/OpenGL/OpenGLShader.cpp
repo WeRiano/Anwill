@@ -1,5 +1,6 @@
 #include <glad.h>
 
+#include "gfx/ShaderMacros.h"
 #include "platform/OpenGL/OpenGLShader.h"
 #include "utils/FileReader.h"
 #include "core/Assert.h"
@@ -10,14 +11,19 @@ namespace Anwill {
     OpenGLShader::OpenGLShader(const std::string& filepath)
     {
         auto shaderSrc = Anwill::FileIO::LoadFileToStrVec(filepath,
-                                                          {"#shadertype vertex", "#shadertype fragment"});
+                          {"#shadertype vertex", "#shadertype fragment"});
         if (shaderSrc.size() != 2)
         {
-            AW_ERROR("Failed to load vertex and fragment shader correctly for {0}.", filepath);
-            AW_ASSERT(false);
+            AW_ERROR("Failed to parse vertex and fragment shader correctly for {0}.",
+                     filepath);
+            return;
         }
         /* TODO: We assume vertex shader comes before fragment shader now. Fix? (Generalize?)
                   Probably not */
+
+        ShaderMacros::ReplaceAllIdentifiers(shaderSrc[0]);
+        ShaderMacros::ReplaceAllIdentifiers(shaderSrc[1]);
+
 
         m_ID = glCreateProgram();
         unsigned int vertID = CompileShader(GL_VERTEX_SHADER, shaderSrc[0]);

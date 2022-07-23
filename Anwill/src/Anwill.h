@@ -19,6 +19,7 @@
 #include "gfx/IndexBuffer.h"
 #include "gfx/Mesh.h"
 #include "gfx/Texture.h"
+#include "gfx/Font.h"
 
 // Math
 #include "math/Math.h"
@@ -31,4 +32,5 @@
 #include "physics/collision/Collision.h"
 
 // Utils
+#include "utils/Utils.h"
 #include "utils/Random.h"

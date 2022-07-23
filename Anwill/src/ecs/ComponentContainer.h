@@ -10,6 +10,8 @@ namespace Anwill {
     // This only exist so we don't have to define <C> when we define the outer map
     class IContainer {
     public:
+        // We need this virtual base function since we need a delete function that is not
+        // based on T type, which means that we can't grab the appropriate
         virtual void DeleteComponent(const EntityID& entityID) = 0;
     };
 
@@ -30,8 +32,9 @@ namespace Anwill {
             m_NrElements++;
         }
 
-        // This operation is currently the "expensive" one because we have to plug the hole.
-        // I feel like deleting should not be done too often though so this is probably the best solution.
+        // This operation is currently the "expensive" one because we have to plug the
+        // hole. I feel like deleting should not be done too often though so this is
+        // probably the best solution.
         void DeleteComponent(const EntityID& entityID) override
         {
             AW_ASSERT(m_EntityToIndex.contains(entityID),
@@ -59,7 +62,8 @@ namespace Anwill {
 
         C& GetComponent(const EntityID& entityID) {
             AW_ASSERT(m_EntityToIndex.contains(entityID),
-                      "Tried to get a component from an entity that doesn't have it.");
+                      "Tried to get a component owned by entity {0}, but that entity"
+                      "does not own a component of that type.");
             return m_Data[m_EntityToIndex[entityID]];
         }
 

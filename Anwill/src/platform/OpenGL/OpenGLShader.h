@@ -7,14 +7,11 @@
 
 namespace Anwill {
 
-    struct ShaderSrc
-    {
-        const std::string vs, fs;
-    };
-
     class OpenGLShader : public Shader
     {
     public:
+        static int s_MaxTextureSlots;
+
         OpenGLShader(const std::string& filepath);
         ~OpenGLShader();
 
@@ -37,6 +34,8 @@ namespace Anwill {
         unsigned int CompileShader(unsigned int glShaderType, const std::string& shaderSrc);
         void AttachLinkAndValidateShader(unsigned int vertexShaderID,
                                          unsigned int fragmentShaderID);
+        void SetShaderConstants(std::string& vertSource,
+                                std::string& fragSource);
         int GetUniformLocation(const std::string& name);
 
     };

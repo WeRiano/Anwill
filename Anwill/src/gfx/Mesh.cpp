@@ -110,7 +110,7 @@ namespace Anwill {
         std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices, verticesSizeBytes);
 
         m_VA = VertexArray::Create();
-        m_VA->AddBuffer(*vb.get(), bufferLayout);
+        m_VA->AddBuffer(*vb, bufferLayout);
         m_IB = IndexBuffer::Create(indices, indicesCount);
     }
 

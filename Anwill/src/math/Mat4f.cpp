@@ -32,6 +32,15 @@ namespace Anwill::Math {
         return translateMat * mat;
     }
 
+    Mat4f Mat4f::Scale(const Mat4f& mat, const Vec3f& scaleVec)
+    {
+        Mat4f result = mat;
+        result.m_Mat[0] *= scaleVec.GetX();
+        result.m_Mat[5] *= scaleVec.GetY();
+        result.m_Mat[10] *= scaleVec.GetZ();
+        return result;
+    }
+
     Mat4f Mat4f::RotateZ(const Mat4f& mat, const float deg)
     {
         float rad = DegToRad(deg);

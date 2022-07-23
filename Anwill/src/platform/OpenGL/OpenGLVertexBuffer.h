@@ -16,7 +16,7 @@ namespace Anwill {
         OpenGLVertexBuffer(unsigned int size);
         ~OpenGLVertexBuffer();
 
-        void DynamicUpdate(const float* data, unsigned int size) const;
+        void DynamicUpdate(const void* data, unsigned int size) const override;
         void Bind() const;
         void Unbind() const;
 

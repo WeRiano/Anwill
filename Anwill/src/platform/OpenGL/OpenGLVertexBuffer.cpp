@@ -2,6 +2,8 @@
 
 #include "platform/OpenGL/OpenGLVertexBuffer.h"
 
+#include <iostream> // TODO: Remove!
+
 namespace Anwill {
 
     OpenGLVertexBuffer::OpenGLVertexBuffer(const float* data, unsigned int size)
@@ -23,7 +25,7 @@ namespace Anwill {
         glDeleteBuffers(1, &m_ID);
     }
 
-    void OpenGLVertexBuffer::DynamicUpdate(const float* data, unsigned int size) const
+    void OpenGLVertexBuffer::DynamicUpdate(const void* data, unsigned int size) const
     {
         Bind();
         glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);

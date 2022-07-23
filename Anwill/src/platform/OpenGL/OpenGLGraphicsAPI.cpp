@@ -1,6 +1,7 @@
 #include <glad.h>
 
-#include "platform/OpenGL/OpenGLGraphicsAPI.h"
+#include "OpenGLGraphicsAPI.h"
+#include "gfx/ShaderMacros.h"
 #include "core/Assert.h"
 
 namespace Anwill {
@@ -38,13 +39,23 @@ namespace Anwill {
 
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // This is probably going to bite me in the ass some day
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        int maxTextureSlots;
+        glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureSlots);
+        AW_INFO("Maximum OpenGL texture slots: {0}", maxTextureSlots);
+        ShaderMacros::SetMacro("AW_MAX_TEXTURE_SLOTS", maxTextureSlots);
+
         // TODO: This stuff for 3D renderer.
         //glClearDepthf(0.0f);                                 // Depth Buffer Setup
         //glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
         //glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
     }
 
-    void OpenGLGraphicsAPI::SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const
+    void OpenGLGraphicsAPI::SetViewport(unsigned int x, unsigned int y, unsigned int width,
+                                        unsigned int height) const
     {
         glViewport(x, y, width, height);
     }
@@ -59,10 +70,17 @@ namespace Anwill {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
+    void OpenGLGraphicsAPI::Draw(Font& font, const std::string& text)
+    {
+        glDrawArrays(GL_TRIANGLES, 0, 6 * text.size());
+        font.Done();
+    }
+
     void OpenGLGraphicsAPI::Draw(const Mesh &mesh)
     {
         mesh.Bind();
-        glDrawElements(GL_TRIANGLES, mesh.GetIndexBufferCount(), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, mesh.GetIndexBufferCount(), GL_UNSIGNED_INT,
+                       nullptr);
         mesh.Unbind();
     }
 

@@ -2,6 +2,7 @@
 
 #include "Tests/Renderer/RendererHelloWorld"
 #include "Tests/Renderer/TextureHelloWorld.h"
+#include "Tests/Renderer/FontHelloWorld.h"
 #include "Tests/PhysicsTest/dynamics/DynamicsDelta.h"
 #include "Tests/PhysicsTest/dynamics/DynamicsExist.h"
 #include "Tests/PhysicsTest/collision/CollisionRender.h"
@@ -18,6 +19,7 @@ public:
     {
         //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
+        AddLayer<FontHelloWorld>(0, ws);
 
         //AddLayer<EcsTestLayer>(144);
 
@@ -27,8 +29,8 @@ public:
         //AddLayer<DynamicsExist>(10);
         //AddLayer<DynamicsDelta>(0, ws);
 
-        AddLayer<CollisionRender>(0, ws);
-        AddLayer<CollisionTest>(30, ws);
+        //AddLayer<CollisionRender>(0, ws);
+        //AddLayer<CollisionTest>(30, ws);
     }
 };
 

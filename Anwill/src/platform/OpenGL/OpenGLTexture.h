@@ -8,6 +8,8 @@ namespace Anwill {
     {
     public:
         OpenGLTexture(const std::string& filePath);
+        OpenGLTexture(const unsigned char* bitmapBuffer,
+                      unsigned int bitmapWidth, unsigned int bitmapHeight);
 
         void Bind(unsigned int slot) const override;
         void Unbind() const override;

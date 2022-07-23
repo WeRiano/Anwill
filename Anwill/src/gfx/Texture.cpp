@@ -16,4 +16,19 @@ namespace Anwill {
                 return nullptr;
         }
     }
+
+    std::shared_ptr<Texture> Texture::Create(const unsigned char* bitmapBuffer,
+                                             unsigned int bitmapWidth,
+                                             unsigned int bitmapHeight)
+    {
+        switch (Renderer::GetAPI())
+        {
+            case GraphicsAPI::API::OpenGL:
+                return std::make_shared<OpenGLTexture>(bitmapBuffer, bitmapWidth,
+                                                       bitmapHeight);
+            default:
+                AW_ASSERT(false, "Texture does not support the chosen gfx API.");
+                return nullptr;
+        }
+    }
 }

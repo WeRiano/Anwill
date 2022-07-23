@@ -45,7 +45,7 @@ namespace Anwill {
     class BufferLayout
     {
     public:
-        BufferLayout(std::vector<BufferElement>&& elements);
+        //BufferLayout(std::vector<BufferElement>&& elements);
         BufferLayout(std::vector<BufferElement> elements);
 
         const std::vector<BufferElement> GetElements() const;

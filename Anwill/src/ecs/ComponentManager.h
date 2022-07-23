@@ -34,13 +34,15 @@ namespace Anwill {
         {
             ComponentID id = GetTypeID<C>();
             if (m_Containers[id] == nullptr) {
-                AW_ERROR("Tried to add a {0} component to the ECS but such a component has not yet been registered.",
-                         typeid(C).name());
+                AW_ERROR("ECS: Tried to add a {0} component to the ECS but such "
+                         "a component has not been registered.", typeid(C).name());
             } else
             {
-                std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
+                std::shared_ptr<ComponentContainer<C>> container =
+                        GetComponentContainer<C>();
                 container->AddComponent(entityID, std::forward<Args>(args)...);
-                AW_INFO("ECS: {0} component added to entity {1}.", typeid(C).name(), entityID);
+                AW_INFO("ECS: {0} component added to entity {1}.",
+                        typeid(C).name(), entityID);
             }
         }
 
@@ -49,23 +51,27 @@ namespace Anwill {
         {
             ComponentID id = GetTypeID<C>();
             if (m_Containers[id] == nullptr) {
-                AW_ERROR("Tried to remove a {0} component from the ECS but such a component has not yet been registered.",
-                         typeid(C).name());
+                AW_ERROR("ECS: Tried to remove a {0} component from the ECS but such a "
+                         "component has not been registered.", typeid(C).name());
             } else {
-                std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
+                std::shared_ptr<ComponentContainer<C>> container =
+                        GetComponentContainer<C>();
                 container->DeleteComponent(entityID);
-                AW_INFO("ECS: {0} component removed from entity {1}.", typeid(C).name(), entityID);
+                AW_INFO("ECS: {0} component removed from entity {1}.", typeid(C).name(),
+                        entityID);
             }
         }
 
         inline void DeleteComponent(EntityID entityID, ComponentID componentID) {
             if (m_Containers[componentID] == nullptr) {
-                AW_ERROR("Tried to remove a component with id {0} from the ECS but such a component has not yet been registered.",
+                AW_ERROR("ECS: Tried to remove a component with id {0} from the ECS but "
+                         "such a component has not been registered.",
                          componentID);
             } else {
                 auto container = m_Containers[componentID];
                 container->DeleteComponent(entityID);
-                AW_INFO("ECS: A component with id {0} removed from entity {1}.", componentID, entityID);
+                AW_INFO("ECS: A component with id {0} removed from entity {1}.",
+                        componentID, entityID);
             }
         }
 
@@ -142,7 +148,8 @@ namespace Anwill {
         {
             m_IDCounter++;
             if(m_IDCounter > AW_MAX_TYPE_COMPONENTS) {
-                AW_FATAL("Cannot register another component. Maximum type amount of {0} reached.",
+                AW_FATAL("ECS: Maximum of {0} unique components has been registered. "
+                         "Cannot register another component.",
                          AW_MAX_TYPE_COMPONENTS);
             }
             return m_IDCounter;
@@ -153,8 +160,10 @@ namespace Anwill {
         {
             ComponentID& id = m_IDs[std::type_index(typeid(C))];
             AW_ASSERT(m_Containers[id] != nullptr,
-                      "Attempted to access a component container of a type that has not been registered.");
-            return std::static_pointer_cast<ComponentContainer<C>>(m_Containers[m_IDs[std::type_index(typeid(C))]]);
+                      "ECS: Attempted to access a component container of a type that has "
+                      "not been registered.");
+            return std::static_pointer_cast<ComponentContainer<C>>(
+                    m_Containers[m_IDs[std::type_index(typeid(C))]]);
         }
     };
 
