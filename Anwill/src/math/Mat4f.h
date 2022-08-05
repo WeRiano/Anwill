@@ -41,6 +41,8 @@ namespace Anwill::Math {
         Vec3f operator*(const Vec3f& vec) const;
 
         Vec3f GetTranslateVector() const;
+        Vec3f GetScale() const;
+        Vec3f GetRotation() const;
         std::array<Math::Vec2f, 2> Get2DBasisVectors() const;
         std::array<Math::Vec3f, 3> Get3DBasisVectors() const;
         const float* GetInternal() const;

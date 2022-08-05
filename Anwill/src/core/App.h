@@ -4,6 +4,7 @@
 
 #include "core/Window.h"
 #include "core/LayerStack.h"
+
 #include "events/SystemEvents.h"
 #include "events/WindowEvents.h"
 
@@ -34,13 +35,11 @@ namespace Anwill {
         std::unique_ptr<Window> m_Window;
         LayerStack m_LayerStack;
 
-        // Callbacks
-        void OnEvent(std::unique_ptr<Event>& e);
-        void OnWindowClose(const WindowCloseEvent& e);
-        void OnWindowResize(const WindowResizeEvent& e);
-        void OnWindowFocus(const WindowFocusEvent& e);
-        void OnWindowMove(const WindowMoveEvent& e);
-        // TODO: More callbacks
+        // Event callbacks
+        void OnWindowClose(std::unique_ptr<Event>& event);
+        void OnWindowResize(std::unique_ptr<Event>& event);
+        void OnWindowFocus(std::unique_ptr<Event>& event);
+        void OnWindowMove(std::unique_ptr<Event>& event);
         // TODO: App Update / Render events?
     };
 

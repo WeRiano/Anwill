@@ -3,6 +3,7 @@ add_executable(Sandbox Sandbox.cpp
         Tests/Renderer/RendererHelloWorld.cpp
         Tests/Renderer/TextureHelloWorld.cpp
         Tests/Renderer/FontHelloWorld.cpp
+        Tests/Renderer/BatchRendererHelloWorld.cpp
 
         Tests/EcsTest/EcsTestLayer.cpp
 

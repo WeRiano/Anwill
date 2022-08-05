@@ -14,8 +14,8 @@ namespace Anwill {
         static Mesh CreateTriangleMesh(float leftWidth, float rightWidth, float height);
 
         Mesh();
-        Mesh(float* vertices, unsigned int verticesSizeBytes, unsigned int* indices, unsigned int indicesCount,
-             const Anwill::BufferLayout& bufferLayout);
+        Mesh(float* vertices, unsigned int verticesSizeBytes, unsigned int* indices,
+             unsigned int indicesCount, const Anwill::BufferLayout& bufferLayout);
 
         std::vector<Math::Vec3f> GetVertices() const;
         const unsigned int GetIndexBufferCount() const;

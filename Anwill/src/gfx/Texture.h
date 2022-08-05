@@ -15,5 +15,10 @@ namespace Anwill {
 
         virtual void Bind(unsigned int slot = 0) const = 0;
         virtual void Unbind() const = 0;
+        unsigned int GetWidth() const;
+        unsigned int GetHeight() const;
+
+    protected:
+        int m_Width, m_Height;
     };
 }

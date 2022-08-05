@@ -6,8 +6,9 @@
 
 namespace Anwill {
 
-    void OpenGLMessageCallback(unsigned source, unsigned type, unsigned id, unsigned severity, int length,
-            const char* message, const void* userParam)
+    void OpenGLMessageCallback(unsigned source, unsigned type, unsigned id,
+                               unsigned severity, int length, const char* message,
+                               const void* userParam)
     {
         switch (severity)
         {
@@ -34,7 +35,8 @@ namespace Anwill {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
         glDebugMessageCallback(OpenGLMessageCallback, nullptr);
-        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION,
+                              0, NULL, GL_FALSE);
         AW_INFO("OpenGL debug output enabled!");
 
         glEnable(GL_BLEND);
@@ -49,13 +51,13 @@ namespace Anwill {
         ShaderMacros::SetMacro("AW_MAX_TEXTURE_SLOTS", maxTextureSlots);
 
         // TODO: This stuff for 3D renderer.
-        //glClearDepthf(0.0f);                                 // Depth Buffer Setup
-        //glEnable(GL_DEPTH_TEST);                            // Enables Depth Testing
-        //glDepthFunc(GL_LESS);                             // The Type Of Depth Testing To Do
+        //glClearDepthf(0.0f);          // Depth Buffer Setup
+        //glEnable(GL_DEPTH_TEST);      // Enables Depth Testing
+        //glDepthFunc(GL_LESS);         // The Type Of Depth Testing To Do
     }
 
-    void OpenGLGraphicsAPI::SetViewport(unsigned int x, unsigned int y, unsigned int width,
-                                        unsigned int height) const
+    void OpenGLGraphicsAPI::SetViewport(unsigned int x, unsigned int y,
+                                        unsigned int width, unsigned int height) const
     {
         glViewport(x, y, width, height);
     }

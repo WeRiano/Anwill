@@ -11,6 +11,7 @@
 namespace Anwill {
 
     /**
+     * OpenGL:
      * bool: conditional type, values may be either true or false.
      * int: a signed, two's complement, 32-bit integer.
      * uint: an unsigned 32-bit integer.

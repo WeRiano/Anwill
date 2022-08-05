@@ -99,15 +99,16 @@ namespace Anwill {
     Mesh::Mesh()
     {}
 
-    Mesh::Mesh(float* vertices, unsigned int verticesSizeBytes, unsigned int* indices, unsigned int indicesCount,
-               const Anwill::BufferLayout& bufferLayout)
+    Mesh::Mesh(float* vertices, unsigned int verticesSizeBytes, unsigned int* indices,
+               unsigned int indicesCount, const Anwill::BufferLayout& bufferLayout)
     {
         for(unsigned int i = 0; i < verticesSizeBytes / sizeof(float); i += 3)
         {
             m_Vertices.emplace_back(vertices[i], vertices[i+1], vertices[i+2]);
         }
 
-        std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices, verticesSizeBytes);
+        std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices,
+                                                                verticesSizeBytes);
 
         m_VA = VertexArray::Create();
         m_VA->AddBuffer(*vb, bufferLayout);

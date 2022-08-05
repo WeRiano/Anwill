@@ -4,14 +4,16 @@
 #include "core/Window.h"
 #include "core/Input.h"
 
+#include "ecs/Ecs.h"
+
+#include "events/MouseEvents.h"
+
 #include "gfx/Renderer.h"
 #include "gfx/GraphicsContext.h"
 #include "gfx/Shader.h"
 #include "gfx/VertexBuffer.h"
 #include "gfx/VertexArray.h"
 #include "gfx/IndexBuffer.h"
-
-#include "ecs/Ecs.h"
 
 #include "utils/Random.h"
 
@@ -27,12 +29,16 @@ namespace Anwill {
         Renderer::Init();
         Ecs::Init();
         Random::Init();
+        SystemEvents::Init();
 
-        SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowClose);
-        SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowResize);
-        SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowFocus);
-        SystemEvents::Subscribe(AW_BIND_EVENT_FN(App::OnEvent), EventType::WindowMove);
-
+        SystemEvents::Subscribe<WindowCloseEvent>(
+                AW_BIND_THIS_MEMBER_FUNC(App::OnWindowClose));
+        SystemEvents::Subscribe<WindowResizeEvent>(
+                AW_BIND_THIS_MEMBER_FUNC(App::OnWindowResize));
+        SystemEvents::Subscribe<WindowFocusEvent>(
+                AW_BIND_THIS_MEMBER_FUNC(App::OnWindowFocus));
+        SystemEvents::Subscribe<WindowMoveEvent>(
+                AW_BIND_THIS_MEMBER_FUNC(App::OnWindowMove));
     }
 
     void App::Run()
@@ -43,11 +49,7 @@ namespace Anwill {
 
             m_LayerStack.Update();
 
-            // TODO: Dynamic event popping depending on q size and/or growth/decay
-            for(unsigned int i = 0; i < 2; i++)
-            {
-                SystemEvents::Pop();
-            }
+            SystemEvents::Pop();
 
             m_Window->Update();
         }
@@ -59,35 +61,31 @@ namespace Anwill {
         return m_Minimized;
     }
 
-    void App::OnEvent(std::unique_ptr<Event>& e)
+    void App::OnWindowClose(std::unique_ptr<Event>& event)
     {
-        EventHandler handler(*e);
-        handler.Handle<WindowCloseEvent>(AW_BIND_EVENT_FN(OnWindowClose));
-        handler.Handle<WindowResizeEvent>(AW_BIND_EVENT_FN(OnWindowResize));
-        handler.Handle<WindowFocusEvent>(AW_BIND_EVENT_FN(OnWindowFocus));
-        handler.Handle<WindowMoveEvent>(AW_BIND_EVENT_FN(OnWindowMove));
-    }
-
-    void App::OnWindowClose(const WindowCloseEvent& e)
-    {
+        //auto e = static_cast<WindowCloseEvent&>(*event);
         m_Running = false;
     }
 
-    void App::OnWindowResize(const WindowResizeEvent& e)
+    void App::OnWindowResize(std::unique_ptr<Event>& event)
     {
-        AW_INFO("Resized Window to width {0} and height {1}.", e.GetNewWidth(), e.GetNewHeight());
+        auto e = static_cast<WindowResizeEvent&>(*event);
+        AW_INFO("Resized Window to width {0} and height {1}.",
+                e.GetNewWidth(), e.GetNewHeight());
         Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());
     }
 
-    void App::OnWindowFocus(const WindowFocusEvent& e)
+    void App::OnWindowFocus(std::unique_ptr<Event>& event)
     {
+        auto e = static_cast<WindowFocusEvent&>(*event);
         m_Minimized = !e.IsInFocus();
         if(m_Minimized) { AW_INFO("Application minimized."); }
         else { AW_INFO("Application in focus."); }
     }
 
-    void App::OnWindowMove(const WindowMoveEvent& e)
+    void App::OnWindowMove(std::unique_ptr<Event>& event)
     {
+        WindowMoveEvent e = static_cast<WindowMoveEvent&>(*event);
         AW_INFO("Window moved to coordinates {0}, {1}", e.GetNewXPos(), e.GetNewYPos());
     }
 }

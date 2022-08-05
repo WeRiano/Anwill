@@ -15,6 +15,5 @@ public:
     void Update(const Anwill::Timestamp &timestamp) override;
 
 private:
-    void OnEvent(std::unique_ptr<Anwill::Event>& e);
-    void ChangePlayerLookDir(Anwill::MouseMoveEvent& e);
+    void ChangePlayerLookDir(std::unique_ptr<Anwill::Event>& event);
 };

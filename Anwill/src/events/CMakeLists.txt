@@ -3,4 +3,6 @@ add_library(Events STATIC
         SystemEvents.cpp
         )
 
+target_link_libraries(Events PUBLIC Core)
+
 # TODO: Probably should use the logging system :D

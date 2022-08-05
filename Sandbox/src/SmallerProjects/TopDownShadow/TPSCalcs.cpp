@@ -4,10 +4,8 @@ TPSCalcs::TPSCalcs(const unsigned int ups)
     : Anwill::Layer(ups)
 {
     Anwill::Ecs::RegisterComponent<EntityComponent>();
-
-    //Anwill::SystemEvents::Subscribe(AW_BIND_EVENT_FN(OnEvent), Anwill::EventType::KeyPress);
-    //Anwill::SystemEvents::Subscribe(AW_BIND_EVENT_FN(OnEvent), Anwill::EventType::KeyRepeat);
-    Anwill::SystemEvents::Subscribe(AW_BIND_EVENT_FN(OnEvent), Anwill::EventType::MouseMove);
+    Anwill::SystemEvents::Subscribe<Anwill::MouseMoveEvent>(
+            AW_BIND_THIS_MEMBER_FUNC(ChangePlayerLookDir));
 }
 
 
@@ -34,17 +32,9 @@ void TPSCalcs::Update(const Anwill::Timestamp &timestamp)
     });
 }
 
-void TPSCalcs::OnEvent(std::unique_ptr<Anwill::Event> &e)
+void TPSCalcs::ChangePlayerLookDir(std::unique_ptr<Anwill::Event>& event)
 {
-    Anwill::EventHandler handler(*e);
-
-    //handler.Handle<Anwill::KeyPressEvent>(AW_BIND_EVENT_FN(MovePlayer));
-    //handler.Handle<Anwill::KeyRepeatEvent>(AW_BIND_EVENT_FN(MovePlayer));
-    handler.Handle<Anwill::MouseMoveEvent>(AW_BIND_EVENT_FN(ChangePlayerLookDir));
-}
-
-void TPSCalcs::ChangePlayerLookDir(Anwill::MouseMoveEvent& e)
-{
+    auto e = static_cast<Anwill::MouseMoveEvent&>(*event);
     Anwill::Ecs::ForEach<EntityComponent>([e](Anwill::EntityID id, EntityComponent& comp) {
         comp.dir = Anwill::Math::Vec2f(e.GetXPos() - (comp.playerPos.GetX() + comp.camPos.GetX()),
                                        e.GetYPos() - (comp.playerPos.GetY() + comp.camPos.GetY()));

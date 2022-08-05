@@ -31,4 +31,14 @@ namespace Anwill {
                 return nullptr;
         }
     }
+
+    unsigned int Texture::GetWidth() const
+    {
+        return m_Width;
+    }
+
+    unsigned int Texture::GetHeight() const
+    {
+        return m_Height;
+    }
 }

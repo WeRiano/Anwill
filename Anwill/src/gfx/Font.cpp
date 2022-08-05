@@ -68,6 +68,16 @@ namespace Anwill {
         }
         FT_Done_Face(ftFace);
         FT_Done_FreeType(ftLib);
+
+        m_VA = VertexArray::Create();
+        m_VB = VertexBuffer::Create(sizeof(float) * 20000); // TODO: Max text size
+        auto layout = BufferLayout({
+            BufferElement(ShaderDataType::Float2),
+            BufferElement(ShaderDataType::Float2),
+            BufferElement(ShaderDataType::Float)
+        });
+
+        m_VA->AddBuffer(*m_VB, layout);
     }
 
     int Font::Prepare(const std::string& text, const std::shared_ptr<Shader>& shader,
@@ -87,6 +97,7 @@ namespace Anwill {
         {
             unsigned char c = text[i];
             unsigned int thisIterationTextSlot;
+            shader->Bind();
             if (textureSlotMap.contains(c)) {
                 // This character has already been used, lets find out which texture
                 // slot it uses
@@ -97,7 +108,6 @@ namespace Anwill {
                 newTextSlotCount++;
 
                 m_Characters[c].texture->Bind(thisIterationTextSlot);
-                shader->Bind();
                 shader->SetUniform1i(thisIterationTextSlot, "u_TextBitmaps[" +
                                      std::to_string(thisIterationTextSlot) + "]");
             }
@@ -150,17 +160,8 @@ namespace Anwill {
             xAdvance += (g.advance >> 6);
         }
 
-        m_VA = VertexArray::Create();
-        m_VB = VertexBuffer::Create(vertices, sizeof(float) * text.size() * glyphSize);
-        auto layout = BufferLayout({
-            BufferElement(ShaderDataType::Float2),
-            BufferElement(ShaderDataType::Float2),
-            BufferElement(ShaderDataType::Float)
-        });
-
-        m_VA->AddBuffer(*m_VB, layout);
+        m_VB->DynamicUpdate(vertices, sizeof(float) * text.size() * glyphSize);
         m_VA->Bind();
-        m_VB->Bind();
 
         delete[] vertices;
         return xAdvance;
@@ -169,39 +170,5 @@ namespace Anwill {
     void Font::Done()
     {
         m_VA->Unbind();
-        m_VB->Unbind();
     }
-
-
-
-    /* DEPRECATED: See header.
-    void Font::Bind(const unsigned char c)
-    {
-        Glyph g = m_Characters[c];
-
-        // Bitmap starts top left, not bottom left.
-        float x0 = g.x0 + m_Stats.advanceX;
-        float x1 = g.x1 + m_Stats.advanceX;
-
-        float vertices[6][4] = {
-                {x0, g.y1, 0.0f, 0.0f },
-                {x0, g.y0, 0.0f, 1.0f },
-                {x1, g.y0, 1.0f, 1.0f },
-
-                {x0, g.y1, 0.0f, 0.0f },
-                {x1, g.y0, 1.0f, 1.0f },
-                {x1, g.y1, 1.0f, 0.0f }
-        };
-
-        m_Stats.advanceX += (g.advance >> 6);
-
-        m_Characters[c].texture->Bind();
-        m_VB->DynamicUpdate(vertices, sizeof(vertices));
-    }
-
-    void Font::Unbind(const unsigned char c)
-    {
-        m_Characters[c].texture->Unbind();
-    }
-     */
 }

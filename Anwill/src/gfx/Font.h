@@ -8,8 +8,6 @@
 #include "VertexArray.h"
 #include "Shader.h"
 
-#define AW_FONT_CHARACTERS 128
-
 namespace Anwill {
 
     struct Glyph {
@@ -34,11 +32,6 @@ namespace Anwill {
         int Prepare(const std::string& text, const std::shared_ptr<Shader>& shader,
                       int startXPos);
         void Done();
-
-        /// DEPRECATED: Batch rendering text now so no reason to bind singular glyphs
-        ///             Storing because maybe I need it later again for some reason
-        //void Bind(const unsigned char c);
-        //void Unbind(const unsigned char c);
 
     private:
         std::shared_ptr<VertexBuffer> m_VB;

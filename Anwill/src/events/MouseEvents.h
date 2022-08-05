@@ -7,9 +7,8 @@ namespace Anwill {
 
     class MouseMoveEvent : public Event {
     public:
-        MouseMoveEvent(float mouseXPos, float mouseYPos) : m_XPos(mouseXPos), m_YPos(mouseYPos) {}
-        inline static EventType GetEventTypeStatic() { return EventType::MouseMove; }
-        inline EventType GetEventType() const override { return EventType::MouseMove; }
+        MouseMoveEvent(float mouseXPos, float mouseYPos)
+        : m_XPos(mouseXPos), m_YPos(mouseYPos) {}
         inline const float GetXPos() const { return m_XPos; }
         inline const float GetYPos() const { return m_YPos; }
     private:
@@ -18,9 +17,8 @@ namespace Anwill {
 
     class MouseButtonPressEvent : public Event {
     public:
-        MouseButtonPressEvent(MouseButtonCode mouseButtonCode) : m_MouseButtonCode(mouseButtonCode) {}
-        inline static EventType GetEventTypeStatic() { return EventType::MouseButtonPress; }
-        inline EventType GetEventType() const override { return EventType::MouseButtonPress; }
+        MouseButtonPressEvent(MouseButtonCode mouseButtonCode)
+        : m_MouseButtonCode(mouseButtonCode) {}
         inline const MouseButtonCode GetKeyCode() const { return m_MouseButtonCode; }
     private:
         MouseButtonCode m_MouseButtonCode;
@@ -28,9 +26,8 @@ namespace Anwill {
 
     class MouseButtonReleaseEvent : public Event {
     public:
-        MouseButtonReleaseEvent(MouseButtonCode mouseButtonCode) : m_MouseButtonCode(mouseButtonCode) {}
-        inline static EventType GetEventTypeStatic() { return EventType::MouseButtonRelease; }
-        inline EventType GetEventType() const override { return EventType::MouseButtonRelease; }
+        MouseButtonReleaseEvent(MouseButtonCode mouseButtonCode)
+        : m_MouseButtonCode(mouseButtonCode) {}
         inline const MouseButtonCode GetKeyCode() const { return m_MouseButtonCode; }
     private:
         MouseButtonCode m_MouseButtonCode;

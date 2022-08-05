@@ -95,6 +95,29 @@ namespace Anwill::Math {
         return {m_Mat[12], m_Mat[13], m_Mat[14]};
     }
 
+    Vec3f Mat4f::GetScale() const
+    {
+        // https://math.stackexchange.com/questions/237369
+        float sX = Vec3f(m_Mat[0], m_Mat[1], m_Mat[2]).GetLength();
+        float sY = Vec3f(m_Mat[4], m_Mat[5], m_Mat[6]).GetLength();
+        float sZ = Vec3f(m_Mat[8], m_Mat[9], m_Mat[10]).GetLength();
+        return {sX, sY, sZ};
+    }
+
+    Vec3f Mat4f::GetRotation() const
+    {
+        Vec3f scale = GetScale();
+        float r11 = m_Mat[0] / scale.GetX();
+        float r21 = m_Mat[1] / scale.GetY();
+        float r31 = m_Mat[2] / scale.GetZ();
+        float r32 = m_Mat[6] / scale.GetZ();
+        float r33 = m_Mat[10] / scale.GetZ();
+        float thetaX = atan2f(r32, r33);
+        float thetaY = atan2f(-r31, sqrtf(r32*r32 + r33*r33));
+        float thetaZ = atan2f(r21, r11);
+        return {thetaX, thetaY, thetaZ};
+    }
+
     std::array<Math::Vec2f, 2> Mat4f::Get2DBasisVectors() const
     {
         return { Vec2f(m_Mat[0], m_Mat[1]), Vec2f(m_Mat[4], m_Mat[5])};

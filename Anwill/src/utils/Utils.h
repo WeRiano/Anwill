@@ -25,5 +25,18 @@ namespace Anwill {
          */
         static std::string UniqueCharsSubstr(const std::string& str,
                                               const unsigned int maxUniqueChars);
+
+        /**
+         * @brief inclusive ([0, 1])
+         * @tparam T
+         * @param value
+         * @param min
+         * @param max
+         * @return
+         */
+        template <typename T>
+        static T NormalizeBetween0And1(const T value, const T min, const T max) {
+            return (value - min) / (max - min);
+        }
     };
 }
