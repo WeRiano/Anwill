@@ -45,6 +45,8 @@ namespace Anwill {
         // This is probably going to bite me in the ass some day
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
+        // Texture slots is exclusive interval (we can go maximum 1 below when using
+        // glActiveTexture()
         int maxTextureSlots;
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureSlots);
         AW_INFO("Maximum OpenGL texture slots: {0}", maxTextureSlots);

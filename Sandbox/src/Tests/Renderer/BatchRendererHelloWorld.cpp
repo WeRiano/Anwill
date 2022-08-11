@@ -7,7 +7,9 @@ BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
     m_QuadShader = Anwill::Shader::Create("assets/shaders/QuadBatch.glsl");
     m_TestSpriteSheet = Anwill::SpriteSheet::Create(
             "assets/textures/test_sprite_sheet.png", 64, 48);
-    m_TestTexture = Anwill::Texture::Create("assets/textures/awesomeface.png");
+    m_TestTexture1 = Anwill::Texture::Create("assets/textures/awesomeface.png");
+    m_TestTexture2 = Anwill::Texture::Create("assets/textures/awesomeface.png");
+    m_TestTexture3 = Anwill::Texture::Create("assets/textures/awesomeface.png");
 }
 
 void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
@@ -26,21 +28,33 @@ void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
             if (i % rowSize == 0)
             {
                 transform = Anwill::Math::Mat4f::Translate(transform,
-                                                           {-40.0f * (rowSize - 1.0f),
+                                                           {-60.0f * (rowSize - 1.0f),
                                                             40.0f, 0.0f});
                 textureRow++;
                 textureCol = 1;
             } else
             {
                 transform = Anwill::Math::Mat4f::Translate(transform,
-                                                           {40.0f, 0.0f, 0.0f});
+                                                           {60.0f, 0.0f, 0.0f});
                 textureCol++;
             }
         }
         Anwill::Renderer::PushQuadToBatch(transform, m_TestSpriteSheet,
-                                          textureCol % 64, textureRow % 48);
+                                          textureCol + 10 % 64, textureRow + 10 % 48);
     }
-    //Anwill::Renderer::PushQuadToBatch(transform, m_TestTexture);
+
+    auto transform2 = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
+                                                {40.0f, 40.0, 0.0f});
+    transform2 = Anwill::Math::Mat4f::Translate(transform2,
+                                                {-200.0f, 0.0f, 0.0f});
+    Anwill::Renderer::PushQuadToBatch(transform2, m_TestTexture1);
+    transform2 = Anwill::Math::Mat4f::Translate(transform2,
+                                                {-200.0f, 0.0f, 0.0f});
+    Anwill::Renderer::PushQuadToBatch(transform2, m_TestTexture2);
+    transform2 = Anwill::Math::Mat4f::Translate(transform2,
+                                                {-200.0f, 0.0f, 0.0f});
+    Anwill::Renderer::PushQuadToBatch(transform2, m_TestTexture3);
+
     Anwill::Renderer::DrawBatch(m_QuadShader);
 
     MoveCamera();

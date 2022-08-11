@@ -3,7 +3,17 @@
 #include "ShaderMacros.h"
 #include "utils/Utils.h"
 
+#undef min
+
 namespace Anwill {
+
+    unsigned int BatchData2D::maxTextureSlots;
+    const std::array<Math::Vec2f, 4> BatchData2D::baselineQuadPositions = {
+            Math::Vec2f{-0.5f, -0.5f},
+            Math::Vec2f{-0.5f,  0.5f},
+            Math::Vec2f{ 0.5f,  0.5f},
+            Math::Vec2f{ 0.5f, -0.5f}
+    };
 
     GraphicsAPI::API Renderer::s_APIName;
     std::unique_ptr<GraphicsAPI> Renderer::s_API;
@@ -45,76 +55,108 @@ namespace Anwill {
 
     void Renderer::DrawBatch(const std::shared_ptr<Shader>& shader)
     {
-        s_B2Data.quadVB->DynamicUpdate(s_B2Data.quadVertices,
-                                       sizeof(float) * s_B2Data.quadVertexCount * 4 *
-                                       s_B2Data.quadsPushed);
-        s_B2Data.quadIB = IndexBuffer::Create(s_B2Data.quadIndices,
-                                              s_B2Data.quadsPushed * 6);
-
         shader->Bind();
-        //shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
-        for(auto i = s_B2Data.textureMap.begin(); i != s_B2Data.textureMap.end(); i++)
-        {
-            auto texture = i->first;
-            auto id = i->second;
-            texture->Bind(id);
-            //shader->SetUniform1i(id, "u_Textures[" + std::to_string(id) + "]");
-        }
-        s_API->Draw(s_B2Data.quadVA, s_B2Data.quadIB);
-        shader->Unbind();
 
+        // Just remove the first texture-less batch if it is empty
+        bool textLessBatch = !s_B2Data.quadsByTexture[0].empty();
+        if(!textLessBatch) {
+            s_B2Data.quadsByTexture.erase(s_B2Data.quadsByTexture.begin());
+        }
+        while(!s_B2Data.quadsByTexture.empty())
+        {
+            // We either go until empty or until we hit maximum nr of texture slots avail
+            // Each quad batch has the same texture (or is texture-less)
+            unsigned int quadBatchesToRender = std::min<unsigned int>(
+                    s_B2Data.quadsByTexture.size(),
+                    BatchData2D::maxTextureSlots + textLessBatch);
+
+            // Find out how many quads we draw this batch
+            unsigned int quadsToDraw = 0;
+            for(unsigned int i = 0; i < quadBatchesToRender; i++)
+            {
+                quadsToDraw += s_B2Data.quadsByTexture[i].size();
+            }
+
+            unsigned int arrOffset = 0;
+            // Form native array with all the vertices that we then feed to VB
+            for (unsigned int i = 0; i < quadBatchesToRender; i++)
+            {
+                // Again, all vertices in this batch have the same texture
+                auto quadBatch = s_B2Data.quadsByTexture[i];
+                for(const auto& quad : quadBatch)
+                {
+                    s_B2Data.QuadToArr(quad, i - textLessBatch, arrOffset);
+                    arrOffset += BatchData2D::quadElementCount;
+                }
+            }
+            s_B2Data.quadVB->DynamicUpdate(s_B2Data.quadVerticesArr,
+                                           sizeof(float) * quadsToDraw *
+                                           BatchData2D::quadElementCount);
+            s_B2Data.quadIB->DynamicUpdate(s_B2Data.quadIndices,
+                                           quadsToDraw * 6);
+
+            // Bind a texture of each quad batch that we are rendering
+            // Get quickly from FIFO queue which their id is implied
+            for (int textID = 0; textID < quadBatchesToRender - textLessBatch; textID++)
+            {
+                const auto& texture = s_B2Data.textureQ.front();
+                s_B2Data.textureQ.pop();
+                texture->Bind(textID);
+                shader->SetUniform1i(textID,
+                                     "u_Textures[" + std::to_string(textID) + "]");
+            }
+
+            s_API->Draw(s_B2Data.quadVA, s_B2Data.quadIB);
+
+            // Delete all the quads that we drew from dynamic storage
+            auto eraseEndIterVec = s_B2Data.quadsByTexture.begin();
+            std::advance(eraseEndIterVec, quadBatchesToRender);
+            s_B2Data.quadsByTexture.erase(s_B2Data.quadsByTexture.begin(),
+                                          eraseEndIterVec);
+            // After first draw call we are always done with the texture-less batch
+            textLessBatch = false;
+        }
         s_B2Data.quadsPushed = 0;
-        s_B2Data.quadVerticesIndex = 0;
+        s_B2Data.textureNewIDCount = BatchData2D::startTextureID;
         s_B2Data.textureMap.clear();
-        s_B2Data.textureNewIDCount = 0;
+        // Put back the index for texture-less quads
+        s_B2Data.quadsByTexture.emplace_back();
+        shader->Unbind();
+    }
+
+    void Renderer::PushQuadToBatch(const Math::Mat4f& transform, const Math::Vec3f& color)
+    {
+        s_B2Data.quadsByTexture[0].emplace_back(
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[0], {}, color),
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[1], {}, color),
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[2], {}, color),
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[3], {}, color));
+        s_B2Data.quadsPushed++;
     }
 
     void Renderer::PushQuadToBatch(const Math::Mat4f& transform,
                                    const std::shared_ptr<Texture>& texture,
                                    float texX0, float texY0, float texX1, float texY1)
     {
-        unsigned int offset = s_B2Data.quadVerticesIndex;
-        // Going clockwise
-        Math::Vec2f p0 = transform * Math::Vec2f{-0.5f, -0.5f};
-        Math::Vec2f p1 = transform * Math::Vec2f{-0.5f,  0.5f};
-        Math::Vec2f p2 = transform * Math::Vec2f{ 0.5f,  0.5f};
-        Math::Vec2f p3 = transform * Math::Vec2f{ 0.5f, -0.5f};
-
         unsigned int textureID = s_B2Data.GetOrGenerateID(texture);
-
-        s_B2Data.quadVertices[offset + 0] = p0.GetX();
-        s_B2Data.quadVertices[offset + 1] = p0.GetY();
-        s_B2Data.quadVertices[offset + 2] = texX0;
-        s_B2Data.quadVertices[offset + 3] = texY0;
-        s_B2Data.quadVertices[offset + 4] = static_cast<float>(textureID);
-
-        s_B2Data.quadVertices[offset + 5] = p1.GetX();
-        s_B2Data.quadVertices[offset + 6] = p1.GetY();
-        s_B2Data.quadVertices[offset + 7] = texX0;
-        s_B2Data.quadVertices[offset + 8] = texY1;
-        s_B2Data.quadVertices[offset + 9] = static_cast<float>(textureID);
-
-        s_B2Data.quadVertices[offset + 10] = p2.GetX();
-        s_B2Data.quadVertices[offset + 11] = p2.GetY();
-        s_B2Data.quadVertices[offset + 12] = texX1;
-        s_B2Data.quadVertices[offset + 13] = texY1;
-        s_B2Data.quadVertices[offset + 14] = static_cast<float>(textureID);
-
-        s_B2Data.quadVertices[offset + 15] = p3.GetX();
-        s_B2Data.quadVertices[offset + 16] = p3.GetY();
-        s_B2Data.quadVertices[offset + 17] = texX1;
-        s_B2Data.quadVertices[offset + 18] = texY0;
-        s_B2Data.quadVertices[offset + 19] = static_cast<float>(textureID);
-
+        s_B2Data.quadsByTexture[textureID].emplace_back(
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[0],
+                           Math::Vec2f(texX0, texY0), {1.0f, 1.0f, 1.0f}),
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[1],
+                           Math::Vec2f(texX0, texY1), {1.0f, 1.0f, 1.0f}),
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[2],
+                           Math::Vec2f(texX1, texY1), {1.0f, 1.0f, 1.0f}),
+                QuadVertex(transform * BatchData2D::baselineQuadPositions[3],
+                           Math::Vec2f(texX1, texY0), {1.0f, 1.0f, 1.0f}));
         s_B2Data.quadsPushed++;
-        s_B2Data.quadVerticesIndex += s_B2Data.quadVertexCount * 4;
     }
 
     void Renderer::PushQuadToBatch(const Math::Mat4f& transform,
                                    const std::shared_ptr<SpriteSheet>& spriteSheet,
                                    unsigned int spriteXPos, unsigned int spriteYPos)
     {
+        // Same as texture version (see function above) but we find specific tex coords
         float texX0, texY0, texX1, texY1;
         spriteSheet->GetEvenSpriteTexCoords(spriteXPos, spriteYPos, texX0, texY0,
                                             texX1, texY1);
@@ -212,27 +254,22 @@ namespace Anwill {
 
     void Renderer::BatchDataInit()
     {
-        // Runtime constants
-        s_B2Data.maxQuads = 20000;
-        s_B2Data.maxTextureSlots = *ShaderMacros::GetMacro<unsigned int>
+        // Runtime constant
+        BatchData2D::maxTextureSlots = *ShaderMacros::GetMacro<unsigned int>
                 ("AW_MAX_TEXTURE_SLOTS");
-        // 2 pos, 2 tex coord, 1 texture
-        s_B2Data.quadVertexCount = 5;
-        // 4 vertices per quad when we use an index buffer
-        s_B2Data.quadVerticesMaxSize = s_B2Data.quadVertexCount * 4 * s_B2Data.maxQuads;
+        // Texture-less quads have the first index reserved.
+        s_B2Data.quadsByTexture.emplace_back();
 
-        // Runtime objects / variables that will be altered
+        // Runtime objects / variables
             // Vertex buffer
         s_B2Data.quadVB = VertexBuffer::Create(sizeof(float) *
-                s_B2Data.quadVerticesMaxSize);
-        s_B2Data.quadVertices = new float[s_B2Data.quadVerticesMaxSize];
+                BatchData2D::quadVerticesArrMaxSize);
         s_B2Data.quadsPushed = 0;
-        s_B2Data.quadVerticesIndex = 0;
 
             // Index buffer
-        const unsigned int indicesMaxSize = s_B2Data.maxQuads * 6;
-        s_B2Data.quadIndices = new unsigned int[indicesMaxSize];
-        for(unsigned int i = 0; i < s_B2Data.maxQuads; i++)
+        s_B2Data.quadIB = IndexBuffer::Create(BatchData2D::quadIndicesMaxElementSize);
+        s_B2Data.quadIndices = new unsigned int[BatchData2D::quadIndicesMaxElementSize];
+        for(unsigned int i = 0; i < BatchData2D::maxQuads; i++)
         {
             s_B2Data.quadIndices[i * 6 + 0] = (i * 4) + 0;
             s_B2Data.quadIndices[i * 6 + 1] = (i * 4) + 1;
@@ -248,13 +285,11 @@ namespace Anwill {
         auto layout = BufferLayout({
             BufferElement(ShaderDataType::Float2),
             BufferElement(ShaderDataType::Float2),
+            BufferElement(ShaderDataType::Float3),
             BufferElement(ShaderDataType::Float)
         });
         s_B2Data.quadVA->AddBuffer(*s_B2Data.quadVB, layout);
 
-        // Shader
-        //s_B2Data.quadShader = Shader::Create(); // TODO:
-
-        s_B2Data.textureNewIDCount = 0;
+        s_B2Data.textureNewIDCount = BatchData2D::startTextureID;
     }
 }

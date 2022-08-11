@@ -10,8 +10,10 @@ namespace Anwill {
     {
     public:
         OpenGLIndexBuffer(const unsigned int* indices, unsigned int count);
+        OpenGLIndexBuffer(unsigned int count);
         ~OpenGLIndexBuffer();
 
+        void DynamicUpdate(const void* data, unsigned int size) override;
         void Bind() const;
         void Unbind() const;
         unsigned int GetCount() const;

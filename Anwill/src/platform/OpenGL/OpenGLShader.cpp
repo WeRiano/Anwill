@@ -149,7 +149,8 @@ namespace Anwill {
             location = glGetUniformLocation(m_ID, name.c_str());
             if (location == -1)
             {
-                AW_ERROR("OpenGL failed to retrieve the location of the following uniform: {0}", name);
+                AW_ERROR("OpenGL failed to retrieve the location of the following "
+                         "uniform: {0}", name);
             } else
             {
                 m_LocationCache[name] = location;

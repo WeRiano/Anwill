@@ -14,7 +14,9 @@ private:
 
     std::shared_ptr<Anwill::Shader> m_QuadShader;
     std::shared_ptr<Anwill::SpriteSheet> m_TestSpriteSheet;
-    std::shared_ptr<Anwill::Texture> m_TestTexture;
+    std::shared_ptr<Anwill::Texture> m_TestTexture1;
+    std::shared_ptr<Anwill::Texture> m_TestTexture2;
+    std::shared_ptr<Anwill::Texture> m_TestTexture3;
 
     void MoveCamera();
 };
