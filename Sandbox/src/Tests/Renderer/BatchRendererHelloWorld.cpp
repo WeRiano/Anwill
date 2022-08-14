@@ -1,4 +1,5 @@
 #include "BatchRendererHelloWorld.h"
+#include "utils/FileIO.h"
 
 BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
                                                  const Anwill::WindowSettings& ws)
@@ -10,6 +11,8 @@ BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
     m_TestTexture1 = Anwill::Texture::Create("assets/textures/awesomeface.png");
     m_TestTexture2 = Anwill::Texture::Create("assets/textures/awesomeface.png");
     m_TestTexture3 = Anwill::Texture::Create("assets/textures/awesomeface.png");
+
+    //Anwill::FileIO::StrToFile();
 }
 
 void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)

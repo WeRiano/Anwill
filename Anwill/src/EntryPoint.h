@@ -11,6 +11,5 @@ int main()
 
     Anwill::App* app = Anwill::CreateApp();
     app->Run();
-    // TODO: app->Terminate(); ?
     delete app;
 }

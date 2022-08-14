@@ -35,8 +35,8 @@ namespace Anwill {
          * @return
          */
         template <typename T>
-        static T NormalizeBetween0And1(const T value, const T min, const T max) {
-            return (value - min) / (max - min);
+        static float NormalizeBetween0And1(T value, T min, T max) {
+            return static_cast<float>(value - min) / static_cast<float>(max - min);
         }
     };
 }

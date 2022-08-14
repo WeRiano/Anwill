@@ -1,7 +1,8 @@
 add_library(Utils STATIC
-        FileReader.cpp
+        FileIO.cpp
         Random.cpp
         Utils.cpp
+        Profiler.cpp
         )
 
 target_link_libraries(Utils PUBLIC Core)

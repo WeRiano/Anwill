@@ -2,6 +2,7 @@
 #include "Renderer.h"
 #include "ShaderMacros.h"
 #include "utils/Utils.h"
+#include "utils/Profiler.h"
 
 #undef min
 
@@ -55,6 +56,8 @@ namespace Anwill {
 
     void Renderer::DrawBatch(const std::shared_ptr<Shader>& shader)
     {
+        Profiler p = AW_PROFILE_FUNC();
+
         shader->Bind();
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
 

@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
 
-#include "FileReader.h"
+#include "FileIO.h"
 #include "core/Assert.h"
 
 namespace Anwill {
@@ -70,4 +70,10 @@ namespace Anwill {
         return result;
     }
 
+    void FileIO::StrToFile(const std::string& filePathAndName, const std::string& str)
+    {
+        std::ofstream file = std::ofstream(filePathAndName);
+        file << str;
+        file.close();
+    }
 }

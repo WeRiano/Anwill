@@ -12,104 +12,103 @@ namespace Anwill {
     {
     public:
         Timestamp()
-                : m_time(GetTime()) {}
+                : m_Time(GetTime()) {}
 
         Timestamp(long long time)
-                : m_time(time) {}
-
-        Timestamp& operator=(long long time)
-        {
-            this->m_time = time;
-            return *this;
-        }
+                : m_Time(time) {}
 
         /**
          * Fetch absolute delta in microseconds between two timestamps.
          * @param other
          * @return abs value of this - other.
          */
-        long long DeltaAbs(const Timestamp& other) const
+        Timestamp DeltaAbs(const Timestamp& other) const
         {
-            return llabs(this->m_time - other.m_time);
+            return m_Time >= other.m_Time ? m_Time - other.m_Time : other.m_Time - m_Time;
         }
 
-        /**
-         * Fetch the delta in microseconds between two timestamps.
-         * @param other
-         * @return this time - the other time.
-         */
-        long long Delta(const Timestamp& other) const
+        Timestamp operator+(const Timestamp& other) const
         {
-            return this->m_time - other.m_time;
+            return {m_Time + other.m_Time};
         }
 
-        long long operator+(long long delta) const
+        void operator+=(const Timestamp& other)
         {
-            return this->m_time + delta;
+            m_Time += other.m_Time;
         }
 
-        void operator+=(long long delta)
+        Timestamp operator-(const Timestamp& other) const
         {
-            this->m_time += delta;
+            return {m_Time - other.m_Time};
         }
 
-        long long operator-(long long delta) const
+        void operator-=(const Timestamp& other)
         {
-            return this->m_time - delta;
+            m_Time -= other.m_Time;
         }
 
-        long long operator-(const Timestamp& other) const
+        Timestamp operator*(const long long s) const
         {
-            return this->m_time - other.m_time;
+            return {m_Time * s};
+        }
+
+        void operator*=(const long long s)
+        {
+            m_Time *= s;
+        }
+
+        Timestamp operator/(const long long d) const
+        {
+            return {m_Time / d};
+        }
+
+        void operator/=(const long long d)
+        {
+            m_Time /= d;
         }
 
         bool operator>(const Timestamp& other) const
         {
-            return this->m_time > other.m_time;
+            return m_Time > other.m_Time;
         }
 
-        bool operator>(const long long& other) const
+        bool operator<(const Timestamp& other) const
         {
-            return this->m_time > other;
+            return m_Time < other.m_Time;
         }
 
         bool operator>=(const Timestamp& other) const
         {
-            return this->m_time >= other.m_time;
-        }
-
-        bool operator>=(const long long& other) const
-        {
-            return this->m_time >= other;
+            return m_Time >= other.m_Time;
         }
 
         bool operator<=(const Timestamp& other) const
         {
-            return this->m_time <= other.m_time;
+            return m_Time <= other.m_Time;
         }
 
-        bool operator<=(const long long& other) const
+        bool IsZero() const
         {
-            return this->m_time < other;
+            return m_Time == 0;
         }
 
         long double GetSeconds() const
         {
-            return m_time / 1000000.;
+            return m_Time / 1000000.;
         }
 
-        long long GetMilliseconds() const
+        long double GetMilliseconds() const
         {
-            return m_time * 1000;
+            return m_Time / 1000.;
         }
 
         long long GetMicroseconds() const
         {
-            return m_time;
+            return m_Time;
         }
 
     private:
-        long long m_time; /// Microseconds
+        long long m_Time; /// Microseconds
 
         static long long GetTime()
         {

@@ -14,6 +14,7 @@ namespace Anwill {
     {
     public:
         App(const WindowSettings& ws);
+        ~App();
 
         void Run();
 
@@ -29,7 +30,6 @@ namespace Anwill {
             m_LayerStack.Add<C>(ups, std::forward<Args>(args)...);
         }
 
-        bool IsMinimized() const;
     private:
         bool m_Running, m_Minimized;
         std::unique_ptr<Window> m_Window;

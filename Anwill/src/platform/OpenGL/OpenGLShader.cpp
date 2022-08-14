@@ -2,7 +2,7 @@
 
 #include "gfx/ShaderMacros.h"
 #include "platform/OpenGL/OpenGLShader.h"
-#include "utils/FileReader.h"
+#include "utils/FileIO.h"
 #include "core/Assert.h"
 #include "core/Log.h"
 

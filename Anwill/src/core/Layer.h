@@ -15,7 +15,7 @@ namespace Anwill {
             m_LastUpdate = timestamp;
         }
 
-        long long GetUpdateDelta() {
+        const Timestamp GetUpdateDelta() {
             return m_UpdateDelta;
         }
 
@@ -24,7 +24,6 @@ namespace Anwill {
         }
 
     protected:
-        long long m_UpdateDelta;
-        Timestamp m_LastUpdate;
+        Timestamp m_UpdateDelta, m_LastUpdate;
     };
 }

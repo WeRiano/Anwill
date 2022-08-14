@@ -9,13 +9,10 @@
 #include "events/MouseEvents.h"
 
 #include "gfx/Renderer.h"
-#include "gfx/GraphicsContext.h"
-#include "gfx/Shader.h"
 #include "gfx/VertexBuffer.h"
-#include "gfx/VertexArray.h"
-#include "gfx/IndexBuffer.h"
 
 #include "utils/Random.h"
+#include "utils/Profiler.h"
 
 
 namespace Anwill {
@@ -39,10 +36,22 @@ namespace Anwill {
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowFocus));
         SystemEvents::Subscribe<WindowMoveEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowMove));
+
+        Profiler::StartAppProfiling();
+    }
+
+    App::~App()
+    {
+        m_Window->Terminate();
+        Profiler::StopAppProfiling();
+        Profiler::SaveDataToDisk();
+        //Profiler::PrintDataToConsole();
     }
 
     void App::Run()
     {
+        Profiler p = AW_PROFILE_FUNC();
+
         while(m_Running)
         {
             Renderer::ClearBuffers();
@@ -53,17 +62,10 @@ namespace Anwill {
 
             m_Window->Update();
         }
-        m_Window->Terminate();
-    }
-
-    bool App::IsMinimized() const
-    {
-        return m_Minimized;
     }
 
     void App::OnWindowClose(std::unique_ptr<Event>& event)
     {
-        //auto e = static_cast<WindowCloseEvent&>(*event);
         m_Running = false;
     }
 

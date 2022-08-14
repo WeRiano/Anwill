@@ -12,4 +12,13 @@
     #else
         #error "Win32 not supported."
     #endif
+#else
+    #error "Anwill does not currently support this platform.
+#endif
+
+#if defined(__FUNCSIG__) || (_MSC_VER)
+    #define AW_GET_FUNC_NAME __FUNCTION__
+    #define AW_GET_FUNC_SIG __FUNCSIG__
+#else
+    #error "Anwill does not currently support this compiler.
 #endif
