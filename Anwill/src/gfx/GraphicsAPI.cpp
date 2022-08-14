@@ -4,17 +4,16 @@
 
 namespace Anwill {
 
-    std::unique_ptr<GraphicsAPI> GraphicsAPI::Create(API api)
+    std::shared_ptr<GraphicsAPI> GraphicsAPI::Create(API api)
     {
         switch(api)
         {
             case API::OpenGL:
-                return std::make_unique<OpenGLGraphicsAPI>();
+                return std::make_shared<OpenGLGraphicsAPI>();
             default:
                 AW_ASSERT(false, "No graphics API not supported");
                 return nullptr;
         }
     }
-
 
 }

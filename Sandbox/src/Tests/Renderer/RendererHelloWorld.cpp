@@ -33,9 +33,9 @@ RendererHelloWorld::RendererHelloWorld(const unsigned int ups)
 
 void RendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
-    Anwill::Renderer::BeginScene(m_Camera);
+    Anwill::Renderer2D::BeginScene(m_Camera);
 
-    Anwill::Renderer::Submit(m_Shader, m_VA, m_IB, Anwill::Math::Mat4f::Identity());
+    Anwill::Renderer2D::Submit(m_Shader, m_VA, m_IB, Anwill::Math::Mat4f::Identity());
 
     Layer::Update(timestamp);
 }

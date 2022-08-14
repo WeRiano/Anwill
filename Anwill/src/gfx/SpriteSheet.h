@@ -24,6 +24,8 @@ namespace Anwill {
          * @param texY1 Resulting tex coordinate Y1 position
          */
         void GetEvenSpriteTexCoords(unsigned int spriteXPos, unsigned int spriteYPos,
+                                    int pixelLeftPad, int pixelRightPad,
+                                    int pixelBottomPad, int pixelTopPad,
                                     float& texX0, float& texY0,
                                     float& texX1, float& texY1);
 

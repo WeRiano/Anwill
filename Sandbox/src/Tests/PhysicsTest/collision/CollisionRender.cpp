@@ -68,7 +68,7 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
 {
     float delta = timestamp.GetSeconds() - m_LastUpdate.GetSeconds();
 
-    Anwill::Renderer::BeginScene(m_Camera);
+    Anwill::Renderer2D::BeginScene(m_Camera);
 
     Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([this, delta](Anwill::EntityID id,
                                                                        Anwill::Math::Mat4f& transform,
@@ -86,16 +86,16 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
         if(id == s_Player)
         {
             if(s_PlayerIsRound) {
-                Anwill::Renderer::Submit(m_CircleShader, s_Mesh, transform);
+                Anwill::Renderer2D::Submit(m_CircleShader, s_Mesh, transform);
             } else {
-                Anwill::Renderer::Submit(m_RectShader, s_Mesh, transform);
+                Anwill::Renderer2D::Submit(m_RectShader, s_Mesh, transform);
             }
         } else {
             if(id % 2 == 0)
             {
-                Anwill::Renderer::Submit(m_CircleShader, s_Mesh, transform);
+                Anwill::Renderer2D::Submit(m_CircleShader, s_Mesh, transform);
             } else {
-                Anwill::Renderer::Submit(m_RectShader, s_Mesh, transform);
+                Anwill::Renderer2D::Submit(m_RectShader, s_Mesh, transform);
             }
         }
 

@@ -1,11 +1,11 @@
 #include "TPS.h"
 #include "TPSCalcs.h"
 
-#define TPS_MAX_WALL_SEGMENTS 100
-
-TPS::TPS(const unsigned int ups, float chunkWidth, float chunkHeight, unsigned int worldWidth, unsigned int worldHeight,
+TPS::TPS(const unsigned int ups, float chunkWidth, float chunkHeight,
+         unsigned int worldWidth, unsigned int worldHeight,
          const Anwill::WindowSettings& ws)
-    : Anwill::Layer(ups), m_Camera(ws.width, ws.height), m_PlayerTransform(Anwill::Math::Mat4f::Identity())
+    : Anwill::Layer(ups), m_Camera(ws.width, ws.height),
+    m_PlayerTransform(Anwill::Math::Mat4f::Identity())
 {
     AW_INFO("TPS Window Size: {0}, {1}", ws.width, ws.height);
 
@@ -38,7 +38,8 @@ TPS::TPS(const unsigned int ups, float chunkWidth, float chunkHeight, unsigned i
 
     unsigned int eID = Anwill::Ecs::CreateEntity();
     Anwill::Ecs::AddComponent<EntityComponent>(eID);
-    Anwill::Ecs::ForEach<EntityComponent>([this](Anwill::EntityID id, EntityComponent& comp) {
+    Anwill::Ecs::ForEach<EntityComponent>([this](Anwill::EntityID id,
+            EntityComponent& comp) {
         comp.camPos = m_Camera.GetPos();
     });
 
@@ -49,9 +50,10 @@ void TPS::Update(const Anwill::Timestamp& timestamp)
 {
     Layer::Update(timestamp);
 
-    Anwill::Renderer::BeginScene(m_Camera);
+    Anwill::Renderer2D::BeginScene(m_Camera);
 
-    Anwill::Ecs::ForEach<EntityComponent>([this](Anwill::EntityID id, EntityComponent& comp) {
+    Anwill::Ecs::ForEach<EntityComponent>([this](Anwill::EntityID id,
+            EntityComponent& comp) {
         m_PlayerTransform.SetTranslateCol(comp.playerPos);
 
         m_ShadowShader->Bind();
@@ -60,8 +62,9 @@ void TPS::Update(const Anwill::Timestamp& timestamp)
         m_ShadowShader->Unbind();
     });
 
-    Anwill::Renderer::Submit(m_ShadowShader, m_WorldMesh, Anwill::Math::Mat4f::Identity());
-    Anwill::Renderer::Submit(m_PlayerShader, m_PlayerMesh, m_PlayerTransform);
+    Anwill::Renderer2D::Submit(m_ShadowShader, m_WorldMesh,
+                               Anwill::Math::Mat4f::Identity());
+    Anwill::Renderer2D::Submit(m_PlayerShader, m_PlayerMesh, m_PlayerTransform);
 }
 
 void TPS::CreateWallSegments()

@@ -11,7 +11,6 @@ out vec3 v_Color;
 flat out int f_TextureIndex;
 
 uniform mat4 u_ViewProjMat;
-//uniform mat4 u_Transform;
 
 void main()
 {

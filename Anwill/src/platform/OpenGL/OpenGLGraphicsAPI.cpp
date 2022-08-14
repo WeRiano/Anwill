@@ -1,6 +1,6 @@
 #include <glad.h>
 
-#include "OpenGLGraphicsAPI.h"
+#include "platform/OpenGL/OpenGLGraphicsAPI.h"
 #include "gfx/ShaderMacros.h"
 #include "core/Assert.h"
 

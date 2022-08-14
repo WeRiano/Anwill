@@ -38,5 +38,10 @@ namespace Anwill {
         static float NormalizeBetween0And1(T value, T min, T max) {
             return static_cast<float>(value - min) / static_cast<float>(max - min);
         }
+
+        template <typename T>
+        static double NormalizeBetween0And1d(T value, T min, T max) {
+            return static_cast<double>(value - min) / static_cast<double>(max - min);
+        }
     };
 }

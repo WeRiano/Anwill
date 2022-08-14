@@ -12,11 +12,17 @@ public:
 private:
     Anwill::OrthographicCamera m_Camera;
 
-    std::shared_ptr<Anwill::Shader> m_QuadShader;
-    std::shared_ptr<Anwill::SpriteSheet> m_TestSpriteSheet;
-    std::shared_ptr<Anwill::Texture> m_TestTexture1;
-    std::shared_ptr<Anwill::Texture> m_TestTexture2;
-    std::shared_ptr<Anwill::Texture> m_TestTexture3;
+    bool m_IsBatchRendering;
+    unsigned int m_CanvasWidth, m_CanvasHeight;
+    float m_QuadWidth, m_QuadHeight;
+    unsigned int m_NrQuadsX, m_NrQuadsY;
 
+    std::shared_ptr<Anwill::Shader> m_QuadShader, m_SlowTextShader, m_SlowColorShader;
+    std::shared_ptr<Anwill::SpriteSheet> m_TestSpriteSheet;
+    std::shared_ptr<Anwill::Texture> m_TestTexture;
+    Anwill::Mesh m_QuadTextMesh, m_QuadColorMesh;
+
+    void BatchRendering();
+    void SlowRendering();
     void MoveCamera();
 };

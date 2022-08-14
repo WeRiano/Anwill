@@ -15,6 +15,7 @@
 
 // Graphics
 #include "gfx/Renderer.h"
+#include "gfx/Renderer2D.h"
 #include "gfx/VertexBuffer.h"
 #include "gfx/IndexBuffer.h"
 #include "gfx/Mesh.h"
@@ -34,3 +35,4 @@
 // Utils
 #include "utils/Utils.h"
 #include "utils/Random.h"
+#include "utils/Profiler.h"

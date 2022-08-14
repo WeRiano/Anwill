@@ -24,7 +24,6 @@ namespace Anwill {
         ShaderMacros::ReplaceAllIdentifiers(shaderSrc[0]);
         ShaderMacros::ReplaceAllIdentifiers(shaderSrc[1]);
 
-
         m_ID = glCreateProgram();
         unsigned int vertID = CompileShader(GL_VERTEX_SHADER, shaderSrc[0]);
         unsigned int fragID = CompileShader(GL_FRAGMENT_SHADER, shaderSrc[1]);

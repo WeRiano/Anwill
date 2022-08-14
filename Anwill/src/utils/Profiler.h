@@ -50,7 +50,7 @@ namespace Anwill {
 }
 
 #ifdef AW_BUILD_DEBUG
-#define AW_PROFILE_FUNC() Profiler(AW_GET_FUNC_NAME);
+#define AW_PROFILE_FUNC() Anwill::Profiler(AW_GET_FUNC_NAME);
 #else
 #define AW_PROFILE_FUNC()
 #endif

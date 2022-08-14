@@ -21,6 +21,8 @@ namespace Anwill {
 
     void
     SpriteSheet::GetEvenSpriteTexCoords(unsigned int spriteXPos, unsigned int spriteYPos,
+                                        int pixelLeftPad, int pixelRightPad,
+                                        int pixelBottomPad, int pixelTopPad,
                                         float& texX0, float& texY0,
                                         float& texX1, float& texY1)
     {
@@ -28,22 +30,22 @@ namespace Anwill {
             AW_ERROR("Incorrect sprite coordinates.");
             return;
         }
-        texX0 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(m_SpriteWidth * (spriteXPos - 1)),
-                0.0f,
-                static_cast<float>(m_Texture->GetWidth()));
-        texY0 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(m_SpriteHeight * (spriteYPos - 1)),
-                0.0f,
-                static_cast<float>(m_Texture->GetHeight()));
-        texX1 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(m_SpriteWidth * spriteXPos),
-                0.0f,
-                static_cast<float>(m_Texture->GetWidth()));
-        texY1 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(m_SpriteHeight * spriteYPos),
-                0.0f,
-                static_cast<float>(m_Texture->GetHeight()));
+        texX0 = Utils::NormalizeBetween0And1<int>(
+                m_SpriteWidth * (spriteXPos - 1) - pixelLeftPad,
+                0,
+                m_Texture->GetWidth());
+        texY0 = Utils::NormalizeBetween0And1<int>(
+                m_SpriteHeight * (spriteYPos - 1) - pixelBottomPad,
+                0,
+                m_Texture->GetHeight());
+        texX1 = Utils::NormalizeBetween0And1<int>(
+                m_SpriteWidth * spriteXPos + pixelRightPad,
+                0,
+                m_Texture->GetWidth());
+        texY1 = Utils::NormalizeBetween0And1<int>(
+                m_SpriteHeight * spriteYPos + pixelTopPad,
+                0,
+                m_Texture->GetHeight());
     }
 
     void SpriteSheet::GetUnevenSpriteTexCoords(unsigned int x, unsigned int y,
@@ -55,22 +57,22 @@ namespace Anwill {
             AW_ERROR("Incorrect sprite coordinates.");
             return;
         }
-        texX0 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(x),
-                0.0f,
-                static_cast<float>(m_Texture->GetWidth()));
-        texY0 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(y),
-                0.0f,
-                static_cast<float>(m_Texture->GetHeight()));
-        texX1 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(x + width),
-                0.0f,
-                static_cast<float>(m_Texture->GetWidth()));
-        texY1 = Utils::NormalizeBetween0And1<float>(
-                static_cast<float>(y + height),
-                0.0f,
-                static_cast<float>(m_Texture->GetHeight()));
+        texX0 = Utils::NormalizeBetween0And1(
+                x,
+                0u,
+                m_Texture->GetWidth());
+        texY0 = Utils::NormalizeBetween0And1(
+                y,
+                0u,
+                m_Texture->GetHeight());
+        texX1 = Utils::NormalizeBetween0And1(
+                x + width,
+                0u,
+                m_Texture->GetWidth());
+        texY1 = Utils::NormalizeBetween0And1(
+                y + height,
+                0u,
+                m_Texture->GetHeight());
     }
 
     std::shared_ptr<Texture> SpriteSheet::GetTexture() const

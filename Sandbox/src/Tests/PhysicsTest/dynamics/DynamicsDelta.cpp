@@ -11,7 +11,7 @@ void DynamicsDelta::Update(const Anwill::Timestamp& timestamp)
 {
     float delta = timestamp.GetSeconds() - m_LastUpdate.GetSeconds();
 
-    Anwill::Renderer::BeginScene(m_Camera);
+    Anwill::Renderer2D::BeginScene(m_Camera);
 
     Anwill::Ecs::ForEach<Anwill::RBody, Anwill::TransformComponent, Anwill::MeshComponent>([delta, this](Anwill::EntityID id,
             Anwill::RBody& rBody,
@@ -19,7 +19,7 @@ void DynamicsDelta::Update(const Anwill::Timestamp& timestamp)
             Anwill::MeshComponent& meshComponent) {
 
         transformComponent.transform = Anwill::Math::Mat4f::Translate(Anwill::Math::Mat4f::Identity(), rBody.GetPosition());
-        Anwill::Renderer::Submit(m_ObjShader, meshComponent.mesh, transformComponent.transform);
+        Anwill::Renderer2D::Submit(m_ObjShader, meshComponent.mesh, transformComponent.transform);
 
         rBody.Tick(2 * delta);
     });
