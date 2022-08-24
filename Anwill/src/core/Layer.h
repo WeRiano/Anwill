@@ -15,12 +15,16 @@ namespace Anwill {
             m_LastUpdate = timestamp;
         }
 
-        const Timestamp GetUpdateDelta() {
+        const Timestamp GetUpdateSpeed() {
             return m_UpdateDelta;
         }
 
         const Timestamp GetLastUpdate() {
             return m_LastUpdate;
+        }
+
+        const Timestamp GetUpdateDelta(const Anwill::Timestamp& timestamp) {
+            return timestamp - m_LastUpdate;
         }
 
     protected:

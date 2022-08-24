@@ -14,8 +14,8 @@ namespace Anwill {
         Timestamp()
                 : m_Time(GetTime()) {}
 
-        Timestamp(long long time)
-                : m_Time(time) {}
+        Timestamp(long long microseconds)
+                : m_Time(microseconds) {}
 
         /**
          * Fetch absolute delta in microseconds between two timestamps.
@@ -47,9 +47,9 @@ namespace Anwill {
             m_Time -= other.m_Time;
         }
 
-        Timestamp operator*(const long long s) const
+        Timestamp operator*(const double s) const
         {
-            return {m_Time * s};
+            return {static_cast<long long>(static_cast<double long>(m_Time) * s)};
         }
 
         void operator*=(const long long s)
@@ -94,12 +94,12 @@ namespace Anwill {
 
         long double GetSeconds() const
         {
-            return m_Time / 1000000.;
+            return static_cast<long double>(m_Time) / 1000000.;
         }
 
         long double GetMilliseconds() const
         {
-            return m_Time / 1000.;
+            return static_cast<long double>(m_Time) / 1000.;
         }
 
         long long GetMicroseconds() const

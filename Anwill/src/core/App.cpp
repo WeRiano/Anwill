@@ -37,20 +37,20 @@ namespace Anwill {
         SystemEvents::Subscribe<WindowMoveEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowMove));
 
-        Profiler::StartAppProfiling();
+        AW_PROFILE_APP_START();
     }
 
     App::~App()
     {
         m_Window->Terminate();
-        Profiler::StopAppProfiling();
-        Profiler::SaveDataToDisk();
-        //Profiler::PrintDataToConsole();
+        AW_PROFILE_APP_STOP();
+        AW_PROFILE_SAVE_TO_DISK();
+        //AW_PROFILE_PRINT_TO_CONSOLE();
     }
 
     void App::Run()
     {
-        Profiler p = AW_PROFILE_FUNC();
+        AW_PROFILE_FUNC();
 
         while(m_Running)
         {

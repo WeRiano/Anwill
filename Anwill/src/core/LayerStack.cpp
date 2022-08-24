@@ -9,7 +9,7 @@ namespace Anwill
         {
             Timestamp last = m_Stack[i]->GetLastUpdate();
             Timestamp now = Timestamp();
-            Timestamp delta = m_Stack[i]->GetUpdateDelta();
+            Timestamp delta = m_Stack[i]->GetUpdateSpeed();
             if (now - last >= delta || delta.IsZero()) {
                 m_Stack[i]->Update(now);
             }

@@ -27,7 +27,7 @@ namespace Anwill {
     {
         Timestamp now = Timestamp();
         s_Data.totalTime = now - s_Data.totalTime;
-        PostTerminationCalc();
+        PostAppCalc();
     }
 
     void Profiler::ResetData()
@@ -75,31 +75,20 @@ namespace Anwill {
 
     void Profiler::UpdateFuncData(const Timestamp& duration)
     {
-        if(s_Data.funcData.contains(m_FuncName)) {
-            FuncProfileData& fData = s_Data.funcData[m_FuncName];
-            fData.totalTime += duration;
-            fData.calls++;
-            if (duration > fData.cycleMaxTime)
-            {
-                fData.cycleMaxTime = duration;
-            }
-            if (duration < fData.cycleMinTime)
-            {
-                fData.cycleMinTime = duration;
-            }
-        } else {
-            s_Data.funcData[m_FuncName] = {
-                    duration,
-                    duration,
-                    duration,
-                    1,
-                    -1.0f,
-                    Timestamp(-1)
-            };
+        FuncProfileData& fData = s_Data.funcData[m_FuncName];
+        fData.totalTime += duration;
+        fData.calls++;
+        if (duration > fData.cycleMaxTime)
+        {
+            fData.cycleMaxTime = duration;
+        }
+        if (duration < fData.cycleMinTime)
+        {
+            fData.cycleMinTime = duration;
         }
     }
 
-    void Profiler::PostTerminationCalc()
+    void Profiler::PostAppCalc()
     {
         for(auto& it : s_Data.funcData) {
             auto& fData = it.second;

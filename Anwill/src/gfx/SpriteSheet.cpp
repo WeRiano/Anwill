@@ -2,6 +2,7 @@
 
 #include "core/Log.h"
 #include "utils/Utils.h"
+#include "utils/Profiler.h"
 
 namespace Anwill {
     std::shared_ptr<SpriteSheet> SpriteSheet::Create(const std::string& filePath,
@@ -19,60 +20,57 @@ namespace Anwill {
         return spriteSheet;
     }
 
-    void
+    QuadTexCoords
     SpriteSheet::GetEvenSpriteTexCoords(unsigned int spriteXPos, unsigned int spriteYPos,
                                         int pixelLeftPad, int pixelRightPad,
-                                        int pixelBottomPad, int pixelTopPad,
-                                        float& texX0, float& texY0,
-                                        float& texX1, float& texY1)
+                                        int pixelBottomPad, int pixelTopPad)
     {
+        AW_PROFILE_FUNC();
         if(spriteXPos > m_SpriteCountX or spriteYPos > m_SpriteCountY) {
             AW_ERROR("Incorrect sprite coordinates.");
-            return;
+            return {-1.0f, -1.0f, -1.0f, -1.0f};
         }
-        texX0 = Utils::NormalizeBetween0And1<int>(
+        return { Utils::NormalizeBetween0And1<int>(
                 m_SpriteWidth * (spriteXPos - 1) - pixelLeftPad,
                 0,
-                m_Texture->GetWidth());
-        texY0 = Utils::NormalizeBetween0And1<int>(
+                m_Texture->GetWidth()),
+                Utils::NormalizeBetween0And1<int>(
                 m_SpriteHeight * (spriteYPos - 1) - pixelBottomPad,
                 0,
-                m_Texture->GetHeight());
-        texX1 = Utils::NormalizeBetween0And1<int>(
+                m_Texture->GetHeight()),
+                Utils::NormalizeBetween0And1<int>(
                 m_SpriteWidth * spriteXPos + pixelRightPad,
                 0,
-                m_Texture->GetWidth());
-        texY1 = Utils::NormalizeBetween0And1<int>(
+                m_Texture->GetWidth()),
+                Utils::NormalizeBetween0And1<int>(
                 m_SpriteHeight * spriteYPos + pixelTopPad,
                 0,
-                m_Texture->GetHeight());
+                m_Texture->GetHeight()) };
     }
 
-    void SpriteSheet::GetUnevenSpriteTexCoords(unsigned int x, unsigned int y,
-                                               unsigned int width, unsigned int height,
-                                               float& texX0, float& texY0,
-                                               float& texX1, float& texY1)
+    QuadTexCoords SpriteSheet::GetUnevenSpriteTexCoords(unsigned int x, unsigned int y,
+                                               unsigned int width, unsigned int height)
     {
         if((x + width) > m_Texture->GetWidth() or (y + height) > m_Texture->GetHeight()) {
             AW_ERROR("Incorrect sprite coordinates.");
-            return;
+            return {-1.0f, -1.0f, -1.0f, -1.0f};
         }
-        texX0 = Utils::NormalizeBetween0And1(
+        return { Utils::NormalizeBetween0And1(
                 x,
                 0u,
-                m_Texture->GetWidth());
-        texY0 = Utils::NormalizeBetween0And1(
+                m_Texture->GetWidth()),
+                Utils::NormalizeBetween0And1(
                 y,
                 0u,
-                m_Texture->GetHeight());
-        texX1 = Utils::NormalizeBetween0And1(
+                m_Texture->GetHeight()),
+                Utils::NormalizeBetween0And1(
                 x + width,
                 0u,
-                m_Texture->GetWidth());
-        texY1 = Utils::NormalizeBetween0And1(
+                m_Texture->GetWidth()),
+                Utils::NormalizeBetween0And1(
                 y + height,
                 0u,
-                m_Texture->GetHeight());
+                m_Texture->GetHeight()) };
     }
 
     std::shared_ptr<Texture> SpriteSheet::GetTexture() const

@@ -17,7 +17,7 @@ namespace Anwill {
 
     void Renderer2D::DrawBatch(const std::shared_ptr<Shader>& shader)
     {
-        Profiler p = AW_PROFILE_FUNC();
+        AW_PROFILE_FUNC();
 
         shader->Bind();
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
@@ -65,44 +65,40 @@ namespace Anwill {
 
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
                                      const std::shared_ptr<Shader>& shader,
-                                     const std::shared_ptr<Texture>& texture,
-                                     float texX0, float texY0, float texX1, float texY1)
+                                     const Sprite& sprite)
     {
         if((s_BData.textureQ.size() == BatchData2D::maxTextureSlots) or
            (s_BData.quadsPushed == BatchData2D::maxQuads)) {
             DrawBatch(shader);
         }
-        unsigned int textureID = s_BData.GetOrGenerateID(texture);
+        unsigned int textureID = s_BData.GetOrGenerateID(sprite.texture);
         s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[0],
-                                 Math::Vec2f(texX0, texY0), {1.0f, 1.0f, 1.0f}},
+                                 Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y0),
+                                 {1.0f, 1.0f, 1.0f}},
                                 textureID);
         s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[1],
-                                 Math::Vec2f(texX0, texY1), {1.0f, 1.0f, 1.0f}},
+                                 Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y1),
+                                 {1.0f, 1.0f, 1.0f}},
                                 textureID);
         s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[2],
-                                 Math::Vec2f(texX1, texY1), {1.0f, 1.0f, 1.0f}},
+                                 Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y1),
+                                 {1.0f, 1.0f, 1.0f}},
                                 textureID);
         s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[3],
-                                 Math::Vec2f(texX1, texY0), {1.0f, 1.0f, 1.0f}},
+                                 Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y0),
+                                 {1.0f, 1.0f, 1.0f}},
                                 textureID);
         s_BData.quadsPushed++;
     }
 
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
                                      const std::shared_ptr<Shader>& shader,
-                                     const std::shared_ptr<SpriteSheet>& spriteSheet,
-                                     unsigned int spriteXPos, unsigned int spriteYPos,
-                                     int pixelLeftPad, int pixelRightPad,
-                                     int pixelBottomPad, int pixelTopPad)
+                                     const SpriteAnimation& animation)
     {
-        // Same as texture version (see function above) but we find specific tex coords
-        float texX0, texY0, texX1, texY1;
-        spriteSheet->GetEvenSpriteTexCoords(spriteXPos, spriteYPos,
-                                            pixelLeftPad, pixelRightPad,
-                                            pixelBottomPad, pixelTopPad,
-                                            texX0, texY0, texX1, texY1);
-        PushQuadToBatch(transform, shader, spriteSheet->GetTexture(), texX0, texY0,
-                        texX1, texY1);
+        std::shared_ptr<Texture> texture;
+        QuadTexCoords texCoords;
+        auto sprite = animation.GetActiveFrame();
+        PushQuadToBatch(transform, shader, sprite);
     }
 
     void Renderer2D::BeginScene(const Camera& camera)

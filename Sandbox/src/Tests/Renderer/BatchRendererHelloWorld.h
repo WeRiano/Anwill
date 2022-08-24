@@ -18,7 +18,8 @@ private:
     unsigned int m_NrQuadsX, m_NrQuadsY;
 
     std::shared_ptr<Anwill::Shader> m_QuadShader, m_SlowTextShader, m_SlowColorShader;
-    std::shared_ptr<Anwill::SpriteSheet> m_TestSpriteSheet;
+    std::unique_ptr<Anwill::Sprite> m_Sprite;
+    Anwill::SpriteAnimation m_SpriteAnimation;
     std::shared_ptr<Anwill::Texture> m_TestTexture;
     Anwill::Mesh m_QuadTextMesh, m_QuadColorMesh;
 
