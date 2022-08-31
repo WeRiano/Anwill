@@ -21,7 +21,8 @@ namespace Anwill {
               );
 
         void ApplyForce(Math::Vec3f force);
-        // We are applying a change in momentum == impulse, but its instantaneous so I'm not sure if its accurate to
+        // We are applying a change in momentum == impulse,
+        // but its instantaneous so I'm not sure if its accurate to
         // call it an 'impulse'.
         void ApplyImpulse(Math::Vec3f impulse, bool subtract = false);
         void Tick(float deltaSeconds);
@@ -36,7 +37,7 @@ namespace Anwill {
         void SetGravAcc(Math::Vec3f gravAcc);
         std::shared_ptr<Collider> GetCollider() const;
         template <class C, typename... Args>
-        void SetCollider(Args... args)
+        void EmplaceCollider(Args... args)
         {
             m_Collider = std::make_shared<C>(std::forward<Args>(args)...);
         }
@@ -45,7 +46,9 @@ namespace Anwill {
     private:
         bool m_Static;
         float m_M;
-        Math::Vec3f m_P, m_V, m_F, m_G; // position, velocity, (temporary) net force and gravitational acceleration
+        // position, velocity, (temporary) net force
+        // and gravitational acceleration
+        Math::Vec3f m_P, m_V, m_F, m_G;
         std::shared_ptr<Collider> m_Collider;
     };
 }

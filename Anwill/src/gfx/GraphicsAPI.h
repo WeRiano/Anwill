@@ -29,5 +29,8 @@ namespace Anwill {
         virtual void Draw(const Mesh& mesh) = 0;
         virtual void Draw(const std::shared_ptr<VertexArray>& vertexArray,
                           const std::shared_ptr<IndexBuffer>& indexBuffer) = 0;
+
+        virtual std::shared_ptr<Shader> CreateQuadBatchShader() const = 0;
+        virtual std::shared_ptr<Shader> CreateCircleBatchShader() const = 0;
     };
 }

@@ -2,15 +2,16 @@
 
 #include "Anwill.h"
 
-class DynamicsExist : public Anwill::Layer
+class DynamicsTest : public Anwill::Layer
 {
 public:
-    DynamicsExist(unsigned int ups);
+    DynamicsTest(unsigned int ups);
 
     void Update(const Anwill::Timestamp& timestamp) override;
 
 private:
     Anwill::Timestamp m_SpawnTimeCount;
+    static constexpr double s_SpawnDeltaSeconds = 0.5;
 
     void SpawnObject();
     void KillObjects();

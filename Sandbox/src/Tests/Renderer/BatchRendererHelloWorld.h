@@ -17,7 +17,7 @@ private:
     float m_QuadWidth, m_QuadHeight;
     unsigned int m_NrQuadsX, m_NrQuadsY;
 
-    std::shared_ptr<Anwill::Shader> m_QuadShader, m_SlowTextShader, m_SlowColorShader;
+    std::shared_ptr<Anwill::Shader> m_SlowTextShader, m_SlowColorShader;
     std::unique_ptr<Anwill::Sprite> m_Sprite;
     Anwill::SpriteAnimation m_SpriteAnimation;
     std::shared_ptr<Anwill::Texture> m_TestTexture;

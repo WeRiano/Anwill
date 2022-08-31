@@ -1,5 +1,7 @@
 #pragma once
 
+#include "math/Vec2f.h"
+
 namespace Anwill::Math {
 
     class Vec3f
@@ -8,6 +10,7 @@ namespace Anwill::Math {
         Vec3f();
         Vec3f(float x, float y, float z);
 
+        Vec3f& operator=(const Vec2f& other);
         Vec3f operator+(const Vec3f& other) const;
         Vec3f operator-(const Vec3f& other) const;
         void operator+=(const Vec3f& other);

@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include "Vec2f.h"
+#include "Vec3f.h"
 
 namespace Anwill::Math {
 
@@ -11,6 +12,13 @@ namespace Anwill::Math {
     Vec2f::Vec2f(float x, float y)
         : m_X(x), m_Y(y)
     {}
+
+    Vec2f& Vec2f::operator=(const Vec3f& other)
+    {
+        m_X = other.GetX();
+        m_Y = other.GetY();
+        return *this;
+    }
 
     Vec2f Vec2f::operator+(const Vec2f& other) const
     {

@@ -12,16 +12,15 @@ namespace Anwill {
     public:
         static void Init(const std::shared_ptr<GraphicsAPI>& api);
 
-        static void DrawBatch(const std::shared_ptr<Shader>& shader);
+        static void DrawBatch();
         static void PushQuadToBatch(const Math::Mat4f& transform,
-                                    const std::shared_ptr<Shader>& shader,
                                     const Math::Vec3f& color);
         static void PushQuadToBatch(const Math::Mat4f& transform,
-                                    const std::shared_ptr<Shader>& shader,
                                     const Sprite& sprite);
         static void PushQuadToBatch(const Math::Mat4f& transform,
-                                    const std::shared_ptr<Shader>& shader,
                                     const SpriteAnimation& animation);
+        static void PushCircleToBatch(const Math::Mat4f& transform,
+                                      const Math::Vec3f& color);
 
         static void BeginScene(const Camera& camera);
 
@@ -40,16 +39,21 @@ namespace Anwill {
     private:
         struct SceneData2D {
             Math::Mat4f ViewProjMat;
+            Math::Vec2f CameraPos;
 
             SceneData2D()
                     : ViewProjMat(Math::Mat4f::Identity())
             {}
         };
 
-        static BatchData2D s_BData;
+        static QuadBatchData s_QData;
+        static CircleBatchData s_CData;
+
         static SceneData2D s_SceneData;
         static std::shared_ptr<GraphicsAPI> s_API;
 
         static void BatchDataInit();
+        static void DrawQuadBatch();
+        static void DrawCircleBatch();
     };
 }

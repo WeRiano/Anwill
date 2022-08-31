@@ -19,5 +19,8 @@ namespace Anwill {
         void Draw(const Mesh& mesh) override;
         void Draw(const std::shared_ptr<VertexArray>& vertexArray,
                   const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+
+        std::shared_ptr<Shader> CreateQuadBatchShader() const override;
+        std::shared_ptr<Shader> CreateCircleBatchShader() const override;
     };
 }

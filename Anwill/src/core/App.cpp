@@ -11,13 +11,15 @@
 #include "gfx/Renderer.h"
 #include "gfx/VertexBuffer.h"
 
+#include "gui/GuiLayer.h"
+
 #include "utils/Random.h"
 #include "utils/Profiler.h"
 
 
 namespace Anwill {
 
-    App::App(const WindowSettings& ws)
+    App::App(const WindowSettings& ws, bool enableGUI)
         : m_Running(true), m_Minimized(false)
     {
         m_Window = Window::Create(ws);
@@ -27,6 +29,8 @@ namespace Anwill {
         Ecs::Init();
         Random::Init();
         SystemEvents::Init();
+
+        AddLayer<GuiLayer>();
 
         SystemEvents::Subscribe<WindowCloseEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowClose));
@@ -72,9 +76,9 @@ namespace Anwill {
     void App::OnWindowResize(std::unique_ptr<Event>& event)
     {
         auto e = static_cast<WindowResizeEvent&>(*event);
-        AW_INFO("Resized Window to width {0} and height {1}.",
+        /*AW_INFO("Resized Window to width {0} and height {1}.",
                 e.GetNewWidth(), e.GetNewHeight());
-        Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());
+        Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());*/
     }
 
     void App::OnWindowFocus(std::unique_ptr<Event>& event)
@@ -88,6 +92,6 @@ namespace Anwill {
     void App::OnWindowMove(std::unique_ptr<Event>& event)
     {
         WindowMoveEvent e = static_cast<WindowMoveEvent&>(*event);
-        AW_INFO("Window moved to coordinates {0}, {1}", e.GetNewXPos(), e.GetNewYPos());
+        //AW_INFO("Window moved to coordinates {0}, {1}", e.GetNewXPos(), e.GetNewYPos());
     }
 }

@@ -1,10 +1,10 @@
 #include "FontHelloWorld.h"
 
 FontHelloWorld::FontHelloWorld(unsigned int ups, const Anwill::WindowSettings& ws)
-    : Anwill::Layer(ups), m_Font(Anwill::Font("assets/fonts/arial.ttf")),
+    : Anwill::Layer(ups), m_Font(Anwill::Font("Sandbox/assets/fonts/arial.ttf")),
       m_Camera(ws.width, ws.height)
 {
-    m_Shader = Anwill::Shader::Create("assets/shaders/Font.glsl");
+    m_Shader = Anwill::Shader::Create("Sandbox/assets/shaders/Font.glsl");
     float cameraMoveX = (float) ws.width / 2.0f;
     float cameraMoveY = (float) ws.height / 2.0f;
     m_Camera.Move(-cameraMoveX, -cameraMoveY);

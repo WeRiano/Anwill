@@ -7,7 +7,8 @@ namespace Anwill {
 
     std::shared_ptr<GraphicsAPI> Renderer2D::s_API = nullptr;
     Renderer2D::SceneData2D Renderer2D::s_SceneData;
-    BatchData2D Renderer2D::s_BData;
+    QuadBatchData Renderer2D::s_QData;
+    CircleBatchData Renderer2D::s_CData;
 
     void Renderer2D::Init(const std::shared_ptr<GraphicsAPI>& api)
     {
@@ -15,96 +16,94 @@ namespace Anwill {
         BatchDataInit();
     }
 
-    void Renderer2D::DrawBatch(const std::shared_ptr<Shader>& shader)
+    void Renderer2D::DrawBatch()
     {
         AW_PROFILE_FUNC();
-
-        shader->Bind();
-        shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
-
-        unsigned int nrTextures = s_BData.textureQ.size();
-        for (int textID = 0; textID < nrTextures; textID++)
-        {
-            const auto& texture = s_BData.textureQ.front();
-            s_BData.textureQ.pop();
-            texture->Bind(textID);
-            shader->SetUniform1i(textID, "u_Textures[" + std::to_string(textID) + "]");
-        }
-
-        s_BData.quadVB->DynamicUpdate(s_BData.quadVerticesArr,
-                                      sizeof(float) * s_BData.quadsPushed *
-                                      BatchData2D::quadElementCount);
-        s_BData.quadIB->DynamicUpdate(s_BData.quadIndices,
-                                      s_BData.quadsPushed * 6);
-        s_API->Draw(s_BData.quadVA, s_BData.quadIB);
-
-        s_BData.quadsPushed = 0;
-        s_BData.quadVerticesArrIndex = 0;
-        s_BData.textureNewIDCount = BatchData2D::startTextureID;
-        s_BData.textureMap.clear();
-        shader->Unbind();
+        DrawQuadBatch();
+        DrawCircleBatch();
+        //DrawLineBatch(); TODO
     }
 
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
-                                     const std::shared_ptr<Shader>& shader,
                                      const Math::Vec3f& color)
     {
-        if(s_BData.quadsPushed == BatchData2D::maxQuads) {
-            DrawBatch(shader);
+        if(s_QData.elementsPushed == QuadBatchData::maxQuads) {
+            DrawQuadBatch();
         }
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[0], {},
-                                 color}, -1);
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[1], {},
-                                 color}, -1);
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[2], {},
-                                 color}, -1);
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[3], {},
-                                 color}, -1);
-        s_BData.quadsPushed++;
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[0], {},
+                             color}, -1);
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[1], {},
+                             color}, -1);
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[2], {},
+                             color}, -1);
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[3], {},
+                             color}, -1);
+        s_QData.elementsPushed++;
     }
 
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
-                                     const std::shared_ptr<Shader>& shader,
                                      const Sprite& sprite)
     {
-        if((s_BData.textureQ.size() == BatchData2D::maxTextureSlots) or
-           (s_BData.quadsPushed == BatchData2D::maxQuads)) {
-            DrawBatch(shader);
+        if((s_QData.textureQ.size() == BatchData2D::maxTextureSlots) or
+           (s_QData.elementsPushed == QuadBatchData::maxQuads)) {
+            DrawQuadBatch();
         }
-        unsigned int textureID = s_BData.GetOrGenerateID(sprite.texture);
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[0],
-                                 Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y0),
-                                 {1.0f, 1.0f, 1.0f}},
-                                textureID);
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[1],
-                                 Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y1),
-                                 {1.0f, 1.0f, 1.0f}},
-                                textureID);
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[2],
-                                 Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y1),
-                                 {1.0f, 1.0f, 1.0f}},
-                                textureID);
-        s_BData.QuadVertexToArr({transform * BatchData2D::baselineQuadPositions[3],
-                                 Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y0),
-                                 {1.0f, 1.0f, 1.0f}},
-                                textureID);
-        s_BData.quadsPushed++;
+        unsigned int textureID = s_QData.GetOrGenerateID(sprite.texture);
+
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[0],
+                             Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y0),
+                             {1.0f, 1.0f, 1.0f}},
+                            textureID);
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[1],
+                             Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y1),
+                             {1.0f, 1.0f, 1.0f}},
+                            textureID);
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[2],
+                             Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y1),
+                             {1.0f, 1.0f, 1.0f}},
+                            textureID);
+        s_QData.VertexToArr({transform * QuadBatchData::unitPositions[3],
+                             Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y0),
+                             {1.0f, 1.0f, 1.0f}},
+                            textureID);
+        s_QData.elementsPushed++;
     }
 
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
-                                     const std::shared_ptr<Shader>& shader,
                                      const SpriteAnimation& animation)
     {
         std::shared_ptr<Texture> texture;
-        QuadTexCoords texCoords;
         auto sprite = animation.GetActiveFrame();
-        PushQuadToBatch(transform, shader, sprite);
+        PushQuadToBatch(transform, sprite);
+    }
+
+    void Renderer2D::PushCircleToBatch(const Math::Mat4f& transform,
+                                       const Math::Vec3f& color)
+    {
+        if(s_CData.elementsPushed == CircleBatchData::maxCircles) {
+            DrawCircleBatch();
+        }
+
+        auto scaleVec = transform.GetScale();
+        float xRadius = scaleVec.GetX() / 2;
+        float yRadius = scaleVec.GetY() / 2;
+        auto centre = (transform * Math::Vec2f()) + s_SceneData.CameraPos;
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[0], {},
+                             color, centre, Math::Vec2f(xRadius, yRadius)});
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[1], {},
+                             color, centre, Math::Vec2f(xRadius, yRadius)});
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[2], {},
+                             color, centre, Math::Vec2f(xRadius, yRadius)});
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[3], {},
+                             color, centre, Math::Vec2f(xRadius, yRadius)});
+        s_CData.elementsPushed++;
     }
 
     void Renderer2D::BeginScene(const Camera& camera)
     {
         s_SceneData = SceneData2D();
         s_SceneData.ViewProjMat = camera.GetViewProj();
+        s_SceneData.CameraPos = camera.GetPos();
     }
 
     void Renderer2D::Submit(const std::shared_ptr<Shader>& shader, Font& font,
@@ -166,9 +165,9 @@ namespace Anwill {
     }
 
     void Renderer2D::Submit(const std::shared_ptr<Shader>& shader,
-                          const Mesh& mesh,
-                          const Math::Mat4f& transform,
-                          const std::vector<std::shared_ptr<Texture>>& textures)
+                            const Mesh& mesh,
+                            const Math::Mat4f& transform,
+                            const std::vector<std::shared_ptr<Texture>>& textures)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
@@ -197,35 +196,111 @@ namespace Anwill {
 
         // Runtime objects / variables
         // Vertex buffer
-        s_BData.quadVB = VertexBuffer::Create(sizeof(float) *
-                                              BatchData2D::quadVerticesArrMaxSize);
-        s_BData.quadsPushed = 0;
-        s_BData.quadVerticesArrIndex = 0;
+        s_QData.VB = VertexBuffer::Create(sizeof(float) *
+                                          QuadBatchData::verticesArrMaxSize);
+        s_CData.VB = VertexBuffer::Create(sizeof(float) *
+                                          CircleBatchData::verticesArrMaxSize);
+        s_QData.elementsPushed = 0;
+        s_CData.elementsPushed = 0;
+        s_QData.verticesArrIndex = 0;
+        s_CData.verticesArrIndex = 0;
+        s_QData.verticesArr = new float[QuadBatchData::verticesArrMaxSize];
+        s_CData.verticesArr = new float[CircleBatchData::verticesArrMaxSize];
 
         // Index buffer
-        s_BData.quadIB = IndexBuffer::Create(BatchData2D::quadIndicesMaxElementSize);
-        s_BData.quadIndices = new unsigned int[BatchData2D::quadIndicesMaxElementSize];
-        for(unsigned int i = 0; i < BatchData2D::maxQuads; i++)
+        // Use the same index buffer for circles and quads
+        s_QData.IB = IndexBuffer::Create(QuadBatchData::indicesMaxElementSize);
+        s_QData.indicesArr = new unsigned int[QuadBatchData::indicesMaxElementSize];
+        unsigned int max = std::max<unsigned int>(QuadBatchData::maxQuads,
+                                    std::max<unsigned int>(CircleBatchData::maxCircles,
+                                                           0));
+        for(unsigned int i = 0; i < max; i++)
         {
-            s_BData.quadIndices[i * 6 + 0] = (i * 4) + 0;
-            s_BData.quadIndices[i * 6 + 1] = (i * 4) + 1;
-            s_BData.quadIndices[i * 6 + 2] = (i * 4) + 2;
+            s_QData.indicesArr[i * 6 + 0] = (i * 4) + 0;
+            s_QData.indicesArr[i * 6 + 1] = (i * 4) + 1;
+            s_QData.indicesArr[i * 6 + 2] = (i * 4) + 2;
 
-            s_BData.quadIndices[i * 6 + 3] = (i * 4) + 0;
-            s_BData.quadIndices[i * 6 + 4] = (i * 4) + 2;
-            s_BData.quadIndices[i * 6 + 5] = (i * 4) + 3;
+            s_QData.indicesArr[i * 6 + 3] = (i * 4) + 0;
+            s_QData.indicesArr[i * 6 + 4] = (i * 4) + 2;
+            s_QData.indicesArr[i * 6 + 5] = (i * 4) + 3;
         }
 
         // Vertex Array
-        s_BData.quadVA = VertexArray::Create();
-        auto layout = BufferLayout({
+        s_QData.VA = VertexArray::Create();
+        auto qLayout = BufferLayout({
             BufferElement(ShaderDataType::Float2),
             BufferElement(ShaderDataType::Float2),
             BufferElement(ShaderDataType::Float3),
             BufferElement(ShaderDataType::Float)
         });
-        s_BData.quadVA->AddBuffer(*s_BData.quadVB, layout);
+        s_QData.VA->AddBuffer(*s_QData.VB, qLayout);
 
-        s_BData.textureNewIDCount = BatchData2D::startTextureID;
+        s_CData.VA = VertexArray::Create();
+        auto cLayout = BufferLayout({
+           BufferElement(ShaderDataType::Float2),
+           BufferElement(ShaderDataType::Float2),
+           BufferElement(ShaderDataType::Float3),
+           BufferElement(ShaderDataType::Float2),
+           BufferElement(ShaderDataType::Float2)
+        });
+        s_CData.VA->AddBuffer(*s_CData.VB, cLayout);
+
+        // Shaders
+        s_QData.shader = s_API->CreateQuadBatchShader();
+        s_CData.shader = s_API->CreateCircleBatchShader();
+
+        s_QData.textureNewIDCount = BatchData2D::startTextureID;
+    }
+
+    void Renderer2D::DrawQuadBatch()
+    {
+        if(!s_QData.elementsPushed) {
+            return;
+        }
+        s_QData.shader->Bind();
+        s_QData.shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        unsigned int nrTextures = s_QData.textureQ.size();
+        for (int textID = 0; textID < nrTextures; textID++)
+        {
+            const auto& texture = s_QData.textureQ.front();
+            s_QData.textureQ.pop();
+            texture->Bind(textID);
+            s_QData.shader->SetUniform1i(textID, "u_Textures[" + std::to_string(textID) + "]");
+        }
+
+        s_QData.VB->DynamicUpdate(s_QData.verticesArr,
+                                  sizeof(float) * s_QData.elementsPushed *
+                                  QuadBatchData::quadAttribCount);
+        s_QData.IB->DynamicUpdate(s_QData.indicesArr,
+                                  s_QData.elementsPushed * 6);
+        s_API->Draw(s_QData.VA, s_QData.IB);
+
+        s_QData.elementsPushed = 0;
+        s_QData.verticesArrIndex = 0;
+        s_QData.textureNewIDCount = BatchData2D::startTextureID;
+        s_QData.textureMap.clear();
+        s_QData.shader->Unbind();
+    }
+
+    void Renderer2D::DrawCircleBatch()
+    {
+        if(!s_CData.elementsPushed) {
+            return;
+        }
+        s_CData.shader->Bind();
+        s_CData.shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        // Reusing quad index buffer since they are identical
+        s_CData.VB->DynamicUpdate(s_CData.verticesArr,
+                                  sizeof(float) * s_CData.elementsPushed *
+                                  CircleBatchData::circleAttribCount);
+        s_QData.IB->DynamicUpdate(s_QData.indicesArr,
+                                  s_CData.elementsPushed * 6);
+        s_API->Draw(s_CData.VA, s_QData.IB);
+
+        s_CData.elementsPushed = 0;
+        s_CData.verticesArrIndex = 0;
+        s_CData.shader->Unbind();
     }
 }

@@ -12,6 +12,11 @@ namespace Anwill {
         m_ProjMat = projMat;
     }
 
+    const Math::Vec3f Camera::GetPos() const
+    {
+        return m_ViewMat.GetTranslateVector();
+    }
+
     OrthographicCamera::OrthographicCamera(float width, float height)
     {
         // TODO: Automatically make the orthographic camera relative to the CURRENT screensize??
@@ -26,10 +31,5 @@ namespace Anwill {
     void OrthographicCamera::Move(float deltaX, float deltaY)
     {
         m_ViewMat = Math::Mat4f::Translate(m_ViewMat, {-deltaX, -deltaY, 0.0f});
-    }
-
-    Math::Vec3f OrthographicCamera::GetPos() const
-    {
-        return m_ViewMat.GetTranslateVector();
     }
 }

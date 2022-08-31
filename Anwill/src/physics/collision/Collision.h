@@ -8,18 +8,20 @@
 
 namespace Anwill {
 
-    class CollisionTest
+    class Collision
     {
     public:
-        static bool CheckCollision(const RBody& body1, const Math::Mat4f& transform1,
-                                   const RBody& body2, const Math::Mat4f& transform2,
-                                   CollisionData& colData);
+        static bool Check(const RBody& body1, const Math::Mat4f& transform1,
+                          const RBody& body2, const Math::Mat4f& transform2,
+                          CollisionData& colData);
 
         // Resolving a collision assumes that body1 and body2 have NOT swapped positions,
-        // i.e body1 from CheckCollision is body2 in ResolveCollision and vise-versa.
-        static void ResolveCollision(RBody& body1, Math::Mat4f& transform1, RBody& body2, Math::Mat4f& transform2,
-                                     const CollisionData& collisionData);
+        // i.e body1 from Check is body2 in Resolve and vise-versa.
+        static void Resolve(RBody& body1, Math::Mat4f& transform1, RBody& body2,
+                            Math::Mat4f& transform2,
+                            const CollisionData& collisionData);
     private:
-        static Math::Vec3f GetArithmeticMean(const std::vector<Math::Vec3f>& vertices, Math::Mat4f transform);
+        static Math::Vec3f GetArithmeticMean(const std::vector<Math::Vec3f>& vertices,
+                                             Math::Mat4f transform);
     };
 }

@@ -69,4 +69,5 @@ namespace Anwill {
 #define AW_PROFILE_APP_STOP()
 #define AW_PROFILE_SAVE_TO_DISK()
 #define AW_PROFILE_PRINT_TO_CONSOLE()
+#define AW_PROFILE_FUNC()
 #endif

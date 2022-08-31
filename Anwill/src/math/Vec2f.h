@@ -10,6 +10,7 @@ namespace Anwill::Math {
         Vec2f();
         Vec2f(float x, float y);
 
+        Vec2f& operator=(const Vec3f& other);
         Vec2f operator+(const Vec2f& other) const;
         Vec2f operator-(const Vec2f& other) const;
         void operator+=(const Vec2f& other);

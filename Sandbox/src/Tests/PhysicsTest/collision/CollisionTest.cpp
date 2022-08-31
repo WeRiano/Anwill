@@ -28,10 +28,11 @@ void CollisionTest::HandleCollisions()
                 if(!colSet.contains(std::pair<Anwill::EntityID, Anwill::EntityID>(idB, idA)))
                 {
                     Anwill::CollisionData data;
-                    if (Anwill::CollisionTest::CheckCollision(bodyA, transformA,
-                                                              bodyB, transformB, data))
+                    if (Anwill::Collision::Check(bodyA, transformA,
+                                                 bodyB, transformB, data))
                     {
-                        Anwill::CollisionTest::ResolveCollision(bodyA, transformA, bodyB, transformB, data);
+                        Anwill::Collision::Resolve(bodyA, transformA, bodyB, transformB,
+                                                   data);
                     }
                     colSet.insert(std::pair<Anwill::EntityID, Anwill::EntityID>(idA, idB));
                 }
@@ -45,7 +46,7 @@ void CollisionTest::SwapShape()
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::C))
     {
         Anwill::Ecs::ForEntity<Anwill::RBody>(CollisionRender::s_Player, [](Anwill::RBody& body) {
-            body.SetCollider<Anwill::CircleCollider>(40.0f);
+            body.EmplaceCollider<Anwill::CircleCollider>(40.0f);
         });
         CollisionRender::s_PlayerIsRound = true;
     }
@@ -53,7 +54,7 @@ void CollisionTest::SwapShape()
     {
         Anwill::Ecs::ForEntity<Anwill::RBody>(CollisionRender::s_Player, [this](Anwill::RBody& body) {
             auto vs = CollisionRender::s_Mesh.GetVertices();
-            body.SetCollider<Anwill::PolygonCollider>(vs);
+            body.EmplaceCollider<Anwill::PolygonCollider>(vs);
         });
         CollisionRender::s_PlayerIsRound = false;
     }
@@ -66,9 +67,6 @@ void CollisionTest::MoveAndTiltPlayer()
         float speed = 0.1f;
         float velMag = 100.0f;
         Anwill::Math::Vec3f newVel = {};
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W) or Anwill::Input::IsKeyPressed(Anwill::KeyCode::A)
-            or Anwill::Input::IsKeyPressed(Anwill::KeyCode::S) or Anwill::Input::IsKeyPressed(Anwill::KeyCode::D)) {
-        }
         if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W))
         {
             newVel += {0.0f, velMag, 0.0f};
@@ -87,7 +85,7 @@ void CollisionTest::MoveAndTiltPlayer()
         }
         if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Space))
         {
-            newVel = {};
+            newVel = Anwill::Math::Vec3f();
             pBody.SetVelocity({});
         }
         pBody.ApplyImpulse(newVel);

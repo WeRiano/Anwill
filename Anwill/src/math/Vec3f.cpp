@@ -12,6 +12,14 @@ namespace Anwill::Math {
         : m_X(x), m_Y(y), m_Z(z)
     {}
 
+    Vec3f& Vec3f::operator=(const Vec2f& other)
+    {
+        m_X = other.GetX();
+        m_Y = other.GetY();
+        m_Z = 0.0f;
+        return *this;
+    }
+
     Vec3f Vec3f::operator+(const Vec3f& other) const
     {
         Vec3f res(m_X + other.m_X, m_Y + other.m_Y, m_Z + other.m_Z);

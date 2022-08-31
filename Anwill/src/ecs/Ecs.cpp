@@ -16,9 +16,11 @@ namespace Anwill {
         {
             s_Instance = std::make_unique<Ecs>();
 
-            s_Instance->RegisterComponent<MeshComponent>();
+            //s_Instance->RegisterComponent<MeshComponent>();
             //s_Instance->RegisterComponent<CameraComponent>();
-            s_Instance->RegisterComponent<TransformComponent>();
+            //s_Instance->RegisterComponent<TransformComponent>();
+            // TODO: "Static" system components??
+
             AW_INFO("ECS Initialized!");
         } else {
             AW_WARN("ECS already initialized!");
@@ -54,5 +56,10 @@ namespace Anwill {
                 break;
             }
         }
+    }
+
+    bool Ecs::IsEntityAlive(EntityID entityID)
+    {
+        return s_Instance->m_EntityManager.IsAlive(entityID);
     }
 }

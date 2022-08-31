@@ -10,6 +10,12 @@ namespace Anwill {
     class PolygonCollider : public Collider
     {
     public:
+        /*
+        // These two could use polymorphism instead if we need to
+        PolygonCollider(float triLeftLength, float triRightLength, float triBaseLength);
+        PolygonCollider(float quadWidth, float quadHeight);
+         */
+
         PolygonCollider(std::vector<Math::Vec2f> vertices);
         PolygonCollider(const std::vector<Math::Vec3f>& vertices);
 
@@ -33,15 +39,17 @@ namespace Anwill {
         * @param min value as a result of the projection
         * @param max value as a result of the projection
         */
-        void Project(const Math::Vec2f& axis, const Math::Mat4f& transform, float& min, float& max) const override;
+        void Project(const Math::Vec2f& axis, const Math::Mat4f& transform,
+                     float& min, float& max) const override;
 
         /**
          * @param otherCollider
          * @param thisTransform
          * @param otherTransform
          * @param colData
-         * @return false if the two objects are not colliding according to the SAT algorithm projected onto the
-         * normals of the polygons edges (defined by m_Vertices). true otherwise.
+         * @return false if the two objects are not colliding according to the
+         *         SAT algorithm projected onto the normals of the polygons edges
+         *         (defined by m_Vertices). true otherwise.
          */
         bool SATCollision(const Collider* otherCollider,
                           const Math::Mat4f& thisTransform,
@@ -49,8 +57,26 @@ namespace Anwill {
                           CollisionData& colData) const;
 
         // Returns the vertex closest to the given reference point
-        Math::Vec2f GetClosestVertex(const Math::Vec2f& point, const Math::Mat4f& transform) const;
-    private:
+        Math::Vec2f GetClosestVertex(const Math::Vec2f& point,
+                                     const Math::Mat4f& transform) const;
+    protected:
         std::vector<Math::Vec2f> m_Vertices;
+
+        PolygonCollider() = default;
     };
+
+    class QuadCollider : public PolygonCollider
+    {
+    public:
+        QuadCollider();
+        QuadCollider(float width, float height);
+    };
+
+    /*
+    class TriCollider : public PolygonCollider
+    {
+    public:
+        TriCollider();
+    };
+     */
 }

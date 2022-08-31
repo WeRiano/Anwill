@@ -55,7 +55,7 @@ namespace Anwill {
             funcDataStr += "\n\n";
 
         }
-        FileIO::StrToFile("logs/profiler/FuncPerformance.txt", funcDataStr);
+        FileIO::StrToFile("Anwill/res/logs/profiler/FuncPerformance.txt", funcDataStr);
     }
 
     void Profiler::PrintDataToConsole()

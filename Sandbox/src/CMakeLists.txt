@@ -7,7 +7,7 @@ add_executable(Sandbox Sandbox.cpp
 
         Tests/EcsTest/EcsTestLayer.cpp
 
-        Tests/PhysicsTest/dynamics/DynamicsDelta.cpp Tests/PhysicsTest/dynamics/DynamicsExist.cpp
+        Tests/PhysicsTest/dynamics/DynamicsRender.cpp Tests/PhysicsTest/dynamics/DynamicsTest.cpp
         Tests/PhysicsTest/collision/CollisionRender.cpp
         Tests/PhysicsTest/collision/CollisionTest.cpp
 

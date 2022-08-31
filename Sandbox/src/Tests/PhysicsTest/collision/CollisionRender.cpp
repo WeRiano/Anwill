@@ -12,12 +12,12 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
 {
     s_Mesh = Anwill::Mesh::CreateRectMesh(80.0f, 80.0f);
 
-    m_RectShader = Anwill::Shader::Create("assets/shaders/RectBorder.glsl");
+    m_RectShader = Anwill::Shader::Create("Sandbox/assets/shaders/RectBorder.glsl");
     m_RectShader->Bind();
     m_RectShader->SetUniformVec2f(Anwill::Math::Vec2f(80.0f, 80.0f), "u_WidthHeight");
     m_RectShader->Unbind();
 
-    m_CircleShader = Anwill::Shader::Create("assets/shaders/Circle.glsl");
+    m_CircleShader = Anwill::Shader::Create("Sandbox/assets/shaders/Circle.glsl");
     m_CircleShader->Bind();
     m_CircleShader->SetUniform1f(40.0f, "u_Radius");
     m_CircleShader->SetUniformVec3f(m_Camera.GetPos(), "u_CamPos");
@@ -53,11 +53,11 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
             Anwill::Math::Mat4f& transform){
         if(id % 2 == 0 and id != s_Player)
         {
-            body.SetCollider<Anwill::CircleCollider>(40.0f);
+            body.EmplaceCollider<Anwill::CircleCollider>(40.0f);
         } else
         {
             auto vs = s_Mesh.GetVertices();
-            body.SetCollider<Anwill::PolygonCollider>(vs);
+            body.EmplaceCollider<Anwill::PolygonCollider>(vs);
         }
     });
 
@@ -66,7 +66,7 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
 
 void CollisionRender::Update(const Anwill::Timestamp& timestamp)
 {
-    float delta = timestamp.GetSeconds() - m_LastUpdate.GetSeconds();
+    float delta = GetUpdateDelta(timestamp).GetSeconds();
 
     Anwill::Renderer2D::BeginScene(m_Camera);
 
@@ -101,7 +101,7 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
 
         auto vel = body.GetVelocity();
         vel.Normalize();
-        body.ApplyForce(-vel * 250.0f);
+        body.SetVelocity(vel * 250.0f);
         body.Tick(delta * 2.0f);
     });
 

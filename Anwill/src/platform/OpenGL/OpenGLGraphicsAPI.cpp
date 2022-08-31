@@ -97,4 +97,14 @@ namespace Anwill {
         vertexArray->Unbind();
         indexBuffer->Unbind();
     }
+
+    std::shared_ptr<Shader> OpenGLGraphicsAPI::CreateQuadBatchShader() const
+    {
+        return Shader::Create("Anwill/res/shaders/OpenGL/AwQuadBatch.glsl");
+    }
+
+    std::shared_ptr<Shader> OpenGLGraphicsAPI::CreateCircleBatchShader() const
+    {
+        return Shader::Create("Anwill/res/shaders/OpenGL/AwCircleBatch.glsl");
+    }
 }

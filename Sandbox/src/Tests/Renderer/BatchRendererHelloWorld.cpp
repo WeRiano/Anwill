@@ -5,19 +5,16 @@ BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
     : Anwill::Layer(ups), m_Camera(ws.width, ws.height), m_IsBatchRendering(true),
       m_SpriteAnimation(Anwill::Timestamp(1  * 1000000))
 {
-    m_QuadShader = Anwill::Shader::Create("assets/shaders/QuadBatch.glsl");
-    m_SlowTextShader = Anwill::Shader::Create("assets/shaders/RectTexture.glsl");
-    m_SlowColorShader = Anwill::Shader::Create("assets/shaders/RectColor.glsl");
+    m_SlowTextShader = Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl");
+    m_SlowColorShader = Anwill::Shader::Create("Sandbox/assets/shaders/RectColor.glsl");
 
     auto spriteSheet = Anwill::SpriteSheet::Create(
-            "assets/textures/test_sprite_sheet.png", 64, 48);
+            "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48);
     m_Sprite = std::make_unique<Anwill::Sprite>(spriteSheet, 3, 2, -1, 0, 0, -1);
 
-    // TODO: Could implement like a range function or something to avoid clutter.
-    // Add all sprites horizontally, vertically, or even diagonally for some range
     m_SpriteAnimation.AddFramesHorizontally(spriteSheet, 43, 48, 1, 10);
 
-    m_TestTexture = Anwill::Texture::Create("assets/textures/awesomeface.png");
+    m_TestTexture = Anwill::Texture::Create("Sandbox/assets/textures/awesomeface.png");
 
     m_QuadTextMesh = Anwill::Mesh::CreateRectMesh(1.0f, 1.0f, true);
     m_QuadColorMesh = Anwill::Mesh::CreateRectMesh(1.0f, 1.0f, false);
@@ -31,6 +28,7 @@ BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
     m_NrQuadsY = static_cast<unsigned int>(m_CanvasHeight) /
             static_cast<unsigned int>(m_QuadHeight);
 
+    m_Camera.Move(100.0f, 0.0f);
 }
 
 void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
@@ -54,7 +52,6 @@ void BatchRendererHelloWorld::BatchRendering()
     AW_PROFILE_FUNC();
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
                                                 {m_QuadWidth, m_QuadHeight, 0.0f});
-    //transform = Anwill::Math::Mat4f::Translate(transform, {-2000.0f, -2000.0f, 0.0f});
     for(unsigned int y = 0; y < m_NrQuadsY; y++)
     {
         for(unsigned int x = 0; x < m_NrQuadsX; x++)
@@ -62,7 +59,12 @@ void BatchRendererHelloWorld::BatchRendering()
             float xClamp = Anwill::Utils::NormalizeBetween0And1(x, 0u, m_NrQuadsY);
             float yClamp = Anwill::Utils::NormalizeBetween0And1(y, 0u, m_NrQuadsX);
             Anwill::Math::Vec3f color(xClamp, yClamp, 1.0f);
-            Anwill::Renderer2D::PushQuadToBatch(transform, m_QuadShader, color);
+            if(x % 2 == 0)
+            {
+                Anwill::Renderer2D::PushQuadToBatch(transform, color);
+            } else {
+                Anwill::Renderer2D::PushCircleToBatch(transform, color);
+            }
             transform = Anwill::Math::Mat4f::Translate(transform,
                                                        {m_QuadWidth, 0.0f, 0.0f});
         }
@@ -78,8 +80,12 @@ void BatchRendererHelloWorld::BatchRendering()
                                                {static_cast<float>(m_CanvasWidth / 2),
                                                 static_cast<float>(m_CanvasHeight / 2),
                                                 0.0f});
-    Anwill::Renderer2D::PushQuadToBatch(transform, m_QuadShader, m_SpriteAnimation);
-    Anwill::Renderer2D::DrawBatch(m_QuadShader);
+    Anwill::Renderer2D::PushQuadToBatch(transform, m_SpriteAnimation);
+
+    transform = Anwill::Math::Mat4f::Scale(transform, {2.0f, 1.0f, 0.0f});
+    transform = Anwill::Math::Mat4f::Translate(transform, {500.0f, 0.0f, 0.0f});
+    Anwill::Renderer2D::PushCircleToBatch(transform, {0.3f, 0.4f, 0.9f});
+    Anwill::Renderer2D::DrawBatch();
 }
 
 void BatchRendererHelloWorld::SlowRendering()

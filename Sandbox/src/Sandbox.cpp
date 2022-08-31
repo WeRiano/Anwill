@@ -4,8 +4,8 @@
 #include "Tests/Renderer/TextureHelloWorld.h"
 #include "Tests/Renderer/FontHelloWorld.h"
 #include "Tests/Renderer/BatchRendererHelloWorld.h"
-#include "Tests/PhysicsTest/dynamics/DynamicsDelta.h"
-#include "Tests/PhysicsTest/dynamics/DynamicsExist.h"
+#include "Tests/PhysicsTest/dynamics/DynamicsRender.h"
+#include "Tests/PhysicsTest/dynamics/DynamicsTest.h"
 #include "Tests/PhysicsTest/collision/CollisionRender.h"
 #include "Tests/PhysicsTest/collision/CollisionTest.h"
 #include "Tests/EcsTest/EcsTestLayer.h"
@@ -28,8 +28,8 @@ public:
         //AddLayer<TPSCalcs>(30);
         //AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
 
-        //AddLayer<DynamicsExist>(10);
-        //AddLayer<DynamicsDelta>(0, ws);
+        //AddLayer<DynamicsTest>(10);
+        //AddLayer<DynamicsRender>(0, ws);
 
         //AddLayer<CollisionRender>(0, ws);
         //AddLayer<CollisionTest>(30, ws);
@@ -43,7 +43,7 @@ Anwill::App* Anwill::CreateApp()
 
     // Change? Just feed 1 struct with information to App or something.
     Anwill::Renderer::SetAPI(Anwill::GraphicsAPI::API::OpenGL);
-    return new Sandbox(ws);
+    return new Sandbox(ws, true);
 }
 
 #include "EntryPoint.h" // Get the main function

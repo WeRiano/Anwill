@@ -112,4 +112,25 @@ namespace Anwill {
         // There is a collision according to the SAT algorithm projected onto the axes 'created' by this polygon.
         return true;
     }
+
+
+    QuadCollider::QuadCollider()
+    {
+        m_Vertices = {
+                Math::Vec2f(-0.5f, -0.5f),
+                Math::Vec2f(-0.5f,  0.5f),
+                Math::Vec2f( 0.5f,  0.5f),
+                Math::Vec2f( 0.5f, -0.5f)
+        };
+    }
+
+    QuadCollider::QuadCollider(float width, float height)
+    {
+        m_Vertices = {
+            Math::Vec2f(-0.5f * width, -0.5f * height),
+            Math::Vec2f(-0.5f * width,  0.5f * height),
+            Math::Vec2f( 0.5f * width,  0.5f * height),
+            Math::Vec2f( 0.5f * width, -0.5f * height)
+        };
+    }
 }
