@@ -16,7 +16,7 @@ class Sandbox : public Anwill::App
 {
 public:
     Sandbox(const Anwill::WindowSettings& ws)
-        : App(ws)
+        : App(ws, true)
     {
         //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
@@ -43,7 +43,7 @@ Anwill::App* Anwill::CreateApp()
 
     // Change? Just feed 1 struct with information to App or something.
     Anwill::Renderer::SetAPI(Anwill::GraphicsAPI::API::OpenGL);
-    return new Sandbox(ws, true);
+    return new Sandbox(ws);
 }
 
 #include "EntryPoint.h" // Get the main function

@@ -30,7 +30,7 @@ namespace Anwill {
         Random::Init();
         SystemEvents::Init();
 
-        AddLayer<GuiLayer>();
+        AddLayer<GuiLayer>(0);
 
         SystemEvents::Subscribe<WindowCloseEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowClose));

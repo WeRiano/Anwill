@@ -4,3 +4,6 @@
 [submodule "Anwill/vendor/glfw"]
 	path = Anwill/vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "Anwill/vendor/imgui"]
+	path = Anwill/vendor/imgui
+	url = https://github.com/ocornut/imgui.git
