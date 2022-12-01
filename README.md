@@ -11,7 +11,7 @@ Anwill is being developed in CLion and is therefore compiled with CMake. It is r
 to use CLion to build and run the project since it automizes the build and run process 
 down to a single button, but it's not necessary.
 
-Installation guide coming soon!
+*Installation guide coming soon!*
 
 ## How does it work?
 Checkout [Sandbox](Sandbox/src) for various examples of how to use specific systems.
@@ -19,7 +19,7 @@ Checkout [Sandbox](Sandbox/src) for various examples of how to use specific syst
 ## Currently working on
 
 * GUI
-* Build guide
+* Installation guide
 
 ## Features
 
@@ -51,3 +51,8 @@ Checkout [Sandbox](Sandbox/src) for various examples of how to use specific syst
 * [GLFW](https://www.glfw.org/)
 * [stb_image](https://github.com/nothings/stb)
 * [Willog](https://github.com/WeRiano/Willog)
+
+## Acknowledgements
+
+Special thanks to [TheCherno](https://www.youtube.com/@TheCherno) 
+and [Learn OpenGL](https://learnopengl.com/) for their free and awesome tutorials!
