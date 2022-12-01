@@ -54,5 +54,11 @@ Checkout [Sandbox](Sandbox/src) for various examples of how to use specific syst
 
 ## Acknowledgements
 
-Special thanks to [TheCherno](https://www.youtube.com/@TheCherno) 
-and [Learn OpenGL](https://learnopengl.com/) for their free and awesome tutorials!
+It would be impossible to cite every resource that I have used to create Anwill but 
+here are a few of them.
+* [TheCherno](https://www.youtube.com/@TheCherno) 
+* [Learn OpenGL](https://learnopengl.com/)
+* [Two-Bit Coding](https://www.youtube.com/@two-bitcoding8018)
+* ECS articles: [1](https://austinmorlan.com/posts/entity_component_system/), 
+[2](https://bitsquid.blogspot.com/2014/08/building-data-oriented-entity-system.html) and 
+[3](https://www.gamedeveloper.com/design/the-entity-component-system---an-awesome-game-design-pattern-in-c-part-1-#refs)
