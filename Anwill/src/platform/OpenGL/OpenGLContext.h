@@ -10,6 +10,6 @@ namespace Anwill {
     class OpenGLContext : public GraphicsContext
     {
     public:
-        OpenGLContext(GLFWwindow* window);
+        OpenGLContext(void* window);
     };
 }

@@ -20,6 +20,7 @@ namespace Anwill {
 
     void Profiler::StartAppProfiling()
     {
+        // totalTime is temporarily start time
         s_Data = {Timestamp()};
     }
 

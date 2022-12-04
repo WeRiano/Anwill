@@ -9,6 +9,7 @@ add_library(OpenGL STATIC
 target_include_directories(OpenGL PUBLIC
         ${PROJECT_SOURCE_DIR}/Anwill/vendor/Glad/include
         ${PROJECT_SOURCE_DIR}/Anwill/vendor/stb_image
+        ${PROJECT_SOURCE_DIR}/Anwill/vendor/glfw/include
         )
 
-target_link_libraries(OpenGL PUBLIC Core opengl32)
+target_link_libraries(OpenGL PUBLIC Core opengl32 glfw ${GLFW_LIBRARIES})

@@ -15,11 +15,16 @@ namespace Anwill {
         Init(ws);
     }
 
-    void WinWindow::Update()
+    void WinWindow::PreRenderUpdate()
     {
-        glfwSwapBuffers(m_Window);
         glfwPollEvents();
     }
+
+    void WinWindow::PostRenderUpdate()
+    {
+        glfwSwapBuffers(m_Window);
+    }
+
 
     void WinWindow::Terminate()
     {

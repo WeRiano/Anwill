@@ -9,9 +9,9 @@
 #include <typeindex>
 #include <type_traits>
 
-// Need to use this to pass a non-static member function as a parameter. This only works
-// when the member function is passed in another non-static member function (so that
-// the "this" keyword is actually defined). If you want to bind a non-static member
+// Need to use this to pass a non-static member function as a parameter.
+// Member functions need to be called on an object which is passed as an implicit
+// argument to the function. If you want to bind a non-static member
 // function, global function or lambda, don't use this. Just pass it like normal.
 #define AW_BIND_THIS_MEMBER_FUNC(fn) [this](auto&&... args) -> decltype(auto) \
 { return this->fn(std::forward<decltype(args)>(args)...); }
@@ -23,7 +23,7 @@ namespace Anwill {
     class Event
     {
     private:
-        //bool m_Handled; TODO: Mark as handled feature
+        //bool m_Handled; TODO: Mark event as handled feature
     };
 
     class EventQueue

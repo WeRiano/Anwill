@@ -4,12 +4,12 @@
 
 namespace Anwill {
 
-    std::unique_ptr<GraphicsContext> GraphicsContext::Create(void* window)
+    std::unique_ptr<GraphicsContext> GraphicsContext::Create(void* nativeWindow)
     {
         switch(Renderer::GetAPI())
         {
             case GraphicsAPI::API::OpenGL:
-                return std::make_unique<OpenGLContext>(static_cast<GLFWwindow*>(window));
+                return std::make_unique<OpenGLContext>(nativeWindow);
         }
         return nullptr;
     }

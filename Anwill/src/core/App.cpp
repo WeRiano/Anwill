@@ -11,11 +11,10 @@
 #include "gfx/Renderer.h"
 #include "gfx/VertexBuffer.h"
 
-#include "gui/GuiLayer.h"
+#include "gui/Gui.h"
 
 #include "utils/Random.h"
 #include "utils/Profiler.h"
-
 
 namespace Anwill {
 
@@ -26,11 +25,10 @@ namespace Anwill {
 
         Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
+        Gui::Init(m_Window->GetNativeWindow());
         Ecs::Init();
         Random::Init();
         SystemEvents::Init();
-
-        AddLayer<GuiLayer>(0);
 
         SystemEvents::Subscribe<WindowCloseEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowClose));
@@ -60,11 +58,17 @@ namespace Anwill {
         {
             Renderer::ClearBuffers();
 
+            m_Window->PreRenderUpdate();
+
+            Gui::Begin();
+
             m_LayerStack.Update();
 
-            SystemEvents::Pop();
+            Gui::Render();
 
-            m_Window->Update();
+            m_Window->PostRenderUpdate();
+
+            SystemEvents::Pop();
         }
     }
 

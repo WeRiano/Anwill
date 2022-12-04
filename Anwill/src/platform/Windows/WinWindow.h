@@ -13,7 +13,8 @@ namespace Anwill {
     public:
         WinWindow(const WindowSettings& ws);
 
-        void Update() override;
+        void PreRenderUpdate() override;
+        void PostRenderUpdate() override;
         void Terminate() override;
         void* GetNativeWindow() const override;
         unsigned int GetWidth() const override;

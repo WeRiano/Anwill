@@ -5,9 +5,11 @@
 
 namespace Anwill {
 
-    OpenGLContext::OpenGLContext(GLFWwindow* window)
+    OpenGLContext::OpenGLContext(void* window)
     {
-        glfwMakeContextCurrent(window);
+        #ifdef AW_PLATFORM_WINDOWS
+        auto glfwWindow = static_cast<GLFWwindow*>(window);
+        glfwMakeContextCurrent(glfwWindow);
         glfwSwapInterval(0); // VSYNC off
 
         int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
@@ -16,10 +18,14 @@ namespace Anwill {
         } else {
             AW_INFO("Glad loaded! OpenGL version: {0}", (const char*) glGetString(GL_VERSION));
             int width, height;
-            glfwGetWindowSize(window, &width, &height);
+            glfwGetWindowSize(glfwWindow, &width, &height);
             glViewport(0, 0, width, height);
         }
+        #else
+            #error OpenGLContext does not support this platform.
+        #endif
     }
+
 
     /* DEPRECATED, SAVING FOR WHEN TO IMPLEMENT WIN32 API
     OpenGLContext::OpenGLContext(HWND* hwnd)

@@ -1,10 +1,9 @@
+#pragma once
 #include <string>
 #include <unordered_map>
-#include <string>
+#include <limits>
 
 #include "core/Timestamp.h"
-
-#pragma once
 
 namespace Anwill {
 
@@ -20,7 +19,8 @@ namespace Anwill {
         Timestamp cycleAverageTime;
 
         FuncProfileData()
-            : cycleMaxTime(0), cycleMinTime(0), totalTime(0), calls(1),
+            : cycleMaxTime(0), cycleMinTime((std::numeric_limits<long long>::max)()),
+              totalTime(0), calls(0),
               overallLoadDecimal(-1.0f), cycleAverageTime(-1)
         {}
     };

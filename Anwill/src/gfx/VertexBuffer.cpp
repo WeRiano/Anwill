@@ -14,7 +14,8 @@ namespace Anwill {
             case GraphicsAPI::API::OpenGL:
                 return std::make_shared<OpenGLVertexBuffer>(vertices, size);
             default:
-                AW_ASSERT(false, "Vertex buffer does not support the chosen gfx API.");
+                AW_ASSERT(false, "Vertex buffer does not support the chosen graphics "
+                                 "API.");
                 return nullptr;
         }
     }

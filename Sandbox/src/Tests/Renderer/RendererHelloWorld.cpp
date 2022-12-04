@@ -26,7 +26,7 @@ RendererHelloWorld::RendererHelloWorld(const unsigned int ups)
     m_VA = Anwill::VertexArray::Create();
     m_VA->AddBuffer(*m_VB.get(), bufferLayout);
 
-    m_Shader = Anwill::Shader::Create("assets/shaders/RectBorder.glsl");
+    m_Shader = Anwill::Shader::Create("Sandbox/assets/shaders/RectBorder.glsl");
 
     Anwill::Renderer::SetClearColor({0.1f, 0.1f, 0.1f});
 }

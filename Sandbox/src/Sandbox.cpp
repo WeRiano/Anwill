@@ -18,10 +18,10 @@ public:
     Sandbox(const Anwill::WindowSettings& ws)
         : App(ws, true)
     {
-        //AddLayer<RendererHelloWorld>(0);
+        AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
-        AddLayer<BatchRendererHelloWorld>(0, ws);
+        //AddLayer<BatchRendererHelloWorld>(0, ws);
 
         //AddLayer<EcsTestLayer>(144);
 
