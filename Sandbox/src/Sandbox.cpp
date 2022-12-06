@@ -4,11 +4,12 @@
 #include "Tests/Renderer/TextureHelloWorld.h"
 #include "Tests/Renderer/FontHelloWorld.h"
 #include "Tests/Renderer/BatchRendererHelloWorld.h"
-#include "Tests/PhysicsTest/dynamics/DynamicsRender.h"
-#include "Tests/PhysicsTest/dynamics/DynamicsTest.h"
-#include "Tests/PhysicsTest/collision/CollisionRender.h"
-#include "Tests/PhysicsTest/collision/CollisionTest.h"
-#include "Tests/EcsTest/EcsTestLayer.h"
+#include "Tests/Gui/GuiTest.h"
+#include "Tests/Physics/dynamics/DynamicsRender.h"
+#include "Tests/Physics/dynamics/DynamicsTest.h"
+#include "Tests/Physics/collision/CollisionRender.h"
+#include "Tests/Physics/collision/CollisionTest.h"
+#include "Tests/Ecs/EcsTestLayer.h"
 #include "SmallerProjects/TopDownShadow/TPS.h"
 #include "SmallerProjects/TopDownShadow/TPSCalcs.h"
 
@@ -18,7 +19,7 @@ public:
     Sandbox(const Anwill::WindowSettings& ws)
         : App(ws, true)
     {
-        AddLayer<RendererHelloWorld>(0);
+        //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
         //AddLayer<BatchRendererHelloWorld>(0, ws);
@@ -33,6 +34,8 @@ public:
 
         //AddLayer<CollisionRender>(0, ws);
         //AddLayer<CollisionTest>(30, ws);
+
+        AddLayer<GuiTest>(0);
     }
 };
 

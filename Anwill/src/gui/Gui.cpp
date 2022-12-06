@@ -1,54 +1,52 @@
-#include <backends/imgui_impl_glfw.h>
-#include <backends/imgui_impl_opengl3.h>
-
 #include "core/Assert.h"
+#include "core/Window.h"
 #include "gui/Gui.h"
 #include "gfx/Renderer.h"
 
 namespace Anwill {
 
-    void Gui::Init(void* nativeWindow)
-    {
-        AW_ASSERT(Renderer::GetAPI() == GraphicsAPI::API::OpenGL,
-                  "GUI does not support this graphics platform!");
-        #ifdef AW_PLATFORM_WINDOWS
-        auto glfwWindow = static_cast<GLFWwindow*>(nativeWindow);
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGui_ImplGlfw_InitForOpenGL(glfwWindow, false);
-        ImGui_ImplOpenGL3_Init();
-        #else
-            #error GUI does not support this platform!
-        #endif
-    }
+    Mesh GuiElement::s_RectMesh;
+    std::unique_ptr<Font> GuiElement::s_Font;
 
-    void Gui::Begin() {
-        AW_ASSERT(Renderer::GetAPI() == GraphicsAPI::API::OpenGL,
-                  "GUI does not support this graphics platform!");
-        ImGui_ImplOpenGL3_NewFrame();
-        #ifdef AW_PLATFORM_WINDOWS
-        ImGui_ImplGlfw_NewFrame();
-        #endif
-        ImGui::NewFrame();
+    std::shared_ptr<Shader> GuiWindow::s_WindowShader;
+
+    std::unique_ptr<OrthographicCamera> Gui::s_Camera;
+    std::vector<GuiWindow> Gui::s_Windows;
+    GuiWindowID Gui::s_NextID = 0;
+
+    void Gui::Init(const WindowSettings& ws)
+    {
+        Gui::s_Camera = std::make_unique<OrthographicCamera>((float) ws.width,
+                                                             (float) ws.height);
+        GuiElement::s_Font = std::make_unique<Font>("Sandbox/assets/fonts/arial.ttf");
+        GuiElement::s_RectMesh = Mesh::CreateRectMesh(1.0f, 1.0f);
+        GuiWindow::s_WindowShader =
+                Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
     }
 
     void Gui::Render()
     {
-        AW_ASSERT(Renderer::GetAPI() == GraphicsAPI::API::OpenGL,
-                  "GUI does not support this graphics platform!");
-        ImGui::ShowDemoWindow(); // TODO: REMOVE! (Temp)
-        ImGui::Render();
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        Renderer2D::BeginScene(*s_Camera);
+        for(unsigned int i = 0; i < s_Windows.size(); i++) {
+            s_Windows[i].Render();
+        }
     }
 
-    void Gui::Terminate()
+    GuiWindowID Gui::NewWindow(const std::string& title)
     {
-        AW_ASSERT(Renderer::GetAPI() == GraphicsAPI::API::OpenGL,
-                  "GUI does not support this graphics platform!");
-        ImGui_ImplOpenGL3_Shutdown();
-        #ifdef AW_PLATFORM_WINDOWS
-        ImGui_ImplGlfw_Shutdown();
-        #endif
-        ImGui::DestroyContext();
+        s_NextID++;
+
+        GuiWindow newWindow;
+        newWindow.id = s_NextID;
+        newWindow.title = title;
+        newWindow.transform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                 {200.0f, 300.0f, 0.0f});
+        newWindow.transform = Math::Mat4f::Translate(newWindow.transform,
+                                                     {600.0f, 450.0f, 0.0f});
+
+        s_Windows.push_back(newWindow);
+
+        return s_NextID;
+        // TODO: Max nr of windows (id cap)
     }
 }

@@ -6,6 +6,8 @@
 
 namespace Anwill {
 
+    std::shared_ptr<Shader> Font::s_Shader;
+
     Font::Font(const std::string& filePath)
     {
         FT_Library ftLib;
@@ -57,7 +59,7 @@ namespace Anwill {
 
             // Just skip calculating this every time we render, do it once here instead
             newGlyph.x0 = newGlyph.bearingX;
-            newGlyph.y0 = -newGlyph.height + newGlyph.bearingY;
+            newGlyph.y0 = newGlyph.bearingY - newGlyph.height;
             newGlyph.x1 = newGlyph.x0 + newGlyph.width;
             newGlyph.y1 = newGlyph.y0 + newGlyph.height;
 
@@ -157,7 +159,7 @@ namespace Anwill {
             // "now advance cursors for next glyph
             // (note that advance is number of 1/64 pixels)
             // bitshift by 6 to get value in pixels (2^6 = 64)"
-            xAdvance += (g.advance >> 6);
+            xAdvance += ((g.advance) >> 6);
         }
 
         m_VB->DynamicUpdate(vertices, sizeof(float) * text.size() * glyphSize);
@@ -167,8 +169,32 @@ namespace Anwill {
         return xAdvance;
     }
 
+    void Font::GetTextSize(const std::string& text, float& xMax, float& yMax, float& yMin)
+    {
+        xMax = 0;
+        yMax = 0;
+        yMin = 0;
+        for(unsigned int i = 0; i < text.size(); i++)
+        {
+            unsigned char c = text[i];
+            Glyph g = m_Characters[c];
+            xMax += (g.advance >> 6);
+            if (g.y0 < yMin) {
+                yMin = g.y0;
+            }
+            if (g.y1 > yMax) {
+                yMax = g.y1;
+            }
+        }
+    }
+
     void Font::Done()
     {
         m_VA->Unbind();
+    }
+
+    float Font::GetScaleValue(unsigned int fontSize)
+    {
+        return (float) fontSize / 42.0f;
     }
 }

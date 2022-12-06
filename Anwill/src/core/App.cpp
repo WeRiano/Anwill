@@ -25,7 +25,7 @@ namespace Anwill {
 
         Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
-        Gui::Init(m_Window->GetNativeWindow());
+        Gui::Init(ws);
         Ecs::Init();
         Random::Init();
         SystemEvents::Init();
@@ -59,8 +59,6 @@ namespace Anwill {
             Renderer::ClearBuffers();
 
             m_Window->PreRenderUpdate();
-
-            Gui::Begin();
 
             m_LayerStack.Update();
 

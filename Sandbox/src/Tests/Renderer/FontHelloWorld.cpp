@@ -14,11 +14,13 @@ void FontHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_Camera);
 
+    auto scale = Anwill::Font::GetScaleValue(12);
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
-                                                {1.0f, 1.0f, 0.0f});
+                                                {scale, scale, 0.0f});
     transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, 0.0f, 0.0f});
     Anwill::Renderer2D::Submit(m_Shader, m_Font,
-                             "ABCDEFGHIJKLMNOPQRSTUVXYZ1234567890!?+-`\"<>=", transform);
+                             "ABCDEFGHIJKLMNOPQRSTUVXYZ1234567890!?+-`\"<>=abcdefghijklmnopqrstuvxyz",
+                             transform);
     MoveCamera();
 
     Layer::Update(timestamp);

@@ -1,16 +1,112 @@
 #pragma once
 
 #include <memory>
-#include <imgui.h> // Include here so that client can use it
+#include <string>
+#include <functional>
+#include <vector>
+
+#include "math/Mat4f.h"
+#include "gfx/Font.h"
+#include "gfx/Mesh.h"
+#include "gfx/Renderer2D.h"
 
 namespace Anwill {
+
+    typedef unsigned int GuiWindowID;
+
+    struct GuiElement {
+        static Mesh s_RectMesh;
+        static std::unique_ptr<Font> s_Font;
+
+        Math::Mat4f transform;
+
+        virtual void Render() = 0;
+    };
+
+    template <typename... Args>
+    struct GuiButton : public GuiElement {
+        std::string text;
+        std::function<void(Args&...)> callback;
+    };
+
+    struct GuiDropdown : public GuiElement {
+        std::vector<std::shared_ptr<GuiElement>> elements;
+    };
+
+    struct GuiWindow {
+        static std::shared_ptr<Shader> s_WindowShader;
+
+        GuiWindowID id;
+        std::string title;
+        Math::Mat4f transform;
+        std::vector<std::shared_ptr<GuiElement>> elements;
+
+        void Render() {
+            RenderWindow();
+            for (unsigned int i = 0; i < elements.size(); i++) {
+                elements[i]->Render();
+            }
+        }
+
+    private:
+        void RenderWindow() {
+            auto windowScale = transform.GetScale();
+            s_WindowShader->Bind();
+            s_WindowShader->SetUniformVec2f({windowScale.GetX(), windowScale.GetY()},
+                                            "u_Size");
+            Renderer2D::Submit(s_WindowShader, GuiElement::s_RectMesh, transform);
+            auto textScale = Font::GetScaleValue(12);
+            auto textTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                    {textScale, textScale, 0.0f});
+            Math::Vec2f titlePos = GetTitleStartPos(title);
+            textTransform = Math::Mat4f::Translate(textTransform,
+                                                   {titlePos.GetX(), titlePos.GetY(),
+                                                    0.0f});
+            Renderer2D::Submit(Font::s_Shader, *GuiElement::s_Font, title, textTransform);
+        }
+
+        Math::Vec2f GetTitleStartPos(const std::string& titleStr) {
+            float borderSize = 8.0f;
+            float headerSize = borderSize * 2.5f;
+            float margin = 5.0f;
+
+            float xMax, yMax, yMin;
+            // TODO: Hide if larger than window width
+            GuiElement::s_Font->GetTextSize(titleStr, xMax, yMax, yMin);
+            auto windowScale = transform.GetScale();
+            float width = windowScale.GetX();
+            float height = windowScale.GetY();
+            Math::Vec3f origin = transform.GetTranslateVector();
+            return {origin.GetX() - width / 2 + borderSize * 2 + margin,
+                    origin.GetY() + height / 2 - headerSize + margin};
+        }
+    };
 
     class Gui
     {
     public:
-        static void Init(void* nativeWindow);
-        static void Begin();
+        static void Init(const WindowSettings& ws);
         static void Render();
-        static void Terminate();
+
+        template <class E, typename... Args>
+        static void AddElement(GuiWindowID windowID, Args&&... args) {
+            if(windowID == 0) {
+                s_Windows[0].elements.emplace_back(E(std::forward<Args>(args)...));
+            }
+
+            for(unsigned int i = 0; i < s_Windows.size(); i++) {
+                if (s_Windows[i].id == windowID) {
+                    s_Windows[0].elements.emplace_back(E(std::forward<Args>(args)...));
+                    break;
+                }
+            }
+        }
+
+        static GuiWindowID NewWindow(const std::string& title);
+
+    private:
+        static std::unique_ptr<OrthographicCamera> s_Camera;
+        static std::vector<GuiWindow> s_Windows;
+        static GuiWindowID s_NextID;
     };
 }

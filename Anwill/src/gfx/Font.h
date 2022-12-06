@@ -21,6 +21,9 @@ namespace Anwill {
     class Font
     {
     public:
+        // This is static for now since
+        static std::shared_ptr<Shader> s_Shader;
+
         Font(const std::string& filePath);
 
         /**
@@ -31,8 +34,15 @@ namespace Anwill {
          */
         int Prepare(const std::string& text, const std::shared_ptr<Shader>& shader,
                       int startXPos);
+
+        /**
+         * @brief Get the distance of some text in the positive y direction, positive
+         *        x direction and in the negative y direction.
+         */
+        void GetTextSize(const std::string& text, float& xMax, float& yMax, float& yMin);
         void Done();
 
+        static float GetScaleValue(unsigned int fontSize);
     private:
         std::shared_ptr<VertexBuffer> m_VB;
         std::shared_ptr<VertexArray> m_VA;

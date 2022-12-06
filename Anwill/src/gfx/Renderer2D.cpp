@@ -14,6 +14,7 @@ namespace Anwill {
     {
         s_API = api;
         BatchDataInit();
+        Font::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/Font.glsl");
     }
 
     void Renderer2D::DrawBatch()
@@ -144,9 +145,9 @@ namespace Anwill {
     }
 
     void Renderer2D::Submit(const std::shared_ptr<Shader> &shader,
-                          const Mesh& mesh,
-                          const Math::Mat4f& transform,
-                          const std::shared_ptr<Texture>& texture)
+                           const Mesh& mesh,
+                           const Math::Mat4f& transform,
+                           const std::shared_ptr<Texture>& texture)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
