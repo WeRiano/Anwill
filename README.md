@@ -11,10 +11,7 @@ Anwill is being developed in CLion and is therefore compiled with CMake. It is r
 to use CLion to build and run the project since it automizes the build and run process 
 down to a single button, but it's not necessary.
 
-1. Clone the repo.
-2. Build G manually with CMake under `Anwill/vendor/glfw/build`
-
-*More detailed and general installation guide coming soon!*
+* _Detailed installation guide coming soon!_
 
 ## How does it work?
 Checkout [Sandbox](Sandbox/src) for various examples of how to use specific systems.
@@ -27,19 +24,16 @@ Checkout [Sandbox](Sandbox/src) for various examples of how to use specific syst
 ## Features
 
 * Event System
-* 2D Renderer with Batch Rendering
+* 2D Renderer with batch rendering
 * (Efficient) Text Rendering
-* Sprites and simple Sprite Animations (which supports SpriteSheet loading)
+* Sprites and sprite animations (which supports spritesheet loading/handling)
 * ECS
 * 2D Physics - Dynamics and Collision
 * Time profiling
-* Custom Precompiler Shader Macros
+* Custom pre-compiler shader macros
 * Logging
-* .. and more! 
-  * Keyboard and Mouse input
-  * Vector and Matrix library
-  * RNG module
-  * Very simple FileIO (to and from string)
+* Math library
+* ... and more
 
 
 ### Supported platforms

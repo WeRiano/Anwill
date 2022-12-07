@@ -114,7 +114,6 @@ namespace Anwill {
                                                           origin.GetY() - size.GetY() / 2},
                                                          10.0f,
                                                          s_MousePos)) {
-                AW_INFO("IS INSIDE!");
                 s_ScalingX = true;
                 s_ScalingY = true;
             }
