@@ -16,7 +16,8 @@ namespace Anwill {
         if (!status) {
             AW_FATAL("GlAD failed to initialize!");
         } else {
-            AW_INFO("Glad loaded! OpenGL version: {0}", (const char*) glGetString(GL_VERSION));
+            AW_INFO("Glad loaded! OpenGL version: {0}",
+                    (const char*) glGetString(GL_VERSION));
             int width, height;
             glfwGetWindowSize(glfwWindow, &width, &height);
             glViewport(0, 0, width, height);

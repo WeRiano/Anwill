@@ -30,6 +30,7 @@
 #include "math/Mat4f.h"
 #include "math/Vec2f.h"
 #include "math/Vec3f.h"
+#include "math/Algo.h"
 
 // Physics
 #include "physics/Dynamics.h"

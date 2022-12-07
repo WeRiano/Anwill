@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 
+#include "events/Event.h"
 #include "math/Mat4f.h"
 #include "gfx/Font.h"
 #include "gfx/Mesh.h"
@@ -41,19 +42,20 @@ namespace Anwill {
         Math::Mat4f transform;
         std::vector<std::shared_ptr<GuiElement>> elements;
 
-        void Render() {
-            RenderWindow();
+        void Render(bool selected) {
+            RenderWindow(selected);
             for (unsigned int i = 0; i < elements.size(); i++) {
                 elements[i]->Render();
             }
         }
 
     private:
-        void RenderWindow() {
+        void RenderWindow(bool selected) {
             auto windowScale = transform.GetScale();
             s_WindowShader->Bind();
             s_WindowShader->SetUniformVec2f({windowScale.GetX(), windowScale.GetY()},
                                             "u_Size");
+            s_WindowShader->SetUniform1i(selected, "u_Selected");
             Renderer2D::Submit(s_WindowShader, GuiElement::s_RectMesh, transform);
             auto textScale = Font::GetScaleValue(12);
             auto textTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
@@ -108,5 +110,13 @@ namespace Anwill {
         static std::unique_ptr<OrthographicCamera> s_Camera;
         static std::vector<GuiWindow> s_Windows;
         static GuiWindowID s_NextID;
+
+        static Math::Vec2f s_MousePos;
+        static bool s_Moving;
+        static bool s_ScalingX, s_ScalingY;
+
+        static void OnMouseMove(std::unique_ptr<Event>& event);
+        static void OnMousePress(std::unique_ptr<Event>& event);
+        static void OnMouseRelease(std::unique_ptr<Event>& event);
     };
 }

@@ -18,6 +18,7 @@ layout(location = 0) out vec4 color;
 
 uniform vec2 u_Size;
 uniform mat4 u_Transform;
+uniform bool u_Selected;
 
 void main()
 {
@@ -39,7 +40,11 @@ void main()
         discard;
     } else if(gl_FragCoord.y > centre.y + u_Size.y / 2 - headerSize) {
         // Header
-        color = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+        if(u_Selected) {
+            color = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        } else {
+            color = vec4(0.1f, 0.1f, 0.1f, 1.0f);
+        }
     } else {
         color = vec4(0.1f, 0.1f, 0.1f, 0.7f);
     }

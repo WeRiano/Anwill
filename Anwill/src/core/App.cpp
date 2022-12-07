@@ -24,11 +24,11 @@ namespace Anwill {
         m_Window = Window::Create(ws);
 
         Input::Init(m_Window->GetNativeWindow());
+        SystemEvents::Init();
         Renderer::Init();
         Gui::Init(ws);
         Ecs::Init();
         Random::Init();
-        SystemEvents::Init();
 
         SystemEvents::Subscribe<WindowCloseEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowClose));
