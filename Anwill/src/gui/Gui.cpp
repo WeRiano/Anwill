@@ -15,6 +15,7 @@ namespace Anwill {
     std::unique_ptr<OrthographicCamera> Gui::s_Camera;
     std::vector<GuiWindow> Gui::s_Windows;
     GuiWindowID Gui::s_NextID = 0;
+    WindowSettings Gui::s_WindowSettings;
     Math::Vec2f Gui::s_MousePos;
     bool Gui::s_Moving = false;
     bool Gui::s_ScalingX = false;
@@ -25,12 +26,11 @@ namespace Anwill {
 
     void Gui::Init(const WindowSettings& ws)
     {
-        Gui::s_Camera = std::make_unique<OrthographicCamera>((float) ws.width,
-                                                             (float) ws.height);
+        s_WindowSettings = ws;
+        s_Camera = std::make_unique<OrthographicCamera>((float) ws.width, (float) ws.height);
         GuiElement::s_Font = std::make_unique<Font>("Sandbox/assets/fonts/arial.ttf");
         GuiElement::s_RectMesh = Mesh::CreateRectMesh(1.0f, 1.0f);
-        GuiWindow::s_WindowShader =
-                Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
+        GuiWindow::s_WindowShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
 
         SystemEvents::Subscribe<MouseMoveEvent>(OnMouseMove);
         SystemEvents::Subscribe<MouseButtonPressEvent>(OnMousePress);
@@ -159,25 +159,46 @@ namespace Anwill {
         Math::Vec3f newMousePos3f = {newMousePos.GetX(), newMousePos.GetY(), 0.0f};
         Math::Vec3f mouseDelta = newMousePos3f - oldMousePos;
         if(s_Moving) {
-            mat = Math::Mat4f::Translate(mat, mouseDelta);
+            Math::Vec2f headerOrigin = {mat.GetTranslateVector().GetX(), mat.GetTranslateVector().GetY() + mat.GetScale().GetY() / 2.0f - GuiWindow::s_HeaderSize / 2.0f};
+            if(!(headerOrigin.GetY() + mouseDelta.GetY() + GuiWindow::s_HeaderSize / 2.0f > (float) s_WindowSettings.height ||
+               headerOrigin.GetY() + mouseDelta.GetY() - GuiWindow::s_HeaderSize / 2.0f < 0.0f)) {
+                mat = Math::Mat4f::Translate(mat, {0.0f, mouseDelta.GetY(), 0.0f});
+            }
+            if(!(headerOrigin.GetX() + mouseDelta.GetX() - mat.GetScale().GetX() / 2.0f < 0.0f ||
+               headerOrigin.GetX() + mouseDelta.GetX() + mat.GetScale().GetX() / 2.0f > (float) s_WindowSettings.width)) {
+                mat = Math::Mat4f::Translate(mat, {mouseDelta.GetX(), 0.0f, 0.0f});
+            }
             return true;
         } else if(s_ScalingX || s_ScalingY)
         {
+            Math::Vec2f minSize = {150.0f, 150.0f};
             if (s_ScalingX)
             {
                 float oldWidth = mat.GetScale().GetX();
                 float newWidth = oldWidth + mouseDelta.GetX();
+                if(newWidth < minSize.GetX()) {
+                    newWidth = minSize.GetX();
+                }
+                if(mat.GetTranslateVector().GetX() + newWidth / 2.0f > s_WindowSettings.width) {
+                    newWidth = (s_WindowSettings.width - mat.GetTranslateVector().GetX()) * 2.0f;
+                }
                 float scaleFactor = newWidth / oldWidth;
                 mat = Math::Mat4f::Scale(mat, {scaleFactor, 1.0f, 1.0f});
-                mat = Math::Mat4f::Translate(mat, {mouseDelta.GetX() / 2.0f, 0.0f, 0.0f});
+                mat = Math::Mat4f::Translate(mat, {(newWidth-oldWidth)*0.5f, 0.0f, 0.0f});
             }
             if (s_ScalingY)
             {
                 float oldHeight = mat.GetScale().GetY();
                 float newHeight = oldHeight - mouseDelta.GetY();
+                if(newHeight < minSize.GetY()) {
+                    newHeight = minSize.GetY();
+                }
+                if(mat.GetTranslateVector().GetY() - newHeight / 2.0f < 0.0f) {
+                    newHeight = (mat.GetTranslateVector().GetY()) * 2.0f;
+                }
                 float scaleFactor = newHeight / oldHeight;
                 mat = Math::Mat4f::Scale(mat, {1.0f, scaleFactor, 1.0f});
-                mat = Math::Mat4f::Translate(mat, {0.0f, mouseDelta.GetY() / 2.0f, 0.0f});
+                mat = Math::Mat4f::Translate(mat, {0.0f, -(newHeight-oldHeight)*0.5f, 0.0f});
             }
             return true;
         }

@@ -14,6 +14,4 @@ private:
     std::shared_ptr<Anwill::VertexArray> m_VA;
     std::shared_ptr<Anwill::IndexBuffer> m_IB;
     std::shared_ptr<Anwill::Shader> m_Shader;
-
-    Anwill::OrthographicCamera m_Camera;
 };

@@ -36,6 +36,10 @@ namespace Anwill {
     };
 
     struct GuiWindow {
+        static constexpr float s_BorderSize = 8.0f;
+        static constexpr float s_HeaderSize = s_BorderSize * 2.5f;
+        static constexpr float s_Margin = 5.0f;
+
         static std::shared_ptr<Shader> s_WindowShader;
 
         GuiWindowID id;
@@ -90,10 +94,6 @@ namespace Anwill {
         }
 
     private:
-        static constexpr float s_BorderSize = 8.0f;
-        static constexpr float s_HeaderSize = s_BorderSize * 2.5f;
-        static constexpr float s_Margin = 5.0f;
-
         void RenderWindow(bool selected) {
             // Render Window
             auto windowScale = transform.GetScale();
@@ -156,6 +156,7 @@ namespace Anwill {
         static std::vector<GuiWindow> s_Windows;
         static GuiWindowID s_NextID;
 
+        static WindowSettings s_WindowSettings;
         static Math::Vec2f s_MousePos;
         static bool s_Moving, s_ScalingX, s_ScalingY;
         static bool s_HoveringDiagonalScaling, s_HoveringHeader;
