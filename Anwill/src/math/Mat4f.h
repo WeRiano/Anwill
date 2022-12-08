@@ -11,15 +11,15 @@
 namespace Anwill::Math {
 
     // Column major (it do go down, like so:)
-    // -------------
+    // -------------------
     // x.x x.y x.z transX
     // y.x y.y y.z transY
     // z.x z.y z.z transZ
     // p.x p.y p.z 1
-    // -------------
-    // { x.x, y.x, z.x, p.x, x.y, y.y, z.y, p.y, x.z, y.z, z.z, p.z,
-    //  transX, transY, transZ, 1 }
-    // -------------
+    // -------------------
+    // [x.x, y.x, z.x, p.x, x.y, y.y, z.y, p.y, x.z, y.z, z.z, p.z,
+    //  transX, transY, transZ, 1]
+    // -------------------
     class Mat4f
     {
     private:

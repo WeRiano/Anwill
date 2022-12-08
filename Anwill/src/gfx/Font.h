@@ -39,7 +39,7 @@ namespace Anwill {
          * @brief Get the distance of some text in the positive y direction, positive
          *        x direction and in the negative y direction.
          */
-        void GetTextSize(const std::string& text, float& xMax, float& yMax, float& yMin);
+        void GetTextSize(const std::string& text, float* xMax, float* yMax, float* yMin);
         void Done();
 
         static float GetScaleValue(unsigned int fontSize);

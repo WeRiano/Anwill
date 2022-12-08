@@ -21,10 +21,9 @@ namespace Anwill {
     App::App(const WindowSettings& ws, bool enableGUI)
         : m_Running(true), m_Minimized(false)
     {
-        m_Window = Window::Create(ws);
-
-        Input::Init(m_Window->GetNativeWindow());
         SystemEvents::Init();
+        m_Window = Window::Create(ws);
+        Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
         Gui::Init(ws);
         Ecs::Init();

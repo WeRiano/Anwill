@@ -169,21 +169,21 @@ namespace Anwill {
         return xAdvance;
     }
 
-    void Font::GetTextSize(const std::string& text, float& xMax, float& yMax, float& yMin)
+    void Font::GetTextSize(const std::string& text, float* xMax, float* yMax, float* yMin)
     {
-        xMax = 0;
-        yMax = 0;
-        yMin = 0;
+        *xMax = 0;
+        *yMax = 0;
+        *yMin = 0;
         for(unsigned int i = 0; i < text.size(); i++)
         {
             unsigned char c = text[i];
             Glyph g = m_Characters[c];
-            xMax += (g.advance >> 6);
-            if (g.y0 < yMin) {
-                yMin = g.y0;
+            *xMax += (g.advance >> 6);
+            if (g.y0 < *yMin) {
+                *yMin = g.y0;
             }
-            if (g.y1 > yMax) {
-                yMax = g.y1;
+            if (g.y1 > *yMax) {
+                *yMax = g.y1;
             }
         }
     }

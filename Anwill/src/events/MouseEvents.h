@@ -32,4 +32,26 @@ namespace Anwill {
     private:
         MouseButtonCode m_MouseButtonCode;
     };
+
+    class SetMouseCursorEvent : public Event {
+    public:
+        enum class CursorType : int {
+            Arrow = 0,
+            HorizontalResize,
+            VerticalResize,
+            PositiveDiagonalResize,
+            NegativeDiagonalResize,
+            TextInput,
+            PointingHand,
+            GrabbingHand,
+
+            NumberOfCursorTypes
+        };
+
+        SetMouseCursorEvent(CursorType cursorType)
+            : m_CursorType(cursorType) {}
+        inline const CursorType GetCursorType() const { return m_CursorType; }
+    private:
+        CursorType m_CursorType;
+    };
 }

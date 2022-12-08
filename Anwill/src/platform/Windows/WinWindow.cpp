@@ -9,6 +9,17 @@
 namespace Anwill {
 
     bool WinWindow::s_Created = false;
+    std::array<int, (std::size_t) SetMouseCursorEvent::CursorType::NumberOfCursorTypes>
+    WinWindow::s_MouseCursorGLFWIDs = {
+            GLFW_ARROW_CURSOR,
+            GLFW_RESIZE_EW_CURSOR,
+            GLFW_RESIZE_NS_CURSOR,
+            GLFW_RESIZE_NESW_CURSOR,
+            GLFW_RESIZE_NWSE_CURSOR,
+            GLFW_IBEAM_CURSOR,
+            GLFW_POINTING_HAND_CURSOR,
+            GLFW_RESIZE_ALL_CURSOR
+    };
 
     WinWindow::WinWindow(const WindowSettings& ws)
     {
@@ -181,5 +192,16 @@ namespace Anwill {
                     break;
             }
         });
+
+        SystemEvents::Subscribe<SetMouseCursorEvent>(
+                AW_BIND_THIS_MEMBER_FUNC(WinWindow::OnSetCursorEvent));
+    }
+
+    void WinWindow::OnSetCursorEvent(const std::unique_ptr<Event>& event)
+    {
+        SetMouseCursorEvent e = static_cast<SetMouseCursorEvent&>(*event);
+        auto cursor = glfwCreateStandardCursor(
+                s_MouseCursorGLFWIDs[static_cast<int>(e.GetCursorType())]);
+        glfwSetCursor(m_Window, cursor);
     }
 }

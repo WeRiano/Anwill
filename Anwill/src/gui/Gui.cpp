@@ -4,7 +4,6 @@
 #include "gfx/Renderer.h"
 #include "events/MouseEvents.h"
 #include "events/SystemEvents.h"
-#include "math/Algo.h"
 
 namespace Anwill {
 
@@ -20,6 +19,9 @@ namespace Anwill {
     bool Gui::s_Moving = false;
     bool Gui::s_ScalingX = false;
     bool Gui::s_ScalingY = false;
+    bool Gui::s_HoveringDiagonalScaling = false;
+    bool Gui::s_HoveringHeader = false;
+    unsigned int Gui::s_HoveringWindow;
 
     void Gui::Init(const WindowSettings& ws)
     {
@@ -68,84 +70,39 @@ namespace Anwill {
         s_Windows.push_back(newWindow);
 
         return s_NextID;
-        // TODO: Max nr of windows (id cap)
+        // TODO: Max nr of windows (id cap or something)
     }
 
     void Gui::OnMouseMove(std::unique_ptr<Event>& event)
     {
         auto e = static_cast<MouseMoveEvent&>(*event);
-        auto& mat = s_Windows[0].transform;
-        Math::Vec3f oldMousePos = {s_MousePos.GetX(), s_MousePos.GetY(), 0.0f};
-        Math::Vec3f newMousePos = {e.GetXPos(), e.GetYPos(), 0.0f};
-        Math::Vec3f delta = newMousePos - oldMousePos;
-        if(s_Moving) {
-            mat = Math::Mat4f::Translate(mat, delta);
-        }
-        if(s_ScalingX) {
-            float oldSize = mat.GetScale().GetX();
-            float newSize = (newMousePos.GetX() - (mat.GetTranslateVector().GetX() - oldSize / 2.0f));
-            float scaleFactor = newSize/oldSize;
-            mat = Math::Mat4f::Scale(mat, {scaleFactor, 1.0f, 1.0f});
-            mat = Math::Mat4f::Translate(mat, {(newSize - oldSize) * 0.5f, 0.0f, 0.0f});
-            // TODO: Minimum size
-        }
-        if(s_ScalingY) {
-            float oldSize = mat.GetScale().GetY();
-            float newSize = (mat.GetTranslateVector().GetY() + oldSize / 2.0f) - newMousePos.GetY();
-            float scaleFactor = newSize/oldSize;
-            mat = Math::Mat4f::Scale(mat, {1.0f, scaleFactor, 1.0f});
-            mat = Math::Mat4f::Translate(mat, {0.0f, -(newSize - oldSize) * 0.5f, 0.0f});
-            // TODO: Minimum size
+        Math::Vec2f newMousePos = {e.GetXPos(), e.GetYPos()};
+        if(!UpdateSelectedWindow(newMousePos)) {
+            CheckForHovering(newMousePos);
+            SetMouseCursor(newMousePos);
         }
         s_MousePos = {e.GetXPos(), e.GetYPos()};
     }
 
     void Gui::OnMousePress(std::unique_ptr<Event>& event)
     {
-        // TODO: Helper functions to cleanup
-
-        // TODO: Don't hard code (use shader macro system!)
-        float borderSize = 8.0f;
-        float headerSize = borderSize * 2.5f;
-        for(unsigned int i = 0; i < s_Windows.size(); i++) {
-            auto origin = s_Windows[i].transform.GetTranslateVector();
-            auto size = s_Windows[i].transform.GetScale();
-            if(i == 0 && Math::Algo::IsPointInsideCircle({origin.GetX() + size.GetX() / 2,
-                                                          origin.GetY() - size.GetY() / 2},
-                                                         10.0f,
-                                                         s_MousePos)) {
-                s_ScalingX = true;
-                s_ScalingY = true;
-            }
-            if(Math::Algo::IsPointInsideRectangle({origin.GetX() - size.GetX() / 2,
-                                                   origin.GetY() + size.GetY() / 2},
-                                                  {origin.GetX() + size.GetX() / 2,
-                                                   origin.GetY() + size.GetY() / 2},
-                                                  {origin.GetX() + size.GetX() / 2,
-                                                   origin.GetY() - size.GetY() / 2},
-                                                  {origin.GetX() - size.GetX() / 2,
-                                                   origin.GetY() - size.GetY() / 2},
-                                                  s_MousePos)) {
-                if(i > 0) {
-                    // Move this window to the front since it has been selected
-                    std::rotate(s_Windows.begin(),
-                                s_Windows.begin() + i,
-                                s_Windows.begin() + i + 1);
+        if(s_HoveringHeader) {
+            std::rotate(s_Windows.begin(), s_Windows.begin() + s_HoveringWindow, s_Windows.begin() + s_HoveringWindow + 1);
+            s_Moving = true;
+        }
+        if(s_HoveringDiagonalScaling) {
+            std::rotate(s_Windows.begin(), s_Windows.begin() + s_HoveringWindow, s_Windows.begin() + s_HoveringWindow + 1);
+            s_ScalingX = true;
+            s_ScalingY = true;
+        } else
+        {
+            for (unsigned int i = 0; i < s_Windows.size(); i++)
+            {
+                if (s_Windows[i].IsHoveringWindow(s_MousePos))
+                {
+                    std::rotate(s_Windows.begin(), s_Windows.begin() + i, s_Windows.begin() + i + 1);
+                    break;
                 }
-                if(Math::Algo::IsPointInsideRectangle({origin.GetX() - size.GetX() / 2,
-                                                       origin.GetY() + size.GetY() / 2},
-                                                      {origin.GetX() + size.GetX() / 2,
-                                                       origin.GetY() + size.GetY() / 2},
-                                                      {origin.GetX() + size.GetX() / 2,
-                                                       origin.GetY() + size.GetY() / 2
-                                                       - headerSize},
-                                                      {origin.GetX() - size.GetX() / 2,
-                                                       origin.GetY() + size.GetY() / 2
-                                                       - headerSize},
-                                                      s_MousePos)) {
-                    s_Moving = true;
-                }
-                break;
             }
         }
     }
@@ -155,5 +112,77 @@ namespace Anwill {
         s_Moving = false;
         s_ScalingX = false;
         s_ScalingY = false;
+    }
+
+    void Gui::SetMouseCursor(const Math::Vec2f& newMousePos)
+    {
+        if (s_HoveringDiagonalScaling)
+        {
+            SystemEvents::Add<SetMouseCursorEvent>(
+                    SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
+        } else if (s_HoveringHeader)
+        {
+            SystemEvents::Add<SetMouseCursorEvent>(
+                    SetMouseCursorEvent::CursorType::GrabbingHand);
+        } else
+        {
+            SystemEvents::Add<SetMouseCursorEvent>(
+                    SetMouseCursorEvent::CursorType::Arrow);
+        }
+    }
+
+    void Gui::CheckForHovering(const Math::Vec2f& newMousePos)
+    {
+        s_HoveringDiagonalScaling = false;
+        s_HoveringHeader = false;
+        for (unsigned int i = 0; i < s_Windows.size(); i++)
+        {
+            if (s_Windows[i].IsHoveringResize(s_MousePos))
+            {
+                s_HoveringDiagonalScaling = true;
+                s_HoveringWindow = i;
+                break;
+            }
+            if (s_Windows[i].IsHoveringHeader(s_MousePos))
+            {
+                s_HoveringHeader = true;
+                s_HoveringWindow = i;
+                break;
+            }
+        }
+    }
+
+    bool Gui::UpdateSelectedWindow(const Math::Vec2f& newMousePos)
+    {
+        auto& mat = s_Windows[0].transform;
+        Math::Vec3f oldMousePos = {s_MousePos.GetX(), s_MousePos.GetY(), 0.0f};
+        Math::Vec3f newMousePos3f = {newMousePos.GetX(), newMousePos.GetY(), 0.0f};
+        Math::Vec3f mouseDelta = newMousePos3f - oldMousePos;
+        if(s_Moving) {
+            mat = Math::Mat4f::Translate(mat, mouseDelta);
+            return true;
+        } else if(s_ScalingX || s_ScalingY)
+        {
+            if (s_ScalingX)
+            {
+                float oldWidth = mat.GetScale().GetX();
+                float newWidth = oldWidth + mouseDelta.GetX();
+                float scaleFactor = newWidth / oldWidth;
+                mat = Math::Mat4f::Scale(mat, {scaleFactor, 1.0f, 1.0f});
+                mat = Math::Mat4f::Translate(mat, {mouseDelta.GetX() / 2.0f, 0.0f, 0.0f});
+                // TODO: Minimum size
+            }
+            if (s_ScalingY)
+            {
+                float oldHeight = mat.GetScale().GetY();
+                float newHeight = oldHeight - mouseDelta.GetY();
+                float scaleFactor = newHeight / oldHeight;
+                mat = Math::Mat4f::Scale(mat, {1.0f, scaleFactor, 1.0f});
+                mat = Math::Mat4f::Translate(mat, {0.0f, mouseDelta.GetY() / 2.0f, 0.0f});
+                // TODO: Minimum size
+            }
+            return true;
+        }
+        return false;
     }
 }

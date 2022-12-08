@@ -16,6 +16,7 @@ namespace Anwill {
         s_SysEvents.Register<MouseMoveEvent>();
         s_SysEvents.Register<MouseButtonPressEvent>();
         s_SysEvents.Register<MouseButtonReleaseEvent>();
+        s_SysEvents.Register<SetMouseCursorEvent>();
 
         s_SysEvents.Register<KeyPressEvent>();
         s_SysEvents.Register<KeyReleaseEvent>();
