@@ -51,9 +51,6 @@ namespace Anwill {
         }
 
         bool IsHoveringHeader(const Math::Vec2f& mousePos) {
-            // TODO: Don't hard code sizes (use shader macro system!)
-            float borderSize = 8.0f;
-            float headerSize = borderSize * 2.5f;
             auto origin = transform.GetTranslateVector();
             auto size = transform.GetScale();
             return (Math::Algo::IsPointInsideRectangle({origin.GetX() - size.GetX() / 2,
@@ -62,10 +59,10 @@ namespace Anwill {
                                                    origin.GetY() + size.GetY() / 2},
                                                   {origin.GetX() + size.GetX() / 2,
                                                    origin.GetY() + size.GetY() / 2
-                                                   - headerSize},
+                                                   - s_HeaderSize},
                                                   {origin.GetX() - size.GetX() / 2,
                                                    origin.GetY() + size.GetY() / 2
-                                                   - headerSize},
+                                                   - s_HeaderSize},
                                                   mousePos));
         }
 
@@ -93,39 +90,42 @@ namespace Anwill {
         }
 
     private:
+        static constexpr float s_BorderSize = 8.0f;
+        static constexpr float s_HeaderSize = s_BorderSize * 2.5f;
+        static constexpr float s_Margin = 5.0f;
+
         void RenderWindow(bool selected) {
+            // Render Window
             auto windowScale = transform.GetScale();
             s_WindowShader->Bind();
             s_WindowShader->SetUniformVec2f({windowScale.GetX(), windowScale.GetY()}, "u_Size");
             s_WindowShader->SetUniform1i(selected, "u_Selected");
             Renderer2D::Submit(s_WindowShader, GuiElement::s_RectMesh, transform);
+
+            // Set Text Size to 12
             auto textScale = Font::GetScaleValue(12);
             auto textTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                     {textScale, textScale, 0.0f});
-            Math::Vec2f titleStartPos, titleEndPos;
-            GetTitleStartAndEnd(title, titleStartPos, titleEndPos);
+
+            // Get the largest title string that we can fit inside header
+            unsigned int textMaxWidth = transform.GetScale().GetX() - (s_BorderSize * 2 + s_Margin) * 2;
+            std::string parsedTitle = GuiElement::s_Font->GetLargestSubstr(title, textMaxWidth * 1.0f / textScale);
+
+            // Get the position of the title
+            Math::Vec2f titleStartPos = GetTitleStartPos();
             textTransform = Math::Mat4f::Translate(textTransform, {titleStartPos.GetX(), titleStartPos.GetY(), 0.0f});
-            Renderer2D::Submit(Font::s_Shader, *GuiElement::s_Font, title, textTransform);
+
+            // Render title
+            Renderer2D::Submit(Font::s_Shader, *GuiElement::s_Font, parsedTitle, textTransform);
         }
 
-        void GetTitleStartAndEnd(const std::string& titleStr, Math::Vec2f& start, Math::Vec2f& end) {
-            // TODO: Don't hardcode
-            float borderSize = 8.0f;
-            float headerSize = borderSize * 2.5f;
-            float margin = 5.0f;
-
-            float xMax, yMax, yMin;
-            // TODO: Hide title if larger than window width
-            // TODO: Get text size should take window width as input and return the
-            //  largest string possible instead of this solution
-            GuiElement::s_Font->GetTextSize(titleStr, xMax, yMax, yMin);
-            auto windowScale = transform.GetScale();
-            float width = windowScale.GetX();
-            float height = windowScale.GetY();
+        Math::Vec2f GetTitleStartPos() {
+            auto windowSize = transform.GetScale();
+            float width = windowSize.GetX();
+            float height = windowSize.GetY();
             Math::Vec3f origin = transform.GetTranslateVector();
-            start = {origin.GetX() - width / 2 + borderSize * 2 + margin,
-                     origin.GetY() + height / 2 - headerSize + margin};
-            end = {start.GetX() + xMax, start.GetY()};
+            return {origin.GetX() - width / 2 + s_BorderSize * 2 + s_Margin,
+                     origin.GetY() + height / 2 - s_HeaderSize + s_Margin};
         }
     };
 

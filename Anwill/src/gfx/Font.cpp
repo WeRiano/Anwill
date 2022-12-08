@@ -169,23 +169,23 @@ namespace Anwill {
         return xAdvance;
     }
 
-    void Font::GetTextSize(const std::string& text, float& xMax, float& yMax, float& yMin)
+    std::string Font::GetLargestSubstr(const std::string& text, unsigned int maxWidth)
     {
-        xMax = 0;
-        yMax = 0;
-        yMin = 0;
+        unsigned int curWidth = 0;
+        std::string result;
         for(unsigned int i = 0; i < text.size(); i++)
         {
-            unsigned char c = text[i];
+            char c = text[i];
             Glyph g = m_Characters[c];
-            xMax += (g.advance >> 6);
-            if (g.y0 < yMin) {
-                yMin = g.y0;
+            unsigned int widthIncrease = (g.advance >> 6);
+            if(curWidth + widthIncrease > maxWidth)
+            {
+                return result;
             }
-            if (g.y1 > yMax) {
-                yMax = g.y1;
-            }
+            curWidth += widthIncrease;
+            result += c;
         }
+        return result;
     }
 
     void Font::Done()

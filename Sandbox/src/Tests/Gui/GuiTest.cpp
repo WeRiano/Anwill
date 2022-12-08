@@ -5,7 +5,7 @@ GuiTest::GuiTest(const unsigned int ups)
 {
     Anwill::Renderer::SetClearColor({0.3f, 0.4f, 0.5f});
     Anwill::Gui::NewWindow("Test");
-    Anwill::Gui::NewWindow("Second");
+    Anwill::Gui::NewWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
 }
 
 void GuiTest::Update(const Anwill::Timestamp& timestamp)

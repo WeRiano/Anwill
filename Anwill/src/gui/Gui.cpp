@@ -170,7 +170,6 @@ namespace Anwill {
                 float scaleFactor = newWidth / oldWidth;
                 mat = Math::Mat4f::Scale(mat, {scaleFactor, 1.0f, 1.0f});
                 mat = Math::Mat4f::Translate(mat, {mouseDelta.GetX() / 2.0f, 0.0f, 0.0f});
-                // TODO: Minimum size
             }
             if (s_ScalingY)
             {
@@ -179,7 +178,6 @@ namespace Anwill {
                 float scaleFactor = newHeight / oldHeight;
                 mat = Math::Mat4f::Scale(mat, {1.0f, scaleFactor, 1.0f});
                 mat = Math::Mat4f::Translate(mat, {0.0f, mouseDelta.GetY() / 2.0f, 0.0f});
-                // TODO: Minimum size
             }
             return true;
         }
