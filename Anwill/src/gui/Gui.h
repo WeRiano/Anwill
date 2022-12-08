@@ -114,11 +114,11 @@ namespace Anwill {
             float headerSize = borderSize * 2.5f;
             float margin = 5.0f;
 
-            float xMax;
+            float xMax, yMax, yMin;
             // TODO: Hide title if larger than window width
             // TODO: Get text size should take window width as input and return the
             //  largest string possible instead of this solution
-            GuiElement::s_Font->GetTextSize(titleStr, &xMax, nullptr, nullptr);
+            GuiElement::s_Font->GetTextSize(titleStr, xMax, yMax, yMin);
             auto windowScale = transform.GetScale();
             float width = windowScale.GetX();
             float height = windowScale.GetY();
