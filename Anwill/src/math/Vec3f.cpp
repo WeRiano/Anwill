@@ -72,6 +72,11 @@ namespace Anwill::Math {
         return {rhs.GetX() * lhs, rhs.GetY() * lhs, rhs.GetZ() * lhs};
     }
 
+    Vec3f::operator Vec2f() const
+    {
+        return {m_X, m_Y};
+    }
+
     float Vec3f::DotProduct(const Vec3f& other) const
     {
         return m_X * other.m_X + m_Y * other.m_Y + m_Z * other.m_Z;

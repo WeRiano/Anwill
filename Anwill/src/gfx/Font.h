@@ -40,6 +40,7 @@ namespace Anwill {
          *        x direction and in the negative y direction.
          */
         std::string GetLargestSubstr(const std::string& text, unsigned int maxWidth);
+        unsigned int GetStringWidth(const std::string& text);
         void Done();
 
         static float GetScaleValue(unsigned int fontSize);

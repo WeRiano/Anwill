@@ -7,6 +7,15 @@ namespace Anwill::Math {
     class Algo
     {
     public:
+        /**
+         * @brief Points are clockwise.
+         * @param a
+         * @param b
+         * @param c
+         * @param d
+         * @param point
+         * @return
+         */
         static bool IsPointInsideRectangle(const Math::Vec2f& a, const Math::Vec2f& b,
                                            const Math::Vec2f& c, const Math::Vec2f& d,
                                            const Math::Vec2f& point);

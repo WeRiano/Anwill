@@ -14,12 +14,14 @@ namespace Anwill::Math {
         Vec2f operator+(const Vec2f& other) const;
         Vec2f operator-(const Vec2f& other) const;
         void operator+=(const Vec2f& other);
+        operator Vec3f() const;
 
         float ScalarProjection(Vec2f vec2f) const;
         float DotProduct(const Vec2f& other) const;
         void Move(float deltaX, float deltaY);
         void Normalize();
         void Negate();
+        void Clamp(const Vec2f& min, const Vec2f& max);
         float GetLength() const;
         float GetX() const;
         float GetY() const;

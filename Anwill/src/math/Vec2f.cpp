@@ -51,6 +51,11 @@ namespace Anwill::Math {
         return {lhs * rhs.GetX(),lhs * rhs.GetY()};
     }
 
+    Vec2f::operator Vec3f() const
+    {
+        return {m_X, m_Y, 0.0f};
+    }
+
     float Vec2f::ScalarProjection(Vec2f vec2f) const
     {
         vec2f.Normalize();
@@ -79,6 +84,14 @@ namespace Anwill::Math {
     {
         m_X = -m_X;
         m_Y = -m_Y;
+    }
+
+    void Vec2f::Clamp(const Vec2f& min, const Vec2f& max)
+    {
+        if(m_X < min.m_X) { m_X = min.m_X; }
+        if(m_X > max.m_X) { m_X = max.m_X; }
+        if(m_Y < min.m_Y) { m_Y = min.m_Y; }
+        if(m_Y > max.m_Y) { m_Y = max.m_Y; }
     }
 
     float Vec2f::GetLength() const

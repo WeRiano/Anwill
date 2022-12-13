@@ -1,5 +1,5 @@
 add_library(Gui STATIC
-        Gui.cpp
+        Gui.cpp GuiElements.cpp
         )
 
 target_include_directories(Gui PUBLIC

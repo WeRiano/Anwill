@@ -17,6 +17,7 @@ namespace Anwill::Math {
         void operator-=(const Vec3f& other);
         void operator*=(const float s);
         Vec3f operator/(const float d) const;
+        operator Vec2f() const;
 
         float DotProduct(const Vec3f& other) const;
         Vec3f CrossProduct(const Vec3f& other) const;

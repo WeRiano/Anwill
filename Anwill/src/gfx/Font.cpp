@@ -188,6 +188,18 @@ namespace Anwill {
         return result;
     }
 
+    unsigned int Font::GetStringWidth(const std::string& text)
+    {
+        unsigned int curWidth = 0;
+        for(unsigned int i = 0; i < text.size(); i++)
+        {
+            char c = text[i];
+            Glyph g = m_Characters[c];
+            curWidth += (g.advance >> 6);
+        }
+        return curWidth;
+    }
+
     void Font::Done()
     {
         m_VA->Unbind();
