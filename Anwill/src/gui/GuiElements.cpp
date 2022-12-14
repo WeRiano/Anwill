@@ -12,8 +12,8 @@ namespace Anwill {
 
     // ---------- ELEMENT ----------
 
-    GuiElement::GuiElement(const Math::Vec2f& position)
-        : m_Pos(position), m_IsHovered(false), m_IsPressed(false)
+    GuiElement::GuiElement()
+        : m_IsHovered(false), m_IsPressed(false)
     {}
 
     void GuiElement::Move(const Math::Vec2f& delta)
@@ -21,14 +21,9 @@ namespace Anwill {
         m_Pos += delta;
     }
 
-    void GuiElement::StopHovering()
+    bool GuiElement::IsHovered() const
     {
-        m_IsHovered = false;
-    }
-
-    void GuiElement::StopPressing()
-    {
-        m_IsPressed = false;
+        return m_IsHovered;
     }
 
     Math::Vec2f GuiElement::GetPos() const
@@ -41,56 +36,83 @@ namespace Anwill {
         return m_Size;
     }
 
+    void GuiElement::StartHovering()
+    {
+        m_IsHovered = true;
+    }
+
+    void GuiElement::StopHovering()
+    {
+        m_IsHovered = false;
+    }
+
+    void GuiElement::StartPressing()
+    {
+        m_IsPressed = true;
+    }
+
+    void GuiElement::StopPressing()
+    {
+        m_IsPressed = false;
+    }
+
+    void GuiElement::Release()
+    {
+        m_IsPressed = false;
+    }
+
     // ---------- TEXT ----------
 
-    GuiText::GuiText(const std::string& text, unsigned int textSize, const Math::Vec2f& position)
-        : GuiElement(position), m_Text(text), m_TextScale(Font::GetScaleValue(textSize)), m_TextWidth((float) GuiText::s_Font->GetStringWidth(text))
+    GuiText::GuiText(const std::string& text, unsigned int textSize)
+        : GuiElement(), m_Text(text), m_TextScale(Font::GetScaleValue(textSize)), m_TextWidth((float) GuiText::s_Font->GetStringWidth(text))
     {
         m_Size = { m_TextWidth * m_TextScale, GuiMetrics::WindowElementHeight };
         m_Pos += { 0.0f, -GuiMetrics::TextBaselineOffset };
     }
 
-    void GuiText::Render(const Math::Vec2f& parentPos, const Math::Vec2f& parentSize)
+    void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
     {
-        float cutoffXPos = parentPos.GetX() + parentSize.GetX() - GuiMetrics::WindowCutoffMargin;
+        Math::Vec2f cutoffPos = {assignedPos.GetX() + assignedMaxSize.GetX(), assignedPos.GetY() - assignedMaxSize.GetY()};
         auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), {m_TextScale, m_TextScale, 1.0f});
-        thisTransform = Math::Mat4f::Translate(thisTransform, parentPos + m_Pos);
+        thisTransform = Math::Mat4f::Translate(thisTransform, assignedPos + m_Pos);
 
         // Render
         GuiText::s_Shader->Bind();
-        GuiText::s_Shader->SetUniform1f(cutoffXPos, "u_CutoffWidth");
+        GuiText::s_Shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         Renderer2D::Submit(GuiText::s_Shader, *GuiElement::s_Font, m_Text, thisTransform);
     }
 
     bool GuiText::IsHovering(const Math::Vec2f& mousePos) { return false; }
-    void GuiText::OnHover() { return; }
-    void GuiText::OnPress() { return; }
-    void GuiText::OnRelease() { return; }
+
+    void GuiText::SetText(const std::string& text) {
+        m_Text = text;
+        m_TextWidth = (float) GuiText::s_Font->GetStringWidth(text);
+    }
 
     // ---------- BUTTON ----------
 
-    GuiButton::GuiButton(const std::string& text, unsigned int textSize, const std::function<void()>& callback, const Math::Vec2f& position)
-        : GuiElement(position), m_ButtonText(text, textSize, position), m_Callback(callback)
+    GuiButton::GuiButton(const std::string& text, unsigned int textSize, const std::function<void()>& callback)
+        : GuiElement(), m_ButtonText(text, textSize), m_Callback(callback)
     {
         m_Size = { m_ButtonText.GetSize().GetX() + GuiMetrics::ButtonTextMargin * 2.0f, GuiMetrics::WindowElementHeight };
         m_Pos += { 0.0f, 0.0f };
         m_ButtonText.Move({ GuiMetrics::ButtonTextMargin, 0.0f});
     }
 
-    void GuiButton::Render(const Math::Vec2f& parentPos, const Math::Vec2f& parentSize)
+    void GuiButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
     {
-        float cutoffXPos = parentPos.GetX() + parentSize.GetX() - GuiMetrics::WindowCutoffMargin;
+        Math::Vec2f cutoffPos = {assignedPos.GetX() + assignedMaxSize.GetX(), assignedPos.GetY() - assignedMaxSize.GetY()};
         auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), m_Size);
-        thisTransform = Math::Mat4f::Translate(thisTransform, parentPos + m_Pos + Math::Vec2f(m_Size.GetX() / 2.0f, -m_Size.GetY() / 2.0f));
+        thisTransform = Math::Mat4f::Translate(thisTransform, assignedPos + m_Pos + Math::Vec2f(m_Size.GetX() / 2.0f, -m_Size.GetY() / 2.0f));
 
         // Render button
         GuiButton::s_Shader->Bind();
         GuiButton::s_Shader->SetUniform1i(m_IsHovered, "u_Hovering");
         GuiButton::s_Shader->SetUniform1i(m_IsPressed, "u_Pressing");
-        GuiButton::s_Shader->SetUniform1f(cutoffXPos, "u_CutoffWidth");
+        GuiButton::s_Shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         Renderer2D::Submit(GuiButton::s_Shader, GuiElement::s_RectMesh, thisTransform);
 
-        m_ButtonText.Render(parentPos, parentSize);
+        m_ButtonText.Render(assignedPos, assignedMaxSize);
     }
 
     bool GuiButton::IsHovering(const Math::Vec2f& mousePos)
@@ -102,34 +124,55 @@ namespace Anwill {
                                                   mousePos);
     }
 
-    void GuiButton::OnHover()
+    void GuiButton::Release()
     {
-        m_IsHovered = true;
+        GuiElement::Release();
+        m_Callback();
     }
 
-    void GuiButton::OnPress()
+    void GuiButton::SetCallback(const std::function<void()>& callback)
     {
-        m_IsPressed = true;
+        m_Callback = callback;
     }
 
-    void GuiButton::OnRelease()
+    void GuiButton::SetText(const std::string& text)
     {
-        m_IsPressed = false;
+        m_ButtonText.SetText(text);
     }
 
-    void GuiDropdown::Render(const Math::Vec2f& parentPos, const Math::Vec2f& parentSize)
+    // -------- DROPDOWN --------
+
+    GuiDropdown::GuiDropdown(const std::string& text, unsigned int textSize)
+        : GuiElement(), m_DropdownText(text, textSize), m_Open(false)
+    {
+        // -1 represents an infinite width (for now)
+        m_Size = {-1.0f, GuiMetrics::WindowElementHeight};
+        m_Pos = {0.0f, 0.0f};
+    }
+
+    void GuiDropdown::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
     {
 
+    }
+
+    void GuiDropdown::Release()
+    {
+        GuiElement::Release();
+        m_Open = !m_Open;
     }
 
     // -------- WINDOW --------
 
     GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size)
             : m_Pos(position), m_Size(size), m_ID(id),
-              m_Title(title, 13, {GuiMetrics::WindowBorderSize * 2 + GuiMetrics::WindowElementMargin, GuiMetrics::TextBaselineOffset - GuiMetrics::WindowHeaderSize * 0.75f}),
+              m_Title(title, 13),
               m_NextHorizontalElementPos(GuiMetrics::WindowElementMargin, -(GuiMetrics::WindowHeaderSize + GuiMetrics::WindowElementMargin)),
               m_NextVerticalElementPos(m_NextHorizontalElementPos)
-    {}
+    {
+        // Title is a very specific type of element that doesn't have a grid location, so its grid location becomes the window origin.
+        m_Title.Move({GuiMetrics::WindowBorderSize * 2 + GuiMetrics::WindowElementMargin,
+                      GuiMetrics::TextBaselineOffset - GuiMetrics::WindowHeaderSize * 0.75f});
+    }
 
     void GuiWindow::Render(bool selected)
     {
@@ -144,7 +187,8 @@ namespace Anwill {
         m_Title.Render(m_Pos, m_Size);
 
         for (unsigned int i = 0; i < m_Elements.size(); i++) {
-            m_Elements[i]->Render(m_Pos, m_Size);
+            m_Elements[i].first->Render(m_Pos + m_Elements[i].second, { m_Size.GetX() - m_Elements[i].second.GetX() - GuiMetrics::WindowCutoffMargin,
+                                                                        m_Size.GetY() + m_Elements[i].second.GetY() - GuiMetrics::WindowCutoffMargin });
         }
     }
 
@@ -174,9 +218,10 @@ namespace Anwill {
 
     std::shared_ptr<GuiElement> GuiWindow::GetHoverElement(const Math::Vec2f& mousePos)
     {
+        // TODO: Can (probably) optimize!
         for(unsigned int i = 0; i < m_Elements.size(); i++) {
-            if(m_Elements[i]->IsHovering(mousePos - GetPos())) {
-                return m_Elements[i];
+            if(m_Elements[i].first->IsHovering( mousePos - (GetPos() + m_Elements[i].second)) ) {
+                return m_Elements[i].first;
             }
         }
         return nullptr;
@@ -201,13 +246,18 @@ namespace Anwill {
         m_Size = newSize;
     }
 
-    Math::Vec2f GuiWindow::GetPos()
+    Math::Vec2f GuiWindow::GetPos() const
     {
         return m_Pos;
     }
 
-    GuiWindowID GuiWindow::GetID()
+    GuiWindowID GuiWindow::GetID() const
     {
         return m_ID;
+    }
+
+    unsigned int GuiWindow::GetElementCount() const
+    {
+        return m_Elements.size();
     }
 }

@@ -18,7 +18,7 @@ namespace Anwill {
     bool Gui::s_ScalingY = false;
     bool Gui::s_HoveringDiagonalScaling = false;
     bool Gui::s_HoveringHeader = false;
-    int Gui::s_HoveringWindow;
+    int Gui::s_HoveringWindowIndex;
     std::shared_ptr<GuiElement> Gui::s_HoverElement;
 
     void Gui::Init(const WindowSettings& ws)
@@ -52,17 +52,27 @@ namespace Anwill {
         }
     }
 
-    void Gui::Text(const std::string& text, bool newRow, GuiWindowID windowID)
+    std::shared_ptr<GuiText> Gui::Text(const std::string& text, bool newRow, GuiWindowID windowID)
     {
-        newRow ? AddVerticalElement<GuiText>(windowID, text, 13) : AddHorizontalElement<GuiText>(windowID, text, 13);
+        int windowIndex = GetWindowIndex(windowID);
+        if(windowIndex == -1) {
+            return nullptr;
+        }
+        return newRow ? s_Windows[windowIndex].AddElementVertically<GuiText>(text, 13) :
+              s_Windows[windowIndex].AddElementHorizontally<GuiText>(text, 13);
     }
 
-    void Gui::Button(const std::string& text, const std::function<void()>& callback, bool newRow, GuiWindowID windowID)
+    std::shared_ptr<GuiButton> Gui::Button(const std::string& text, const std::function<void()>& callback, bool newRow, GuiWindowID windowID)
     {
-        newRow ? AddVerticalElement<GuiButton>(windowID, text, 13, callback) : AddHorizontalElement<GuiButton>(windowID, text, 13, callback);
+        int windowIndex = GetWindowIndex(windowID);
+        if(windowIndex == -1) {
+            return nullptr;
+        }
+        return newRow ? s_Windows[windowIndex].AddElementVertically<GuiButton>(text, 13, callback) :
+               s_Windows[windowIndex].AddElementHorizontally<GuiButton>(text, 13, callback);
     }
 
-    GuiWindowID Gui::NewWindow(const std::string& title)
+    GuiWindowID Gui::CreateWindow(const std::string& title)
     {
         s_NextID++;
 
@@ -84,21 +94,23 @@ namespace Anwill {
                 for(unsigned int i = 0; i < s_Windows.size(); i++) {
                     if(s_Windows[i].IsHoveringWindow(newMousePos)) {
                         // Update which window we are currently hovering
-                        s_HoveringWindow = i;
-
+                        s_HoveringWindowIndex = i;
                         // Remember which element we hovered last iteration
                         std::shared_ptr<GuiElement> lastIterHoverElement = s_HoverElement;
+                        // Update which element we are hovering right now
                         s_HoverElement = s_Windows[i].GetHoverElement(newMousePos);
                         if(s_HoverElement != nullptr && s_HoverElement != lastIterHoverElement) {
-                            // We call OnHover() if we are hovering an element and if we weren't already hovering it
-                            s_HoverElement->OnHover();
+                            // If we are hovering and element for the first time since last iteration we notify the element
+                            s_HoverElement->StartHovering();
                         } else if(s_HoverElement == nullptr && lastIterHoverElement != nullptr) {
-                            // If we stopped hovering an element we need to tell it so
+                            // If we stopped hovering an element since last iteration we notify the element
                             lastIterHoverElement->StopHovering();
+                            lastIterHoverElement->StopPressing();
                         }
+                        // We can only hover 1 window and 1 element so no need to continue.
                         break;
                     } else {
-                        s_HoveringWindow = -1;
+                        s_HoveringWindowIndex = -1;
                     }
                 }
             }
@@ -108,9 +120,9 @@ namespace Anwill {
 
     void Gui::OnMousePress(std::unique_ptr<Event>& event)
     {
-        if(s_HoveringWindow != -1 && s_HoveringWindow != 0) {
+        if(s_HoveringWindowIndex != -1 && s_HoveringWindowIndex != 0) {
             // Select window if we are hovering a window and the window is not already selected
-            std::rotate(s_Windows.begin(), s_Windows.begin() + s_HoveringWindow, s_Windows.begin() + s_HoveringWindow + 1);
+            std::rotate(s_Windows.begin(), s_Windows.begin() + s_HoveringWindowIndex, s_Windows.begin() + s_HoveringWindowIndex + 1);
         }
         if(s_HoveringHeader) {
             s_Moving = true;
@@ -121,7 +133,7 @@ namespace Anwill {
         } else
         {
             if(s_HoverElement != nullptr) {
-                s_HoverElement->OnPress();
+                s_HoverElement->StartPressing();
             }
         }
     }
@@ -132,7 +144,7 @@ namespace Anwill {
         s_ScalingX = false;
         s_ScalingY = false;
         if(s_HoverElement != nullptr) {
-            s_HoverElement->OnRelease();
+            s_HoverElement->Release();
         }
     }
 
@@ -140,19 +152,19 @@ namespace Anwill {
     {
         s_HoveringDiagonalScaling = false;
         s_HoveringHeader = false;
-        for (unsigned int i = 0; i < s_Windows.size(); i++)
+        for (int i = 0; i < s_Windows.size(); i++)
         {
             if (s_Windows[i].IsHoveringResize(s_MousePos))
             {
                 s_HoveringDiagonalScaling = true;
-                s_HoveringWindow = i;
+                s_HoveringWindowIndex = i;
                 SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
                 return true;
             }
             if (s_Windows[i].IsHoveringHeader(s_MousePos))
             {
                 s_HoveringHeader = true;
-                s_HoveringWindow = i;
+                s_HoveringWindowIndex = i;
                 SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand);
                 return true;
             }
@@ -181,20 +193,22 @@ namespace Anwill {
         return false;
     }
 
-    GuiWindow& Gui::GetWindow(GuiWindowID id)
+    int Gui::GetWindowIndex(GuiWindowID id)
     {
+        if(s_Windows.empty()) {
+            AW_ERROR("There are no active windows.");
+            return -1;
+        }
         if(id == 0) {
-            return s_Windows[0];
+            return 0;
         } else {
-            for (unsigned int i = 0; i < s_Windows.size(); i++)
-            {
-                if (s_Windows[i].GetID() == id)
-                {
-                    return s_Windows[i];
+            for(int i = 0; i < s_Windows.size(); i++) {
+                if (s_Windows[i].GetID() == id) {
+                    return i;
                 }
             }
         }
         AW_ERROR("The window you requested does not exist.");
-        return s_Windows[0];
+        return -1;
     }
 }

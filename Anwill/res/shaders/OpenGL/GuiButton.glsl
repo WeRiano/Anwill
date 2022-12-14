@@ -19,7 +19,7 @@ layout(location = 0) out vec4 color;
 uniform bool u_Hovering;
 uniform bool u_Pressing;
 uniform mat4 u_Transform;
-uniform float u_CutoffWidth;
+uniform vec2 u_CutoffPos;
 
 void main()
 {
@@ -27,7 +27,7 @@ void main()
     vec2 size = vec2( length(vec2(u_Transform[0][0], u_Transform[0][1])),
                       length(vec2(u_Transform[1][0], u_Transform[1][1])) );
 
-    if(gl_FragCoord.x > u_CutoffWidth) {
+    if(gl_FragCoord.x > u_CutoffPos.x || gl_FragCoord.y < u_CutoffPos.y) {
         discard;
     }
 

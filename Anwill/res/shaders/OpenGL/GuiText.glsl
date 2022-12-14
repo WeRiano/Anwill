@@ -28,12 +28,12 @@ out vec4 FragColor;
 
 uniform mat4 u_Transform;
 uniform sampler2D u_TextBitmaps[AW_MAX_TEXTURE_SLOTS];
-uniform float u_CutoffWidth;
+uniform vec2 u_CutoffPos;
 
 void main()
 {
     vec2 centre = vec2(u_Transform[3][0], u_Transform[3][1]);
-    if(gl_FragCoord.x > u_CutoffWidth) {
+    if(gl_FragCoord.x > u_CutoffPos.x || gl_FragCoord.y < u_CutoffPos.y) {
         discard;
     }
 
