@@ -6,7 +6,6 @@ namespace Anwill
 {
     void LayerStack::Update()
     {
-        AW_PROFILE_FUNC();
         for(unsigned int i = 0; i < m_Stack.size(); i++)
         {
             Timestamp last = m_Stack[i]->GetLastUpdate();

@@ -70,18 +70,12 @@ namespace Anwill {
         return result;
     }
 
-    // This is probably not nec, just use shader :)
-    Mesh Mesh::CreateCircleMesh()
-    {
-        return {};
-    }
-
-    Mesh Mesh::CreateTriangleMesh(float baseWidth, float rightWidth, float height)
+    Mesh Mesh::CreateTriangleMesh(const Math::Vec2f& a, const Math::Vec2f& b, const Math::Vec2f& c)
     {
         float vertices[] = {
-                -baseWidth, -height / 2.0f, 0.0f,
-                 0.0f,       height / 2.0f, 0.0f,
-                 rightWidth,  height / 2.0f, 0.0f
+                a.GetX(), a.GetY(), 0.0f,
+                b.GetX(), b.GetY(), 0.0f,
+                c.GetX(), c.GetY(), 0.0f
         };
 
         unsigned int indices[] = {

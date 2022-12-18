@@ -5,9 +5,7 @@
 namespace Anwill {
 
     class WindowCloseEvent : public Event
-    {
-    public:
-    };
+    {};
 
     class WindowResizeEvent : public Event
     {

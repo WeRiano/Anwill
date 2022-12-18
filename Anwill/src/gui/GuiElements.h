@@ -12,163 +12,132 @@
 namespace Anwill {
 
     struct GuiMetrics {
+        static const unsigned int FontSize = 13;
+
+            // Window element stuff
+        static constexpr float WindowElementIndent = 5.0f;
         static constexpr float WindowElementHeight = 30.0f;
-        static constexpr float TextBaselineOffset = WindowElementHeight * 0.68f;
-        static constexpr float WindowBorderSize = 8.0f;
-        static constexpr float WindowHeaderSize = WindowBorderSize * 2.5f;
-        static constexpr float WindowElementMargin = 6.0f;
+        static constexpr float WindowElementVerticalMargin = 3.0f;
+        static constexpr float WindowElementHorizontalMargin = 6.0f;
         static constexpr float WindowCutoffMargin = 2.0f;
+        // We render text in the middle of the assigned space, but the baseline should not be in the middle, it should be slightly below
+        static constexpr float TextBaselineOffset = -(float) FontSize * 0.45;
         static constexpr float ButtonTextMargin = 5.0f; // X distance from button edge to text
-        static const unsigned int FontSize = 12;
+
+            // Window stuff
+        static constexpr float WindowBorderSize = 8.0f;
+        static constexpr float WindowHeaderSize = WindowElementHeight;
+
+        static Math::Vec2f windowSize;
+
+        static inline Math::Vec2f GetNextElementPos(const Math::Vec2f& curPos,
+                                                    float curElementWidth,
+                                                    unsigned int curElementGridDepth,
+                                                    float originXPos, bool onNewRow) {
+            if(onNewRow) {
+                return {
+                        originXPos,
+                        curPos.GetY() - ((float) curElementGridDepth * (GuiMetrics::WindowElementHeight + GuiMetrics::WindowElementVerticalMargin))
+                };
+            } else {
+                return {
+                        curPos.GetX() + curElementWidth + GuiMetrics::WindowElementHorizontalMargin,
+                        curPos.GetY()
+                };
+            }
+        }
+
+        static inline Math::Vec2f GetCutoffPos(const Math::Vec2f& assignedPos,
+                                               const Math::Vec2f& assignedMaxSize) {
+            return {assignedPos.GetX() + assignedMaxSize.GetX(), assignedPos.GetY() - assignedMaxSize.GetY()};
+        }
     };
 
     class GuiElement {
     public:
         static Mesh s_RectMesh;
+        static Mesh s_TriangleMesh;
+        static std::shared_ptr<Shader> s_PrimitiveShader;
         static std::unique_ptr<Font> s_Font;
 
-        GuiElement();
+        GuiElement(bool onNewRow, bool forceNextToNewRow);
 
         virtual void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) = 0;
-        virtual bool IsHovering(const Math::Vec2f& mousePos) = 0;
+        /**
+         * @brief Check if the mouse cursor is hovering the element
+         */
+        virtual bool IsHovering(const Math::Vec2f& mousePos) const = 0;
+        virtual float GetWidth() const = 0;
+        virtual unsigned int GetGridDepth() const = 0;
 
-        void Move(const Math::Vec2f& delta);
-        bool IsHovered() const;
-        Math::Vec2f GetPos() const;
-        Math::Vec2f GetSize() const;
         virtual void StartHovering();
         virtual void StopHovering();
         virtual void StartPressing();
         virtual void StopPressing();
         virtual void Release();
 
+        /**
+         * @brief Check if element is currently in the state of being hovered by something
+         */
+        bool IsHovered() const;
+        bool OnNewRow() const;
+        bool ForceNextToNewRow() const;
+
     protected:
         // Position is relative to assigned grid position.
-        // Size is absolute, there is no relativity
-        Math::Vec2f m_Pos, m_Size;
+        // Size is absolute and tells manager how much space you occupy.
+        // If m_ForceNextToNewRow is true your width will not be used
         bool m_IsHovered, m_IsPressed;
+        bool m_OnNewRow, m_ForceNextToNewRow;
     };
 
     class GuiText : public GuiElement {
     public:
         static std::shared_ptr<Shader> s_Shader;
 
-        GuiText(const std::string& text, unsigned int textSize);
+        GuiText(bool onNewRow, const std::string& text, unsigned int textSize);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
-        bool IsHovering(const Math::Vec2f& mousePos) override;
+        bool IsHovering(const Math::Vec2f& mousePos) const override;
+        float GetWidth() const override;
+        unsigned int GetGridDepth() const override;
 
-        void SetText(const std::string& text);
+        virtual void SetText(const std::string& text);
+
+    protected:
+        Math::Vec2f m_TextPos;
 
     private:
         std::string m_Text;
-        float m_TextScale;
-        float m_TextWidth;
+        float m_TextScale; // Scaling factor to render in given textSize
+        float m_TextWidth; // Horizontal space occupied by the text
     };
 
-    class GuiButton : public GuiElement {
+    class GuiButton : public GuiText {
+        /*
+         * Inherited behavior from GuiText:
+         *  - Has text
+         *  - Renders based on width of text
+         */
     public:
         static std::shared_ptr<Shader> s_Shader;
 
-        GuiButton(const std::string& text, unsigned int textSize, const std::function<void()>& callback);
+        GuiButton(bool onNewRow, const std::string& text,
+                  unsigned int textSize, const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
-        bool IsHovering(const Math::Vec2f& mousePos) override;
+        bool IsHovering(const Math::Vec2f& mousePos) const override;
+        float GetWidth() const override;
+        unsigned int GetGridDepth() const override;
         void Release() override;
+        void SetText(const std::string& text) override;
 
         void SetCallback(const std::function<void()>& callback);
-        void SetText(const std::string& text);
+
+    protected:
+        Math::Vec2f m_ButtonSize;
+
     private:
-        GuiText m_ButtonText;
         std::function<void()> m_Callback;
     };
-
-    class GuiDropdown : public GuiElement {
-    public:
-        GuiDropdown(const std::string& text, unsigned int textSize);
-
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
-        void Release() override;
-    private:
-        std::vector<std::pair<std::shared_ptr<GuiElement>, Math::Vec2f>> m_Elements;
-        GuiText m_DropdownText;
-        bool m_Open;
-    };
-
-    typedef unsigned int GuiWindowID;
-
-    class GuiWindow {
-    public:
-        static std::shared_ptr<Shader> s_WindowShader;
-
-        GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size);
-
-        void Render(bool selected);
-        bool IsHoveringHeader(const Math::Vec2f& mousePos);
-        bool IsHoveringResize(const Math::Vec2f& mousePos);
-        bool IsHoveringWindow(const Math::Vec2f& mousePos);
-        std::shared_ptr<GuiElement> GetHoverElement(const Math::Vec2f& mousePos);
-        void Move(const Math::Vec2f& delta, const Math::Vec2f& minPos, const Math::Vec2f& maxPos);
-        void Resize(const Math::Vec2f& delta, const Math::Vec2f& minSize, const Math::Vec2f& maxSize);
-        Math::Vec2f GetPos() const;
-        GuiWindowID GetID() const;
-        unsigned int GetElementCount() const;
-
-        template <class E, typename... Args>
-        std::shared_ptr<E> AddElementHorizontally(Args&&... args) {
-            // If this is the first element in the window it is technically always a new vertical element
-            // (So we add it as such to correctly calculate correct values for nextHorizontalElementStart
-            // and nextVerticalElementStart)
-            if(m_Elements.empty()) {
-                return AddElementVertically<E>(std::forward<Args>(args)...);
-            }
-            m_Elements.emplace_back(
-                    std::make_pair<std::shared_ptr<E>, Math::Vec2f>(
-                            std::make_shared<E>(std::forward<Args>(args)...), {m_NextHorizontalElementPos.GetX(), m_NextHorizontalElementPos.GetY()} ));
-            std::shared_ptr<E> newElement = std::dynamic_pointer_cast<E>(m_Elements.back().first);
-            // New Vertical spot remains the same. New horizontal spot is 1 shift to the right.
-            m_NextHorizontalElementPos = {
-                    m_NextHorizontalElementPos.GetX() + newElement->GetSize().GetX() + GuiMetrics::WindowElementMargin,
-                    m_NextHorizontalElementPos.GetY()
-            };
-            return newElement;
-        }
-
-        template <class E, typename... Args>
-        std::shared_ptr<E> AddElementVertically(Args&&... args) {
-            m_Elements.emplace_back(
-                    std::make_pair<std::shared_ptr<E>, Math::Vec2f>(
-                            std::make_shared<E>(std::forward<Args>(args)...), {m_NextVerticalElementPos.GetX(), m_NextVerticalElementPos.GetY()}
-                            ));
-            std::shared_ptr<E> newElement = std::dynamic_pointer_cast<E>(m_Elements.back().first);
-            if(m_Elements.size() == 1) {
-                // If this is the first element in the window we have to push it 1 to the right
-                m_NextHorizontalElementPos = {
-                        m_NextHorizontalElementPos.GetX() + newElement->GetSize().GetX() + GuiMetrics::WindowElementMargin,
-                        m_NextHorizontalElementPos.GetY()
-                };
-            } else {
-                // Otherwise its to the right of the new element
-                m_NextHorizontalElementPos = {
-                        m_NextVerticalElementPos.GetX() + newElement->GetSize().GetX() + GuiMetrics::WindowElementMargin,
-                        m_NextVerticalElementPos.GetY()
-                };
-            }
-            // Next vertical element is just 1 spot down
-            m_NextVerticalElementPos = {
-                    m_NextVerticalElementPos.GetX(),
-                    m_NextVerticalElementPos.GetY() -(newElement->GetSize().GetY() + GuiMetrics::WindowElementMargin)
-            };
-            return newElement;
-        }
-
-    private:
-        Math::Vec2f m_Pos, m_Size;
-        GuiWindowID m_ID;
-        GuiText m_Title;
-        // Each element is stored together with its grid location
-        std::vector<std::pair<std::shared_ptr<GuiElement>, Math::Vec2f>> m_Elements;
-        Math::Vec2f m_NextHorizontalElementPos, m_NextVerticalElementPos;
-    };
-
 }

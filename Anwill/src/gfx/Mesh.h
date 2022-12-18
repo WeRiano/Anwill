@@ -10,8 +10,7 @@ namespace Anwill {
     {
     public:
         static Mesh CreateRectMesh(float width, float height, bool texture = false);
-        static Mesh CreateCircleMesh();
-        static Mesh CreateTriangleMesh(float leftWidth, float rightWidth, float height);
+        static Mesh CreateTriangleMesh(const Math::Vec2f& a, const Math::Vec2f& b, const Math::Vec2f& c);
 
         Mesh();
         Mesh(float* vertices, unsigned int verticesSizeBytes, unsigned int* indices,

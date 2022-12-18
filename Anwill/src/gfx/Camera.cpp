@@ -2,19 +2,14 @@
 
 namespace Anwill {
 
-    Math::Mat4f Camera::GetViewProj() const
-    {
-        return m_ProjMat * m_ViewMat;
-    }
-
-    void Camera::SetProjMat(const Math::Mat4f&& projMat)
-    {
-        m_ProjMat = projMat;
-    }
-
     const Math::Vec3f Camera::GetPos() const
     {
         return m_ViewMat.GetTranslateVector();
+    }
+
+    Math::Mat4f Camera::GetViewProj() const
+    {
+        return m_ProjMat * m_ViewMat;
     }
 
     OrthographicCamera::OrthographicCamera(float width, float height)
@@ -31,5 +26,10 @@ namespace Anwill {
     void OrthographicCamera::Move(float deltaX, float deltaY)
     {
         m_ViewMat = Math::Mat4f::Translate(m_ViewMat, {-deltaX, -deltaY, 0.0f});
+    }
+
+    void OrthographicCamera::SetProjection(float width, float height)
+    {
+        m_ProjMat = Math::Mat4f::Orthographic(0.0f, width, 0.0f, height, -1.0f, 1.0f);
     }
 }

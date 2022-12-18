@@ -78,8 +78,8 @@ namespace Anwill {
     {
         auto e = static_cast<WindowResizeEvent&>(*event);
         /*AW_INFO("Resized Window to width {0} and height {1}.",
-                e.GetNewWidth(), e.GetNewHeight());
-        Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());*/
+                e.GetNewWidth(), e.GetNewHeight()); */
+        Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());
     }
 
     void App::OnWindowFocus(std::unique_ptr<Event>& event)
