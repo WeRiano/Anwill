@@ -4,9 +4,12 @@
 namespace Anwill {
 
     std::shared_ptr<Shader> GuiWindow::s_WindowShader;
+    const Math::Vec2f GuiWindow::s_TitlePos = {GuiMetrics::WindowBorderSize + s_IconWidthHeight,
+                               GuiMetrics::WindowElementHeight / 2.0f - GuiMetrics::WindowHeaderSize / 2.0f};
+    const Math::Vec2f GuiWindow::s_MinimizeIconPos = {GuiMetrics::WindowBorderSize / 2.0f, 0.0f};
 
     GuiContainer::GuiContainer()
-        : m_GridDepth(1)
+        : m_GridDepth(1), m_HideElements(true)
     {}
 
     std::shared_ptr<GuiElement> GuiContainer::GetHoverElementInternal(const Math::Vec2f& mousePos,
@@ -19,11 +22,14 @@ namespace Anwill {
             }
             if(dynamic_cast<GuiContainer*>(element.get()) != nullptr) {
                 // If element is a container we need to check with those elements
-                auto maybeResult = std::dynamic_pointer_cast<GuiContainer>(element)->
-                        GetHoverElement(mousePos-(posOffset + m_ElementPosCache[i]));
-                if (maybeResult != nullptr) {
-                    // If we found an element we return it, otherwise we continue
-                    return maybeResult;
+                auto container = std::dynamic_pointer_cast<GuiContainer>(element);
+                if(!container->m_HideElements) {
+                    auto maybeResult = container->GetHoverElement(mousePos - (posOffset + m_ElementPosCache[i]));
+                    if (maybeResult != nullptr)
+                    {
+                        // If we found an element we return it, otherwise we continue
+                        return maybeResult;
+                    }
                 }
             }
         }
@@ -54,10 +60,15 @@ namespace Anwill {
         }
     }
 
+    bool GuiContainer::IsHidingElements() const
+    {
+        return m_HideElements;
+    }
+
     GuiDropdown::GuiDropdown(const std::string& text, unsigned int textSize)
             : GuiButton(true, text, textSize, [this](){
-                m_Open = !m_Open;
-            }), m_Open(true)
+                m_HideElements = !m_HideElements;
+            })
     {
         // Can't place stuff to the right of a dropdown
         m_ForceNextToNewRow = true;
@@ -73,7 +84,7 @@ namespace Anwill {
 
         // Render arrow icon
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), {s_IconWidthHeight * 0.5f, s_IconWidthHeight * 0.5f, 0.0f});
-        if(!m_Open) {
+        if(m_HideElements) {
             iconTransform = Math::Mat4f::RotateZ(iconTransform, 90);
         }
         iconTransform = Math::Mat4f::Translate(iconTransform,
@@ -85,9 +96,9 @@ namespace Anwill {
         GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
 
-        if(!m_Open) { return; }
+        if(m_HideElements) { return; }
         GuiContainer::Render(assignedPos, assignedMaxSize,
-                             {GuiMetrics::WindowElementIndent, -(GuiMetrics::WindowElementHeight + GuiMetrics::WindowElementVerticalMargin) });
+                             {GuiMetrics::WindowElementIndent, -GuiMetrics::WindowElementHeight - GuiMetrics::WindowElementVerticalMargin });
     }
 
     bool GuiDropdown::IsHovering(const Math::Vec2f& mousePos) const
@@ -111,7 +122,7 @@ namespace Anwill {
 
     unsigned int GuiDropdown::GetGridDepth() const
     {
-        return m_Open ? m_GridDepth : 1;
+        return m_HideElements ? 1 : m_GridDepth;
     }
 
     std::shared_ptr<GuiElement> GuiDropdown::GetHoverElement(const Math::Vec2f& mousePos) const
@@ -123,7 +134,9 @@ namespace Anwill {
 
     GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size)
             : m_Pos(position), m_Size(size), m_ID(id),
-              m_Title(false, title, 14)
+              m_Title(false, title, 14), m_MinimizeButton(false, "", 14, [this](){
+                  m_HideElements = !m_HideElements;
+              })
     {}
 
     std::shared_ptr<GuiElement> GuiWindow::GetHoverElement(const Math::Vec2f& mousePos) const
@@ -141,8 +154,21 @@ namespace Anwill {
         Renderer2D::Submit(s_WindowShader, GuiElement::s_RectMesh, transform);
 
         // Render title
-        m_Title.Render(m_Pos + Math::Vec2f(GuiMetrics::WindowBorderSize * 2 + GuiMetrics::WindowElementHorizontalMargin,
-                                           GuiMetrics::WindowElementHeight / 2.0f - GuiMetrics::WindowHeaderSize / 2.0f), m_Size);
+        m_Title.Render(m_Pos + s_TitlePos, m_Size);
+
+        // Render minimize button
+        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                       {s_IconWidthHeight * 0.5f, s_IconWidthHeight * 0.5f, 1.0f});
+        if(m_HideElements) {
+            iconTransform = Math::Mat4f::RotateZ(iconTransform, 90);
+        }
+        iconTransform = Math::Mat4f::Translate(iconTransform, m_Pos + s_MinimizeIconPos +
+                        Math::Vec2f(s_IconWidthHeight / 2.0f, -s_IconWidthHeight / 2.0f));
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(m_Pos, m_Size);
+        GuiElement::s_PrimitiveShader->Bind();
+        GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
+
 
         GuiContainer::Render(m_Pos, m_Size,
                              {GuiMetrics::WindowElementIndent,
@@ -151,10 +177,10 @@ namespace Anwill {
 
     bool GuiWindow::IsHoveringHeader(const Math::Vec2f& mousePos)
     {
-        return Math::Algo::IsPointInsideRectangle({m_Pos.GetX(), m_Pos.GetY()},
+        return Math::Algo::IsPointInsideRectangle({m_Pos.GetX() + s_TitlePos.GetX(), m_Pos.GetY()},
                                                   {m_Pos.GetX() + m_Size.GetX(), m_Pos.GetY()},
                                                   {m_Pos.GetX() + m_Size.GetX(), m_Pos.GetY() - GuiMetrics::WindowHeaderSize},
-                                                  {m_Pos.GetX(), m_Pos.GetY() - GuiMetrics::WindowHeaderSize},
+                                                  {m_Pos.GetX() + s_TitlePos.GetX(), m_Pos.GetY() - GuiMetrics::WindowHeaderSize},
                                                   mousePos);
     }
 
@@ -170,6 +196,14 @@ namespace Anwill {
                                                   {m_Pos.GetX() + m_Size.GetX(), m_Pos.GetY()},
                                                   {m_Pos.GetX() + m_Size.GetX(), m_Pos.GetY() - m_Size.GetY()},
                                                   {m_Pos.GetX(), m_Pos.GetY() - m_Size.GetY()},
+                                                  mousePos);
+    }
+
+    bool GuiWindow::IsHoveringMinimize(const Math::Vec2f& mousePos) {
+        return Math::Algo::IsPointInsideRectangle({m_Pos.GetX(), m_Pos.GetY()},
+                                                  {m_Pos.GetX() + s_IconWidthHeight, m_Pos.GetY()},
+                                                  {m_Pos.GetX() + s_IconWidthHeight, m_Pos.GetY() - GuiMetrics::WindowHeaderSize},
+                                                  {m_Pos.GetX(), m_Pos.GetY() - GuiMetrics::WindowHeaderSize},
                                                   mousePos);
     }
 

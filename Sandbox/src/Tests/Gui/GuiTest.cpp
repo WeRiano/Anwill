@@ -14,8 +14,8 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Text("More text to test the y thing ...");
 
     auto dd1 = Anwill::Gui::Dropdown("This is an awesome dropdown!");
-    Anwill::Gui::Text("Dropdown element 1", dd1, true);
-    Anwill::Gui::Button("Dropdown element 2", dd1, [](){}, false);
+    auto dd1Button = Anwill::Gui::Button("This is a button. Click it!", dd1);
+    auto dd1Text = Anwill::Gui::Text("You have clicked the button " + std::to_string(m_Counter) + " times.", dd1, false);
     Anwill::Gui::Text("Dropdown element 3", dd1, true);
     Anwill::Gui::Button("Dropdown element 4", dd1, [](){}, false);
     Anwill::Gui::Text("Dropdown element 5", dd1, false);
@@ -28,6 +28,11 @@ GuiTest::GuiTest(const unsigned int ups)
     button->SetCallback([this, text](){
         m_Counter++;
         text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
+    });
+
+    dd1Button->SetCallback([this, dd1Text](){
+        m_Counter++;
+        dd1Text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });
 
     /*

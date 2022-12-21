@@ -162,6 +162,7 @@ namespace Anwill {
     {
         bool lastIterHoveringDiagonalScaling = s_HoveringDiagonalScaling;
         bool lastIterHoveringHeader = s_HoveringHeader;
+        bool lastIterHoveringMinimize = s_HoveringMinimize;
         for (int i = 0; i < s_Windows.size(); i++)
         {
             s_HoveringDiagonalScaling = s_Windows[i].IsHoveringResize(s_MousePos);

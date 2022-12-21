@@ -11,6 +11,7 @@ namespace Anwill {
         virtual std::shared_ptr<GuiElement> GetHoverElement(const Math::Vec2f& mousePos) const = 0;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Math::Vec2f& firstPos);
+        bool IsHidingElements() const;
 
         template <class E, typename... Args>
         std::shared_ptr<E> AddElement(Args&&... args) {
@@ -32,6 +33,7 @@ namespace Anwill {
         unsigned int m_GridDepth;
         std::vector<std::shared_ptr<GuiElement>> m_Elements;
         std::vector<Math::Vec2f> m_ElementPosCache;
+        bool m_HideElements;
 
         virtual std::shared_ptr<GuiElement> GetHoverElementInternal(const Math::Vec2f& mousePos,
                                                                     const Math::Vec2f& posOffset) const;
@@ -53,8 +55,6 @@ namespace Anwill {
 
     private:
         static constexpr float s_IconWidthHeight = GuiMetrics::WindowElementHeight;
-
-        bool m_Open;
     };
 
     typedef unsigned int GuiWindowID;
@@ -72,15 +72,20 @@ namespace Anwill {
         bool IsHoveringHeader(const Math::Vec2f& mousePos);
         bool IsHoveringResize(const Math::Vec2f& mousePos);
         bool IsHoveringWindow(const Math::Vec2f& mousePos);
+        bool IsHoveringMinimize(const Math::Vec2f& mousePos);
         void Move(const Math::Vec2f& delta, const Math::Vec2f& minPos, const Math::Vec2f& maxPos);
         void Resize(const Math::Vec2f& delta, const Math::Vec2f& minSize, const Math::Vec2f& maxSize);
         Math::Vec2f GetPos() const;
         GuiWindowID GetID() const;
 
     private:
+        static constexpr float s_IconWidthHeight = GuiMetrics::WindowHeaderSize;
+        static const Math::Vec2f s_TitlePos, s_MinimizeIconPos;
+
         Math::Vec2f m_Pos, m_Size;
         GuiWindowID m_ID;
         GuiText m_Title;
+        GuiButton m_MinimizeButton;
     };
 
 }
