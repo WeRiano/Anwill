@@ -1,4 +1,4 @@
-#pragma once
+ #pragma once
 
 #include <vector>
 #include <functional>
@@ -113,7 +113,30 @@ namespace Anwill {
         float m_TextWidth; // Horizontal space occupied by the text
     };
 
-    class GuiButton : public GuiText {
+    class GuiIcon : public GuiElement {
+    public:
+        // static stuff
+
+        enum class Type {
+            Arrow = 1,
+            CheckboxStandard,
+            CheckboxCross,
+            Exit
+        };
+
+        GuiIcon();
+
+        virtual void OnStartHovering() = 0;
+        virtual void OnStartPressing() = 0;
+        virtual void OnStopHovering() = 0;
+        virtual void OnStopPressing() = 0;
+        virtual void OnRelease() = 0;
+
+    protected:
+        Math::Vec2f m_Pos, m_Size;
+    };
+
+    class GuiTextButton : public GuiText {
         /*
          * Inherited behavior from GuiText:
          *  - Has text
@@ -122,8 +145,8 @@ namespace Anwill {
     public:
         static std::shared_ptr<Shader> s_Shader;
 
-        GuiButton(bool onNewRow, const std::string& text,
-                  unsigned int textSize, const std::function<void()>& callback);
+        GuiTextButton(bool onNewRow, const std::string& text,
+                      unsigned int textSize, const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;

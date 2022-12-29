@@ -33,13 +33,13 @@ namespace Anwill {
         static std::shared_ptr<GuiText> Text(const std::string& text,
                                              const std::shared_ptr<GuiContainer>& container,
                                              bool onNewRow = true);
-        static std::shared_ptr<GuiButton> Button(const std::string& text,
-                                                 const std::function<void()>& callback = [](){},
-                                                 bool onNewRow = true, GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiButton> Button(const std::string& text,
-                                                 const std::shared_ptr<GuiContainer>& container,
-                                                 const std::function<void()>& callback = [](){},
-                                                 bool onNewRow = true);
+        static std::shared_ptr<GuiTextButton> Button(const std::string& text,
+                                                     const std::function<void()>& callback = [](){},
+                                                     bool onNewRow = true, GuiWindowID windowID = 0);
+        static std::shared_ptr<GuiTextButton> Button(const std::string& text,
+                                                     const std::shared_ptr<GuiContainer>& container,
+                                                     const std::function<void()>& callback = [](){},
+                                                     bool onNewRow = true);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);
 

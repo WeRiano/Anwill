@@ -66,7 +66,7 @@ namespace Anwill {
     }
 
     GuiDropdown::GuiDropdown(const std::string& text, unsigned int textSize)
-            : GuiButton(true, text, textSize, [this](){
+            : GuiTextButton(true, text, textSize, [this](){
                 m_HideElements = !m_HideElements;
             })
     {
@@ -80,7 +80,7 @@ namespace Anwill {
     {
         // Force button size to max width render it
         m_ButtonSize = { assignedMaxSize.GetX(), m_ButtonSize.GetY()};
-        GuiButton::Render(assignedPos, assignedMaxSize);
+        GuiTextButton::Render(assignedPos, assignedMaxSize);
 
         // Render arrow icon
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), {s_IconWidthHeight * 0.5f, s_IconWidthHeight * 0.5f, 0.0f});
@@ -103,7 +103,7 @@ namespace Anwill {
 
     bool GuiDropdown::IsHovering(const Math::Vec2f& mousePos) const
     {
-        if (GuiButton::IsHovering(mousePos)) {
+        if (GuiTextButton::IsHovering(mousePos)) {
             return true;
         } else {
             for(unsigned int i = 0; i < m_Elements.size(); i++) {
@@ -117,7 +117,7 @@ namespace Anwill {
 
     float GuiDropdown::GetWidth() const
     {
-        return GuiButton::GetWidth();
+        return GuiTextButton::GetWidth();
     }
 
     unsigned int GuiDropdown::GetGridDepth() const
@@ -134,7 +134,8 @@ namespace Anwill {
 
     GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size)
             : m_Pos(position), m_Size(size), m_ID(id),
-              m_Title(false, title, 14), m_MinimizeButton(false, "", 14, [this](){
+              m_Title(false, title, 14),
+              m_MinimizeButton(false, "", 14, [this](){
                   m_HideElements = !m_HideElements;
               })
     {}

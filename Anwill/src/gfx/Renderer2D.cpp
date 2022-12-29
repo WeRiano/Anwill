@@ -115,7 +115,7 @@ namespace Anwill {
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
 
         int batchStartXPos = 0;
-        auto maxTextSlots = *ShaderMacros::GetMacro<unsigned int>("AW_MAX_TEXTURE_SLOTS");
+        auto maxTextSlots = *ShaderMacros::GetMacro<unsigned int>("AW_MAX_FRAGMENT_SAMPLERS");
         std::string remainingText = text; // Everything is remaining at the start
         while (!remainingText.empty()) {
             auto thisStr = Utils::UniqueCharsSubstr(remainingText, maxTextSlots);
@@ -193,7 +193,7 @@ namespace Anwill {
     {
         // Runtime constant
         BatchData2D::maxTextureSlots = *ShaderMacros::GetMacro<unsigned int>
-                ("AW_MAX_TEXTURE_SLOTS");
+                ("AW_MAX_FRAGMENT_SAMPLERS");
 
         // Runtime objects / variables
         // Vertex buffer

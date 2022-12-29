@@ -1,5 +1,5 @@
 #shadertype vertex
-#version 330 core
+#version 460 core
 
 layout(location = 0) in vec2 a_Vertex;
 layout(location = 1) in vec2 a_TexCoords;
@@ -21,7 +21,7 @@ void main()
 }
 
 #shadertype fragment
-#version 330 core
+#version 460 core
 
 in vec2 v_TexCoords;
 in vec3 v_Color;
@@ -29,7 +29,7 @@ flat in int f_TextureIndex;
 
 layout(location = 0) out vec4 FragColor;
 
-uniform sampler2D u_Textures[AW_MAX_TEXTURE_SLOTS];
+uniform sampler2D u_Textures[AW_MAX_FRAGMENT_SAMPLERS];
 
 void main()
 {

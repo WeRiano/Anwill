@@ -35,7 +35,7 @@ namespace Anwill {
         GuiElement::s_PrimitiveShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiPrimitiveColor.glsl");
         GuiWindow::s_WindowShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
         GuiText::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiText.glsl");
-        GuiButton::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiButton.glsl");
+        GuiTextButton::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTextButton.glsl");
 
         GuiElement::s_PrimitiveShader->Bind();
         GuiElement::s_PrimitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
@@ -73,17 +73,17 @@ namespace Anwill {
         return container->AddElement<GuiText>(onNewRow, text, GuiMetrics::FontSize);
     }
 
-    std::shared_ptr<GuiButton> Gui::Button(const std::string& text, const std::function<void()>& callback, bool onNewRow, GuiWindowID windowID)
+    std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text, const std::function<void()>& callback, bool onNewRow, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiButton>(windowID, onNewRow, text, GuiMetrics::FontSize, callback);
+        return AddElementToWindow<GuiTextButton>(windowID, onNewRow, text, GuiMetrics::FontSize, callback);
     }
 
-    std::shared_ptr<GuiButton> Gui::Button(const std::string& text,
-                                           const std::shared_ptr<GuiContainer>& container,
-                                           const std::function<void()>& callback,
-                                           bool onNewRow)
+    std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text,
+                                               const std::shared_ptr<GuiContainer>& container,
+                                               const std::function<void()>& callback,
+                                               bool onNewRow)
     {
-        return container->AddElement<GuiButton>(onNewRow, text, GuiMetrics::FontSize, callback);
+        return container->AddElement<GuiTextButton>(onNewRow, text, GuiMetrics::FontSize, callback);
     }
 
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
@@ -162,7 +162,6 @@ namespace Anwill {
     {
         bool lastIterHoveringDiagonalScaling = s_HoveringDiagonalScaling;
         bool lastIterHoveringHeader = s_HoveringHeader;
-        bool lastIterHoveringMinimize = s_HoveringMinimize;
         for (int i = 0; i < s_Windows.size(); i++)
         {
             s_HoveringDiagonalScaling = s_Windows[i].IsHoveringResize(s_MousePos);

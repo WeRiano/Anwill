@@ -39,9 +39,9 @@ namespace Anwill {
                                                                     const Math::Vec2f& posOffset) const;
     };
 
-    class GuiDropdown : public GuiButton, public GuiContainer {
+    class GuiDropdown : public GuiTextButton, public GuiContainer {
         /*
-         * Inherited behavior from GuiButton:
+         * Inherited behavior from GuiTextButton:
          * - Dropdown toggle is a button, but with maximum allowed width and an arrow icon
          */
     public:
@@ -85,7 +85,7 @@ namespace Anwill {
         Math::Vec2f m_Pos, m_Size;
         GuiWindowID m_ID;
         GuiText m_Title;
-        GuiButton m_MinimizeButton;
+        GuiTextButton m_MinimizeButton;
     };
 
 }
