@@ -53,6 +53,19 @@ namespace Anwill {
         }
     };
 
+    class GuiIcon {
+    public:
+        static void RenderRightArrow(const Math::Vec2f& assignedPos,
+                                     const Math::Vec2f& assignedSize,
+                                     const Math::Vec2f& assignedMaxSize);
+        static void RenderDownArrow(const Math::Vec2f& assignedPos,
+                                     const Math::Vec2f& assignedSize,
+                                     const Math::Vec2f& assignedMaxSize);
+        static void RenderCross(const Math::Vec2f& assignedPos,
+                                     const Math::Vec2f& assignedSize,
+                                     const Math::Vec2f& assignedMaxSize);
+    };
+
     class GuiElement {
     public:
         static Mesh s_RectMesh;
@@ -113,30 +126,24 @@ namespace Anwill {
         float m_TextWidth; // Horizontal space occupied by the text
     };
 
-    class GuiIcon : public GuiElement {
+    class GuiButton : public GuiElement {
     public:
-        // static stuff
+        GuiButton(bool onNewRow, const Math::Vec2f& size, const std::function<void()>& callback);
 
-        enum class Type {
-            Arrow = 1,
-            CheckboxStandard,
-            CheckboxCross,
-            Exit
-        };
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        bool IsHovering(const Math::Vec2f& mousePos) const override;
+        float GetWidth() const override;
+        unsigned int GetGridDepth() const override;
+        void Release() override;
 
-        GuiIcon();
-
-        virtual void OnStartHovering() = 0;
-        virtual void OnStartPressing() = 0;
-        virtual void OnStopHovering() = 0;
-        virtual void OnStopPressing() = 0;
-        virtual void OnRelease() = 0;
+        void SetCallback(const std::function<void()>& callback);
 
     protected:
-        Math::Vec2f m_Pos, m_Size;
+        Math::Vec2f m_ButtonSize;
+        std::function<void()> m_Callback;
     };
 
-    class GuiTextButton : public GuiText {
+    class GuiTextButton : public GuiButton {
         /*
          * Inherited behavior from GuiText:
          *  - Has text
@@ -149,18 +156,9 @@ namespace Anwill {
                       unsigned int textSize, const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
-        bool IsHovering(const Math::Vec2f& mousePos) const override;
-        float GetWidth() const override;
-        unsigned int GetGridDepth() const override;
-        void Release() override;
-        void SetText(const std::string& text) override;
-
-        void SetCallback(const std::function<void()>& callback);
+        void SetText(const std::string& text);
 
     protected:
-        Math::Vec2f m_ButtonSize;
-
-    private:
-        std::function<void()> m_Callback;
+        GuiText m_Text;
     };
 }

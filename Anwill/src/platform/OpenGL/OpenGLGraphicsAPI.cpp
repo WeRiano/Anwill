@@ -46,11 +46,13 @@ namespace Anwill {
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         // Texture slots is exclusive interval (we can go maximum 1 below when using glActiveTexture()
-        int maxTextureSlots, maxFragTextureSlots;
+        int maxTextureSlots, maxFragTextureSlots, maxTextureLayers;
         glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureSlots);
         glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, &maxFragTextureSlots);
+        glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxTextureLayers);
         AW_INFO("Maximum OpenGL texture slots: {0}", maxTextureSlots);
         AW_INFO("Maximum OpenGL fragment shader samplers: {0}", maxFragTextureSlots);
+        AW_INFO("Maximum OpenGL texture layers: {0}", maxTextureLayers);
         ShaderMacros::SetMacro("AW_MAX_FRAGMENT_SAMPLERS", maxFragTextureSlots);
 
         // TODO: This stuff for 3D renderer.

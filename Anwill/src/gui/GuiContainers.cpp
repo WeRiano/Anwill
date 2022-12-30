@@ -72,29 +72,29 @@ namespace Anwill {
     {
         // Can't place stuff to the right of a dropdown
         m_ForceNextToNewRow = true;
-        // Give space for arrow icon
-        m_TextPos += {s_IconWidthHeight, 0.0f};
     }
 
     void GuiDropdown::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
     {
         // Force button size to max width render it
         m_ButtonSize = { assignedMaxSize.GetX(), m_ButtonSize.GetY()};
-        GuiTextButton::Render(assignedPos, assignedMaxSize);
+        GuiButton::Render(assignedPos, assignedMaxSize);
 
         // Render arrow icon
-        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), {s_IconWidthHeight * 0.5f, s_IconWidthHeight * 0.5f, 0.0f});
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
         if(m_HideElements) {
-            iconTransform = Math::Mat4f::RotateZ(iconTransform, 90);
+            GuiIcon::RenderRightArrow(assignedPos,
+                                      Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
+                                      assignedMaxSize);
+        } else {
+            GuiIcon::RenderDownArrow(assignedPos,
+                                     Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
+                                     assignedMaxSize);
         }
-        iconTransform = Math::Mat4f::Translate(iconTransform,
-                                               assignedPos + Math::Vec2f(s_IconWidthHeight / 2.0f,
-                                                                         -s_IconWidthHeight / 2.0f));
-        Math::Vec2f cutoffPos = {assignedPos.GetX() + assignedMaxSize.GetX(),
-                                 assignedPos.GetY() - assignedMaxSize.GetY()};
-        GuiElement::s_PrimitiveShader->Bind();
-        GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
-        Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
+
+        // Render text slightly to the right compared to a regular text button
+        m_Text.Render(assignedPos + Math::Vec2f(s_IconWidthHeight, 0.0f),
+                      assignedMaxSize - Math::Vec2f(s_IconWidthHeight, 0.0f));
 
         if(m_HideElements) { return; }
         GuiContainer::Render(assignedPos, assignedMaxSize,
@@ -135,7 +135,7 @@ namespace Anwill {
     GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size)
             : m_Pos(position), m_Size(size), m_ID(id),
               m_Title(false, title, 14),
-              m_MinimizeButton(false, "", 14, [this](){
+              m_MinimizeButton(false, {s_IconWidthHeight, s_IconWidthHeight},[this](){
                   m_HideElements = !m_HideElements;
               })
     {}
@@ -158,18 +158,15 @@ namespace Anwill {
         m_Title.Render(m_Pos + s_TitlePos, m_Size);
 
         // Render minimize button
-        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
-                                                       {s_IconWidthHeight * 0.5f, s_IconWidthHeight * 0.5f, 1.0f});
         if(m_HideElements) {
-            iconTransform = Math::Mat4f::RotateZ(iconTransform, 90);
+            GuiIcon::RenderRightArrow(m_Pos + s_MinimizeIconPos,
+                                      Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
+                                      m_Size);
+        } else {
+            GuiIcon::RenderDownArrow(m_Pos + s_MinimizeIconPos,
+                                     Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
+                                     m_Size);
         }
-        iconTransform = Math::Mat4f::Translate(iconTransform, m_Pos + s_MinimizeIconPos +
-                        Math::Vec2f(s_IconWidthHeight / 2.0f, -s_IconWidthHeight / 2.0f));
-        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(m_Pos, m_Size);
-        GuiElement::s_PrimitiveShader->Bind();
-        GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
-        Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
-
 
         GuiContainer::Render(m_Pos, m_Size,
                              {GuiMetrics::WindowElementIndent,

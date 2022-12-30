@@ -45,8 +45,8 @@ namespace Anwill {
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
                                      const Sprite& sprite)
     {
-        if((s_QData.textureQ.size() == BatchData2D::maxTextureSlots) or
-           (s_QData.elementsPushed == QuadBatchData::maxQuads)) {
+        if((s_QData.textureQ.size() >= BatchData2D::maxTextureSlots) or
+           (s_QData.elementsPushed >= QuadBatchData::maxQuads)) {
             DrawQuadBatch();
         }
         unsigned int textureID = s_QData.GetOrGenerateID(sprite.texture);

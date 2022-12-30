@@ -12,6 +12,43 @@ namespace Anwill {
     std::shared_ptr<Shader> GuiText::s_Shader;
     std::shared_ptr<Shader> GuiTextButton::s_Shader;
 
+    // ---------- ICON ----------
+
+    void GuiIcon::RenderRightArrow(const Math::Vec2f& assignedPos,
+                                   const Math::Vec2f& assignedSize,
+                                   const Math::Vec2f& assignedMaxSize) {
+        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                       {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
+        iconTransform = Math::Mat4f::RotateZ(iconTransform, 90);
+        iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
+        + Math::Vec2f(assignedSize.GetX() / 1.0f, -assignedSize.GetY() / 1.0f));
+
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
+        GuiElement::s_PrimitiveShader->Bind();
+        GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
+    }
+
+    void GuiIcon::RenderDownArrow(const Math::Vec2f& assignedPos,
+                                  const Math::Vec2f& assignedSize,
+                                  const Math::Vec2f& assignedMaxSize) {
+        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                       {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
+        iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
+                                                              + Math::Vec2f(assignedSize.GetX() / 1.0f, -assignedSize.GetY() / 1.0f));
+
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
+        GuiElement::s_PrimitiveShader->Bind();
+        GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
+    }
+
+    void GuiIcon::RenderCross(const Math::Vec2f& assignedPos,
+                              const Math::Vec2f& assignedSize,
+                              const Math::Vec2f& assignedMaxSize) {
+        // TODO
+    }
+
     // ---------- ELEMENT ----------
 
     GuiElement::GuiElement(bool onNewRow, bool forceNextToNewRow)
@@ -62,14 +99,17 @@ namespace Anwill {
     // ---------- TEXT ----------
 
     GuiText::GuiText(bool onNewRow, const std::string& text, unsigned int textSize)
-        : GuiElement(onNewRow, false), m_TextPos(1.0f, -GuiMetrics::WindowElementHeight / 2.0f + GuiMetrics::TextBaselineOffset), m_Text(text),
+        : GuiElement(onNewRow, false),
+          m_TextPos(1.0f, -GuiMetrics::WindowElementHeight / 2.0f + GuiMetrics::TextBaselineOffset),
+          m_Text(text),
           m_TextScale(Font::GetScaleValue(textSize)), m_TextWidth((float) GuiText::s_Font->GetStringWidth(text) * m_TextScale)
     {}
 
     void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
     {
-        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
-        auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), {m_TextScale, m_TextScale, 1.0f});
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(m_TextPos + assignedPos, assignedMaxSize);
+        auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                {m_TextScale, m_TextScale, 1.0f});
         thisTransform = Math::Mat4f::Translate(thisTransform, m_TextPos + assignedPos);
 
         // Render
@@ -99,17 +139,13 @@ namespace Anwill {
 
     // ---------- BUTTON ----------
 
-    GuiTextButton::GuiTextButton(bool onNewRow, const std::string& text, unsigned int textSize, const std::function<void()>& callback)
-        : GuiText(onNewRow, text, textSize),
-          m_ButtonSize(GuiText::GetWidth() + GuiMetrics::ButtonTextMargin * 2.0f, GuiMetrics::WindowElementHeight),
+    GuiButton::GuiButton(bool onNewRow, const Math::Vec2f& size, const std::function<void()>& callback)
+        : GuiElement(onNewRow, false),
+          m_ButtonSize(size),
           m_Callback(callback)
-    {
-        // Text pos adjusted slightly to the right such that it is positioned in the middle of the button
-        m_TextPos += {GuiMetrics::ButtonTextMargin, 0.0f};
-    }
+    {}
 
-    void GuiTextButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
-    {
+    void GuiButton::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize) {
         Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
         auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), m_ButtonSize);
         thisTransform = Math::Mat4f::Translate(thisTransform,
@@ -121,12 +157,9 @@ namespace Anwill {
         GuiTextButton::s_Shader->SetUniform1i(m_IsPressed, "u_Pressing");
         GuiTextButton::s_Shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         Renderer2D::Submit(GuiTextButton::s_Shader, GuiElement::s_RectMesh, thisTransform);
-
-        // Render text
-        GuiText::Render(assignedPos, assignedMaxSize);
     }
 
-    bool GuiTextButton::IsHovering(const Math::Vec2f& mousePos) const
+    bool GuiButton::IsHovering(const Math::Vec2f& mousePos) const
     {
         return Math::Algo::IsPointInsideRectangle({0.0f,                 0.0f},
                                                   {m_ButtonSize.GetX(),  0.0f},
@@ -135,29 +168,47 @@ namespace Anwill {
                                                   mousePos);
     }
 
-    float GuiTextButton::GetWidth() const
+    float GuiButton::GetWidth() const
     {
         return m_ButtonSize.GetX();
     }
 
-    unsigned int GuiTextButton::GetGridDepth() const
+    unsigned int GuiButton::GetGridDepth() const
     {
         return 1;
     }
 
-    void GuiTextButton::Release()
+    void GuiButton::Release()
     {
         GuiElement::Release();
         m_Callback();
     }
 
-    void GuiTextButton::SetCallback(const std::function<void()>& callback)
-    {
+    void GuiButton::SetCallback(const std::function<void()>& callback) {
         m_Callback = callback;
     }
 
+    // ---------- TEXT BUTTON ----------
+
+    GuiTextButton::GuiTextButton(bool onNewRow, const std::string& text, unsigned int textSize,
+                                 const std::function<void()>& callback)
+        : GuiButton(onNewRow, {}, callback),
+          m_Text(false, text, textSize)
+    {
+        m_ButtonSize = {m_Text.GetWidth() + GuiMetrics::ButtonTextMargin * 2.0f, GuiMetrics::WindowElementHeight};
+    }
+
+    void GuiTextButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
+    {
+        GuiButton::Render(assignedPos, assignedMaxSize);
+
+        // Render text
+        m_Text.Render(assignedPos + Math::Vec2f(GuiMetrics::ButtonTextMargin, 0.0f),
+                      assignedMaxSize - Math::Vec2f(GuiMetrics::ButtonTextMargin, -assignedPos.GetY()));
+    }
+
     void GuiTextButton::SetText(const std::string& text) {
-        GuiText::SetText(text);
-        m_ButtonSize = { GuiText::GetWidth() + GuiMetrics::ButtonTextMargin * 2.0f, m_ButtonSize.GetY() };
+        m_Text.SetText(text);
+        m_ButtonSize = { m_Text.GetWidth() + GuiMetrics::ButtonTextMargin * 2.0f, m_ButtonSize.GetY() };
     }
 }

@@ -3,16 +3,16 @@
 BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
                                                  const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_Camera(ws.width, ws.height), m_IsBatchRendering(true),
-      m_SpriteAnimation(Anwill::Timestamp(1  * 1000000))
+      m_SpriteAnimation(Anwill::Timestamp(1  * 1000000)),
+      m_SpriteSheet(Anwill::SpriteSheet::Create(
+              "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48))
 {
     m_SlowTextShader = Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl");
     m_SlowColorShader = Anwill::Shader::Create("Sandbox/assets/shaders/RectColor.glsl");
 
-    auto spriteSheet = Anwill::SpriteSheet::Create(
-            "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48);
-    m_Sprite = std::make_unique<Anwill::Sprite>(spriteSheet, 3, 2, -1, 0, 0, -1);
+    m_Sprite = std::make_unique<Anwill::Sprite>(m_SpriteSheet, 3, 2, -1, 0, 0, -1);
 
-    m_SpriteAnimation.AddFramesHorizontally(spriteSheet, 43, 48, 1, 10);
+    m_SpriteAnimation.AddFramesHorizontally(m_SpriteSheet, 43, 48, 1, 10);
 
     m_TestTexture = Anwill::Texture::Create("Sandbox/assets/textures/awesomeface.png");
 
@@ -29,6 +29,13 @@ BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
             static_cast<unsigned int>(m_QuadHeight);
 
     m_Camera.Move(100.0f, 0.0f);
+
+    for(int i = 0; i < m_SheetArr.size(); i++) {
+        AW_INFO("{0}", i);
+        m_SheetArr[i] = Anwill::SpriteSheet::Create(
+                "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48);
+    }
+
 }
 
 void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
@@ -36,11 +43,13 @@ void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
     Anwill::Renderer2D::BeginScene(m_Camera);
     m_SpriteAnimation.Tick(GetUpdateDelta(timestamp));
 
+    /*
     if(m_IsBatchRendering) {
         BatchRendering();
     } else {
         SlowRendering();
-    }
+    }*/
+    TestBatchTextureRendering();
 
     MoveCamera();
 
@@ -127,9 +136,36 @@ void BatchRendererHelloWorld::SlowRendering()
                                m_TestTexture);
 }
 
+void BatchRendererHelloWorld::TestBatchTextureRendering() {
+    //AW_PROFILE_FUNC();
+    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
+                                                {m_QuadWidth * 3, m_QuadHeight * 3, 0.0f});
+    int sheetArrIndex = 0;
+    for(int i = 0; i < m_SheetArr.size(); i++) {
+        Anwill::Renderer2D::PushQuadToBatch(transform, Anwill::Sprite(m_SheetArr[sheetArrIndex], i, 2));
+        transform = Anwill::Math::Mat4f::Translate(transform,
+                                                   {m_QuadWidth * 3, 0.0f, 0.0f});
+        sheetArrIndex++;
+    }
+    /*
+    for(unsigned int y = 0; y < 48; y++)
+    {
+        for(unsigned int x = 0; x < 64; x++)
+        {
+            Anwill::Renderer2D::PushQuadToBatch(transform, Anwill::Sprite(m_SheetArr[sheetArrIndex], x, y));
+            transform = Anwill::Math::Mat4f::Translate(transform,
+                                                       {m_QuadWidth, 0.0f, 0.0f});
+        }
+        transform = Anwill::Math::Mat4f::Translate(transform,
+                                                   {-m_QuadWidth * 64,
+                                                    m_QuadHeight, 0.0f});
+    } */
+    Anwill::Renderer2D::DrawBatch();
+}
+
 void BatchRendererHelloWorld::MoveCamera()
 {
-    float speed = 10.0f;
+    float speed = 1.0f;
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W)) {
         m_Camera.Move(0.0f, speed);
     }

@@ -49,6 +49,9 @@ namespace Anwill {
 
     void Gui::Render()
     {
+        if(s_Windows.empty()) {
+            return;
+        }
         AW_PROFILE_FUNC();
         Renderer2D::BeginScene(*s_Camera);
         bool last = false;
@@ -223,7 +226,8 @@ namespace Anwill {
         } else if(s_ScalingX || s_ScalingY)
         {
             Math::Vec2f windowPos = s_Windows[0].GetPos();
-            s_Windows[0].Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {150.0f, 150.0f}, {maxPos.GetX() - windowPos.GetX(), windowPos.GetY()});
+            s_Windows[0].Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {0.0f, 0.0f},
+                                {maxPos.GetX() - windowPos.GetX(), windowPos.GetY()});
             return true;
         }
         return false;

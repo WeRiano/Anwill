@@ -101,7 +101,7 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
 
         auto vel = body.GetVelocity();
         vel.Normalize();
-        body.SetVelocity(vel * 250.0f);
+        body.ApplyForce(-vel * 250.0f);
         body.Tick(delta * 2.0f);
     });
 

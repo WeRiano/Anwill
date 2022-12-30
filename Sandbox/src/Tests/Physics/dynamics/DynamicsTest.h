@@ -11,7 +11,7 @@ public:
 
 private:
     Anwill::Timestamp m_SpawnTimeCount;
-    static constexpr double s_SpawnDeltaSeconds = 0.5;
+    static constexpr double s_SpawnDeltaSeconds = 0.15;
 
     void SpawnObject();
     void KillObjects();

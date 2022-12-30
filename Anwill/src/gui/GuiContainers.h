@@ -85,7 +85,7 @@ namespace Anwill {
         Math::Vec2f m_Pos, m_Size;
         GuiWindowID m_ID;
         GuiText m_Title;
-        GuiTextButton m_MinimizeButton;
+        GuiButton m_MinimizeButton;
     };
 
 }
