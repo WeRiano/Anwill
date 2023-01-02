@@ -19,7 +19,7 @@ namespace Anwill {
         static constexpr float WindowElementHeight = 30.0f;
         static constexpr float WindowElementVerticalMargin = 3.0f;
         static constexpr float WindowElementHorizontalMargin = 6.0f;
-        static constexpr float WindowCutoffMargin = 2.0f;
+        static constexpr float WindowCutoffMargin = 4.0f;
         // We render text in the middle of the assigned space, but the baseline should not be in the middle, it should be slightly below
         static constexpr float TextBaselineOffset = -(float) FontSize * 0.45;
         static constexpr float ButtonTextMargin = 5.0f; // X distance from button edge to text
@@ -50,6 +50,11 @@ namespace Anwill {
         static inline Math::Vec2f GetCutoffPos(const Math::Vec2f& assignedPos,
                                                const Math::Vec2f& assignedMaxSize) {
             return {assignedPos.GetX() + assignedMaxSize.GetX(), assignedPos.GetY() - assignedMaxSize.GetY()};
+        }
+
+        static inline Math::Vec2f GetNewMaxSize(const Math::Vec2f& posDelta,
+                                                const Math::Vec2f& oldMaxSize) {
+            return {oldMaxSize.GetX() - posDelta.GetX(), oldMaxSize.GetY() + posDelta.GetY()};
         }
     };
 
@@ -128,7 +133,9 @@ namespace Anwill {
 
     class GuiButton : public GuiElement {
     public:
-        GuiButton(bool onNewRow, const Math::Vec2f& size, const std::function<void()>& callback);
+        GuiButton(bool onNewRow,
+                  const Math::Vec2f& size,
+                  const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;

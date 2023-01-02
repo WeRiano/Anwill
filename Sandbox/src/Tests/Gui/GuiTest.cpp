@@ -35,14 +35,12 @@ GuiTest::GuiTest(const unsigned int ups)
         dd1Text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });
 
-    /*
-    auto id2 = Anwill::Gui::NewWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
+    auto id2 = Anwill::Gui::CreateWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
     Anwill::Gui::Text("Some text inside window! Cool!", true, id2);
 
     Anwill::Gui::Text("More stupid text ... which is also super cool hehe xd", true, id2);
     Anwill::Gui::Text("AWESOME TEXT IN CAPSLOCK! AND SOME NUMBERS! 123456", true, id2);
     Anwill::Gui::Text("More stupid text ... which is also super cool hehe xd", true, id2);
-     */
 }
 
 void GuiTest::Update(const Anwill::Timestamp& timestamp)

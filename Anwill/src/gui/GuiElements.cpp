@@ -21,7 +21,7 @@ namespace Anwill {
                                                        {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
         iconTransform = Math::Mat4f::RotateZ(iconTransform, 90);
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
-        + Math::Vec2f(assignedSize.GetX() / 1.0f, -assignedSize.GetY() / 1.0f));
+        + Math::Vec2f(assignedSize.GetX(), -assignedSize.GetY()));
 
         Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
         GuiElement::s_PrimitiveShader->Bind();
@@ -35,7 +35,7 @@ namespace Anwill {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                        {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
-                                                              + Math::Vec2f(assignedSize.GetX() / 1.0f, -assignedSize.GetY() / 1.0f));
+        + Math::Vec2f(assignedSize.GetX(), -assignedSize.GetY()));
 
         Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
         GuiElement::s_PrimitiveShader->Bind();
@@ -107,7 +107,7 @@ namespace Anwill {
 
     void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
     {
-        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(m_TextPos + assignedPos, assignedMaxSize);
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(Math::Vec2f(m_TextPos.GetX(), 0.0f) + assignedPos, assignedMaxSize);
         auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                 {m_TextScale, m_TextScale, 1.0f});
         thisTransform = Math::Mat4f::Translate(thisTransform, m_TextPos + assignedPos);
@@ -204,7 +204,7 @@ namespace Anwill {
 
         // Render text
         m_Text.Render(assignedPos + Math::Vec2f(GuiMetrics::ButtonTextMargin, 0.0f),
-                      assignedMaxSize - Math::Vec2f(GuiMetrics::ButtonTextMargin, -assignedPos.GetY()));
+                      assignedMaxSize - Math::Vec2f(GuiMetrics::ButtonTextMargin, 0.0f));
     }
 
     void GuiTextButton::SetText(const std::string& text) {

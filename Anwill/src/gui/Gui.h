@@ -45,7 +45,7 @@ namespace Anwill {
 
     private:
         static std::unique_ptr<OrthographicCamera> s_Camera;
-        static GuiWindowID s_NextID;
+        static GuiWindowID s_LastWindowID;
         static std::vector<GuiWindow> s_Windows;
 
         // Gui state stuff
@@ -60,7 +60,7 @@ namespace Anwill {
         static void OnMouseRelease(std::unique_ptr<Event>& event);
         static void OnWindowResize(std::unique_ptr<Event>& event);
 
-        static bool HandleHoveringAndPressing(const Math::Vec2f& mousePos);
+        static void HandleHoveringAndPressing(const Math::Vec2f& mousePos);
         static bool MoveOrResizeSelectedWindow(const Math::Vec2f& newMousePos);
         static int GetWindowIndex(GuiWindowID id);
 

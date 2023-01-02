@@ -12,7 +12,7 @@ namespace Anwill {
 
     std::unique_ptr<OrthographicCamera> Gui::s_Camera;
     std::vector<GuiWindow> Gui::s_Windows;
-    GuiWindowID Gui::s_NextID = 0;
+    GuiWindowID Gui::s_LastWindowID = 0;
     Math::Vec2f Gui::s_MousePos;
     bool Gui::s_Moving = false;
     bool Gui::s_ScalingX = false;
@@ -102,12 +102,10 @@ namespace Anwill {
 
     GuiWindowID Gui::CreateWindow(const std::string& title)
     {
-        s_NextID++;
-
-        GuiWindow newWindow(title, s_NextID, {0.0f, 900.0f}, {600.0f, 450.0f});
-        s_Windows.push_back(newWindow);
-
-        return s_NextID;
+        s_LastWindowID++;
+        s_Windows.emplace_back(title, s_LastWindowID, Math::Vec2f(0.0f, 900.0f),
+                               Math::Vec2f(600.0f, 450.0f));
+        return s_LastWindowID;
         // TODO: Max nr of windows (id cap or something)
     }
 
@@ -126,9 +124,12 @@ namespace Anwill {
 
     void Gui::OnMousePress(std::unique_ptr<Event>& event)
     {
-        if(s_HoveringWindowIndex != -1 && s_HoveringWindowIndex != 0) {
+        if(s_HoveringWindowIndex == -1) { return; }
+        if(s_HoveringWindowIndex != 0) {
             // Select window if we are hovering a window and the window is not already selected
-            std::rotate(s_Windows.begin(), s_Windows.begin() + s_HoveringWindowIndex, s_Windows.begin() + s_HoveringWindowIndex + 1);
+            std::rotate(s_Windows.begin(),
+                        s_Windows.begin() + s_HoveringWindowIndex, s_Windows.begin() + s_HoveringWindowIndex + 1);
+            s_HoveringWindowIndex = 0;
         }
         if(s_HoveringHeader) {
             s_Moving = true;
@@ -161,27 +162,33 @@ namespace Anwill {
         s_Camera->SetProjection((float) e.GetNewWidth(), (float) e.GetNewHeight());
     }
 
-    bool Gui::HandleHoveringAndPressing(const Math::Vec2f& mousePos)
+    void Gui::HandleHoveringAndPressing(const Math::Vec2f& mousePos)
     {
         bool lastIterHoveringDiagonalScaling = s_HoveringDiagonalScaling;
         bool lastIterHoveringHeader = s_HoveringHeader;
         for (int i = 0; i < s_Windows.size(); i++)
         {
-            s_HoveringDiagonalScaling = s_Windows[i].IsHoveringResize(s_MousePos);
-            if(lastIterHoveringDiagonalScaling != s_HoveringDiagonalScaling) {
-                // We are either not hovering it or hovering it for the first time
-                s_HoveringDiagonalScaling ? SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize) :
-                        SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
-                return s_HoveringDiagonalScaling;
+            if(s_Windows[i].IsHoveringResize(s_MousePos)) {
+                if(!lastIterHoveringDiagonalScaling) {
+                    SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
+                    s_HoveringDiagonalScaling = true;
+                }
+                s_HoveringWindowIndex = i;
+                return;
             }
-            s_HoveringHeader = s_Windows[i].IsHoveringHeader(s_MousePos);
-            if(lastIterHoveringHeader != s_HoveringHeader) {
-                // We are either not hovering it or hovering it for the first time
-                s_HoveringHeader ? SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand) :
-                        SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
-                return s_HoveringHeader;
+            if(s_Windows[i].IsHoveringHeader(s_MousePos)) {
+                if(!lastIterHoveringHeader) {
+                    SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand);
+                    s_HoveringHeader = true;
+                }
+                s_HoveringWindowIndex = i;
+                return;
             }
             if(s_Windows[i].IsHoveringWindow(mousePos)) {
+                if(lastIterHoveringDiagonalScaling || lastIterHoveringHeader) {
+                    // We were somewhere else last iteration
+                    SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
+                }
                 // Update which window we are currently hovering
                 s_HoveringWindowIndex = i;
                 // Remember which element we hovered last iteration
@@ -198,18 +205,24 @@ namespace Anwill {
                     }
                 }
                 // We can only hover 1 window and 1 element so no need to continue.
-                return true;
-            } else {
-                s_HoveringWindowIndex = -1;
+                s_HoveringDiagonalScaling = false;
+                s_HoveringHeader = false;
+                return;
             }
         }
-        if(s_HoveringWindowIndex == -1 && s_HoverElement != nullptr) {
+        // We are not hovering anything
+        s_HoveringDiagonalScaling = false;
+        s_HoveringHeader = false;
+        s_HoveringWindowIndex = -1;
+        if(lastIterHoveringDiagonalScaling || lastIterHoveringHeader) {
+            SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
+        }
+        if(s_HoverElement != nullptr) {
             // If we did not hit a window, but we are hovering something from last iteration we stop hovering that
             s_HoverElement->StopHovering();
             s_HoverElement->StopPressing();
             s_HoverElement = nullptr;
         }
-        return false;
     }
 
     bool Gui::MoveOrResizeSelectedWindow(const Math::Vec2f& newMousePos)
@@ -226,7 +239,7 @@ namespace Anwill {
         } else if(s_ScalingX || s_ScalingY)
         {
             Math::Vec2f windowPos = s_Windows[0].GetPos();
-            s_Windows[0].Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {0.0f, 0.0f},
+            s_Windows[0].Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {100.0f, 100.0f},
                                 {maxPos.GetX() - windowPos.GetX(), windowPos.GetY()});
             return true;
         }

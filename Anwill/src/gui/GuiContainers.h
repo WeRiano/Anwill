@@ -29,11 +29,12 @@ namespace Anwill {
             return std::dynamic_pointer_cast<E>(m_Elements.back());
         }
 
+        void ToggleMinimize();
     protected:
         unsigned int m_GridDepth;
         std::vector<std::shared_ptr<GuiElement>> m_Elements;
         std::vector<Math::Vec2f> m_ElementPosCache;
-        bool m_HideElements;
+        volatile bool m_HideElements;
 
         virtual std::shared_ptr<GuiElement> GetHoverElementInternal(const Math::Vec2f& mousePos,
                                                                     const Math::Vec2f& posOffset) const;
@@ -82,10 +83,10 @@ namespace Anwill {
         static constexpr float s_IconWidthHeight = GuiMetrics::WindowHeaderSize;
         static const Math::Vec2f s_TitlePos, s_MinimizeIconPos;
 
-        Math::Vec2f m_Pos, m_Size;
+        Math::Vec2f m_Pos, m_Size, m_LastShowSize;
         GuiWindowID m_ID;
         GuiText m_Title;
-        GuiButton m_MinimizeButton;
+        std::shared_ptr<GuiButton> m_MinimizeButton;
     };
 
 }
