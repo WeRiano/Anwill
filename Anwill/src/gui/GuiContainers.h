@@ -81,7 +81,7 @@ namespace Anwill {
 
     private:
         static constexpr float s_IconWidthHeight = GuiMetrics::WindowHeaderSize;
-        static const Math::Vec2f s_TitlePos, s_MinimizeIconPos;
+        static const Math::Vec2f s_TitlePos;
 
         Math::Vec2f m_Pos, m_Size, m_LastShowSize;
         GuiWindowID m_ID;

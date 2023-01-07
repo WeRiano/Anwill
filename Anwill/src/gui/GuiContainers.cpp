@@ -7,7 +7,6 @@ namespace Anwill {
     std::shared_ptr<Shader> GuiWindow::s_WindowShader;
     const Math::Vec2f GuiWindow::s_TitlePos = {GuiMetrics::WindowBorderSize + s_IconWidthHeight,
                                GuiMetrics::WindowElementHeight / 2.0f - GuiMetrics::WindowHeaderSize / 2.0f};
-    const Math::Vec2f GuiWindow::s_MinimizeIconPos = {GuiMetrics::WindowBorderSize / 2.0f, 0.0f};
 
     GuiContainer::GuiContainer()
         : m_GridDepth(1), m_HideElements(true)
