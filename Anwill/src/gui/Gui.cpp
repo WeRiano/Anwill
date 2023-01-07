@@ -11,7 +11,7 @@
 namespace Anwill {
 
     std::unique_ptr<OrthographicCamera> Gui::s_Camera;
-    std::vector<GuiWindow> Gui::s_Windows;
+    std::vector<std::shared_ptr<GuiWindow>> Gui::s_Windows;
     GuiWindowID Gui::s_LastWindowID = 0;
     Math::Vec2f Gui::s_MousePos;
     bool Gui::s_Moving = false;
@@ -60,7 +60,7 @@ namespace Anwill {
             if(i == 0) {
                 last = true;
             }
-            s_Windows[i].Render(last);
+            s_Windows[i]->Render(last);
         }
     }
 
@@ -103,8 +103,8 @@ namespace Anwill {
     GuiWindowID Gui::CreateWindow(const std::string& title)
     {
         s_LastWindowID++;
-        s_Windows.emplace_back(title, s_LastWindowID, Math::Vec2f(0.0f, 900.0f),
-                               Math::Vec2f(600.0f, 450.0f));
+        s_Windows.emplace_back(std::make_shared<GuiWindow>(title, s_LastWindowID, Math::Vec2f(0.0f, 900.0f),
+                               Math::Vec2f(600.0f, 450.0f)));
         return s_LastWindowID;
         // TODO: Max nr of windows (id cap or something)
     }
@@ -168,7 +168,7 @@ namespace Anwill {
         bool lastIterHoveringHeader = s_HoveringHeader;
         for (int i = 0; i < s_Windows.size(); i++)
         {
-            if(s_Windows[i].IsHoveringResize(s_MousePos)) {
+            if(s_Windows[i]->IsHoveringResize(s_MousePos)) {
                 if(!lastIterHoveringDiagonalScaling) {
                     SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
                     s_HoveringDiagonalScaling = true;
@@ -176,7 +176,7 @@ namespace Anwill {
                 s_HoveringWindowIndex = i;
                 return;
             }
-            if(s_Windows[i].IsHoveringHeader(s_MousePos)) {
+            if(s_Windows[i]->IsHoveringHeader(s_MousePos)) {
                 if(!lastIterHoveringHeader) {
                     SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand);
                     s_HoveringHeader = true;
@@ -184,7 +184,7 @@ namespace Anwill {
                 s_HoveringWindowIndex = i;
                 return;
             }
-            if(s_Windows[i].IsHoveringWindow(mousePos)) {
+            if(s_Windows[i]->IsHoveringWindow(mousePos)) {
                 if(lastIterHoveringDiagonalScaling || lastIterHoveringHeader) {
                     // We were somewhere else last iteration
                     SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
@@ -194,7 +194,7 @@ namespace Anwill {
                 // Remember which element we hovered last iteration
                 std::shared_ptr<GuiElement> lastIterHoverElement = s_HoverElement;
                 // Update which element we are hovering right now
-                s_HoverElement = s_Windows[i].GetHoverElement(mousePos);
+                s_HoverElement = s_Windows[i]->GetHoverElement(mousePos);
                 if(s_HoverElement != lastIterHoverElement) {
                     if(s_HoverElement != nullptr) {
                         s_HoverElement->StartHovering();
@@ -234,12 +234,12 @@ namespace Anwill {
         Math::Vec2f mouseDelta = newMousePos - s_MousePos;
         Math::Vec2f maxPos = GuiMetrics::windowSize;
         if(s_Moving) {
-            s_Windows[0].Move(mouseDelta, {0.0f, 0.0f}, maxPos);
+            s_Windows[0]->Move(mouseDelta, {0.0f, 0.0f}, maxPos);
             return true;
         } else if(s_ScalingX || s_ScalingY)
         {
-            Math::Vec2f windowPos = s_Windows[0].GetPos();
-            s_Windows[0].Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {100.0f, 100.0f},
+            Math::Vec2f windowPos = s_Windows[0]->GetPos();
+            s_Windows[0]->Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {100.0f, 100.0f},
                                 {maxPos.GetX() - windowPos.GetX(), windowPos.GetY()});
             return true;
         }
@@ -256,7 +256,7 @@ namespace Anwill {
             return 0;
         } else {
             for(int i = 0; i < s_Windows.size(); i++) {
-                if (s_Windows[i].GetID() == id) {
+                if (s_Windows[i]->GetID() == id) {
                     return i;
                 }
             }

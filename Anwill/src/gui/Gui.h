@@ -46,7 +46,7 @@ namespace Anwill {
     private:
         static std::unique_ptr<OrthographicCamera> s_Camera;
         static GuiWindowID s_LastWindowID;
-        static std::vector<GuiWindow> s_Windows;
+        static std::vector<std::shared_ptr<GuiWindow>> s_Windows;
 
         // Gui state stuff
         static Math::Vec2f s_MousePos;
@@ -70,7 +70,7 @@ namespace Anwill {
             if(windowIndex == -1) {
                 return nullptr;
             }
-            return s_Windows[windowIndex].AddElement<E>(std::forward<Args>(args)...);
+            return s_Windows[windowIndex]->AddElement<E>(std::forward<Args>(args)...);
         }
 
         template <class E, typename... Args>
