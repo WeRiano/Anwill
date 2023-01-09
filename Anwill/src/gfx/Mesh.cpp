@@ -90,6 +90,43 @@ namespace Anwill {
         return {vertices, sizeof(vertices), indices, 3, bufferLayout};
     }
 
+    Mesh Mesh::CreateCheckmarkMesh(float width, float height) {
+        // Width is distance between the leftmost vertex (e) and the rightmost vertex (a)
+        // Height is distance between the most north vertex (b) and the most south vertex (c)
+        Math::Vec2f a = {0.5f * width, 0.375f * height};
+        Math::Vec2f b = {a.GetY(), a.GetX()};
+        Math::Vec2f c = {-0.1f * width, -0.5f * height};
+        Math::Vec2f d = {b.GetX() - a.GetX() + c.GetX(), b.GetY() - a.GetY() + c.GetY()};
+        Math::Vec2f e = {c.GetY(), c.GetX()};
+        Math::Vec2f f = {e.GetX() + a.GetX() - b.GetX(), e.GetY() + b.GetY() - a.GetY()};
+        Math::Vec2f g = {f.GetX() - e.GetX() + d.GetX(), f.GetY() - e.GetY() + d.GetY()};
+
+        float vertices[] = {
+                a.GetX(), a.GetY(), 0.0f,
+                b.GetX(), b.GetY(), 0.0f,
+                c.GetX(), c.GetY(), 0.0f,
+                d.GetX(), d.GetY(), 0.0f,
+                e.GetX(), e.GetY(), 0.0f,
+                f.GetX(), f.GetY(), 0.0f,
+                g.GetX(), g.GetY(), 0.0f
+        };
+
+        unsigned int indices[] = {
+                0, 1, 2, // a, b, c
+                3, 2, 1, // d, c, b
+
+                6, 5, 3, // g, f, d
+                4, 3, 5 // e, d, f
+        };
+
+        std::vector<BufferElement> elements = {
+                Anwill::BufferElement(Anwill::ShaderDataType::Float3)
+        };
+        auto bufferLayout = Anwill::BufferLayout(elements);
+
+        return {vertices, sizeof(vertices), indices, 12, bufferLayout};
+    }
+
     Mesh::Mesh()
     {}
 

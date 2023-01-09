@@ -21,8 +21,9 @@ namespace Anwill {
         static constexpr float WindowElementHorizontalMargin = 6.0f;
         static constexpr float WindowCutoffMargin = 4.0f;
         // We render text in the middle of the assigned space, but the baseline should not be in the middle, it should be slightly below
-        static constexpr float TextBaselineOffset = -(float) FontSize * 0.45;
+        static constexpr float TextBaselineOffset = -(float) FontSize * 0.45f;
         static constexpr float ButtonTextMargin = 5.0f; // X distance from button edge to text
+        static constexpr float CheckboxElementMargin = 2.0f;
 
             // Window stuff
         static constexpr float WindowBorderSize = 8.0f;
@@ -69,6 +70,9 @@ namespace Anwill {
         static void RenderCross(const Math::Vec2f& assignedPos,
                                      const Math::Vec2f& assignedSize,
                                      const Math::Vec2f& assignedMaxSize);
+        static void RenderCheckmark(const Math::Vec2f& assignedPos,
+                                   const Math::Vec2f& assignedSize,
+                                   const Math::Vec2f& assignedMaxSize);
     };
 
     class GuiElement {
@@ -167,5 +171,18 @@ namespace Anwill {
 
     protected:
         GuiText m_Text;
+    };
+
+    class GuiCheckbox : public GuiButton {
+    public:
+        static Mesh s_CheckmarkMesh;
+
+        GuiCheckbox(bool onNewRow,
+                    bool startAsChecked,
+                    const std::function<void(bool)>& callback);
+
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+    private:
+        bool m_Checked;
     };
 }

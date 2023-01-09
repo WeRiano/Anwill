@@ -11,6 +11,7 @@ namespace Anwill {
     std::unique_ptr<Font> GuiElement::s_Font;
     std::shared_ptr<Shader> GuiText::s_Shader;
     std::shared_ptr<Shader> GuiTextButton::s_Shader;
+    Mesh GuiCheckbox::s_CheckmarkMesh;
 
     // ---------- ICON ----------
 
@@ -47,6 +48,20 @@ namespace Anwill {
                               const Math::Vec2f& assignedSize,
                               const Math::Vec2f& assignedMaxSize) {
         // TODO
+    }
+
+    void GuiIcon::RenderCheckmark(const Math::Vec2f &assignedPos,
+                                 const Math::Vec2f &assignedSize,
+                                 const Math::Vec2f &assignedMaxSize) {
+        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                       {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
+        iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
+        + (Math::Vec2f(assignedSize.GetX(), -assignedSize.GetY()) * 0.5f));
+
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
+        GuiElement::s_PrimitiveShader->Bind();
+        GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiCheckbox::s_CheckmarkMesh, iconTransform);
     }
 
     // ---------- ELEMENT ----------
@@ -210,5 +225,28 @@ namespace Anwill {
     void GuiTextButton::SetText(const std::string& text) {
         m_Text.SetText(text);
         m_ButtonSize = { m_Text.GetWidth() + GuiMetrics::ButtonTextMargin * 2.0f, m_ButtonSize.GetY() };
+    }
+
+    // ---------- CHECKBOX ----------
+
+    GuiCheckbox::GuiCheckbox(bool onNewRow,
+                             bool startAsChecked,
+                             const std::function<void(bool)>& callback)
+        : GuiButton(onNewRow, {GuiMetrics::WindowElementHeight, GuiMetrics::WindowElementHeight},
+                    [this, callback](){
+            m_Checked = !m_Checked;
+            callback(m_Checked);
+        }), m_Checked(startAsChecked)
+    {}
+
+    void GuiCheckbox::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize) {
+        GuiButton::Render(assignedPos, assignedMaxSize);
+
+        // Render checkmark
+        if(!m_Checked) { return; }
+        GuiIcon::RenderCheckmark(assignedPos + Math::Vec2f(GuiMetrics::CheckboxElementMargin, -GuiMetrics::CheckboxElementMargin * 2.0f),
+                                 {m_ButtonSize.GetX() - GuiMetrics::CheckboxElementMargin * 2.0f,
+                                  m_ButtonSize.GetY() - GuiMetrics::CheckboxElementMargin * 4.0f},
+                                 assignedMaxSize);
     }
 }

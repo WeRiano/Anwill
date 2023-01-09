@@ -40,6 +40,13 @@ namespace Anwill {
                                                      const std::shared_ptr<GuiContainer>& container,
                                                      const std::function<void()>& callback = [](){},
                                                      bool onNewRow = true);
+        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially,
+                                                     const std::function<void(bool)>& callback = [](bool checked){},
+                                                     bool onNewRow = true, GuiWindowID windowID = 0);
+        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially,
+                                                     const std::shared_ptr<GuiContainer>& container,
+                                                     const std::function<void(bool)>& callback = [](bool checked){},
+                                                     bool onNewRow = true);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);
 

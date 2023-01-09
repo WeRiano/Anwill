@@ -36,6 +36,7 @@ namespace Anwill {
         GuiWindow::s_WindowShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
         GuiText::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiText.glsl");
         GuiTextButton::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTextButton.glsl");
+        GuiCheckbox::s_CheckmarkMesh = Mesh::CreateCheckmarkMesh(1.0f, 1.0f);
 
         GuiElement::s_PrimitiveShader->Bind();
         GuiElement::s_PrimitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
@@ -87,6 +88,18 @@ namespace Anwill {
                                                bool onNewRow)
     {
         return container->AddElement<GuiTextButton>(onNewRow, text, GuiMetrics::FontSize, callback);
+    }
+
+    std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially,
+                                               const std::function<void(bool)> &callback,
+                                               bool onNewRow,
+                                               GuiWindowID windowID) {
+        return AddElementToWindow<GuiCheckbox>(windowID, onNewRow, checkedInitially, callback);
+    }
+
+    std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::shared_ptr<GuiContainer> &container,
+                                               const std::function<void(bool)> &callback, bool onNewRow) {
+        return container->AddElement<GuiCheckbox>(onNewRow, checkedInitially, callback);
     }
 
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
