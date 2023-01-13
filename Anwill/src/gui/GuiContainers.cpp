@@ -35,11 +35,6 @@ namespace Anwill {
         return nullptr;
     }
 
-    void GuiContainer::ToggleMinimize() {
-        AW_INFO("HideElements: {0}", m_HideElements);
-        m_HideElements = !m_HideElements;
-    }
-
     void GuiContainer::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                               const Math::Vec2f& firstPos)
     {
@@ -50,8 +45,8 @@ namespace Anwill {
         for (unsigned int i = 0; i < m_Elements.size(); i++) {
             auto element = m_Elements[i];
             if(i > 0) {
-                bool wantsNewRow = element->OnNewRow();
-                bool forcedToNewRow = lastElement->ForceNextToNewRow();
+                bool wantsNewRow = m_NewRowChecks[i].first;
+                bool forcedToNewRow = m_NewRowChecks[i].second;
                 elementGridPos = GuiMetrics::GetNextElementPos(elementGridPos, lastElement->GetWidth(),
                                                                lastElement->GetGridDepth(),
                                                                newRowXPos,
@@ -71,13 +66,10 @@ namespace Anwill {
     }
 
     GuiDropdown::GuiDropdown(const std::string& text, unsigned int textSize)
-            : GuiTextButton(true, text, textSize, [this](){
+            : GuiTextButton(text, textSize, [this](){
                 m_HideElements = !m_HideElements;
             })
-    {
-        // Can't place stuff to the right of a dropdown
-        m_ForceNextToNewRow = true;
-    }
+    {}
 
     void GuiDropdown::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
     {
@@ -139,9 +131,8 @@ namespace Anwill {
 
     GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size)
             : GuiContainer(), m_Pos(position), m_Size(size), m_LastShowSize(), m_ID(id),
-              m_Title(false, title, 14),
-              m_MinimizeButton(std::make_shared<GuiButton>(false,
-                                                           Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight),
+              m_Title(title, 14),
+              m_MinimizeButton(std::make_shared<GuiButton>(Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight),
                                                            [this]() {
                                                                m_HideElements = !m_HideElements;
                                                                if(m_HideElements) {

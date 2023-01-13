@@ -66,9 +66,8 @@ namespace Anwill {
 
     // ---------- ELEMENT ----------
 
-    GuiElement::GuiElement(bool onNewRow, bool forceNextToNewRow)
-        : m_IsHovered(false), m_IsPressed(false),
-          m_OnNewRow(onNewRow), m_ForceNextToNewRow(forceNextToNewRow)
+    GuiElement::GuiElement()
+        : m_IsHovered(false), m_IsPressed(false)
     {}
 
     void GuiElement::StartHovering()
@@ -101,20 +100,10 @@ namespace Anwill {
         return m_IsHovered;
     }
 
-    bool GuiElement::OnNewRow() const
-    {
-        return m_OnNewRow;
-    }
-
-    bool GuiElement::ForceNextToNewRow() const
-    {
-        return m_ForceNextToNewRow;
-    }
-
     // ---------- TEXT ----------
 
-    GuiText::GuiText(bool onNewRow, const std::string& text, unsigned int textSize)
-        : GuiElement(onNewRow, false),
+    GuiText::GuiText(const std::string& text, unsigned int textSize)
+        : GuiElement(),
           m_TextPos(1.0f, -GuiMetrics::WindowElementHeight / 2.0f + GuiMetrics::TextBaselineOffset),
           m_Text(text),
           m_TextScale(Font::GetScaleValue(textSize)), m_TextWidth((float) GuiText::s_Font->GetStringWidth(text) * m_TextScale)
@@ -154,8 +143,8 @@ namespace Anwill {
 
     // ---------- BUTTON ----------
 
-    GuiButton::GuiButton(bool onNewRow, const Math::Vec2f& size, const std::function<void()>& callback)
-        : GuiElement(onNewRow, false),
+    GuiButton::GuiButton(const Math::Vec2f& size, const std::function<void()>& callback)
+        : GuiElement(),
           m_ButtonSize(size),
           m_Callback(callback)
     {}
@@ -205,10 +194,10 @@ namespace Anwill {
 
     // ---------- TEXT BUTTON ----------
 
-    GuiTextButton::GuiTextButton(bool onNewRow, const std::string& text, unsigned int textSize,
+    GuiTextButton::GuiTextButton(const std::string& text, unsigned int textSize,
                                  const std::function<void()>& callback)
-        : GuiButton(onNewRow, {}, callback),
-          m_Text(false, text, textSize)
+        : GuiButton({}, callback),
+          m_Text(text, textSize)
     {
         m_ButtonSize = {m_Text.GetWidth() + GuiMetrics::ButtonTextMargin * 2.0f, GuiMetrics::WindowElementHeight};
     }
@@ -229,10 +218,9 @@ namespace Anwill {
 
     // ---------- CHECKBOX ----------
 
-    GuiCheckbox::GuiCheckbox(bool onNewRow,
-                             bool startAsChecked,
+    GuiCheckbox::GuiCheckbox(bool startAsChecked,
                              const std::function<void(bool)>& callback)
-        : GuiButton(onNewRow, {GuiMetrics::WindowElementHeight, GuiMetrics::WindowElementHeight},
+        : GuiButton({GuiMetrics::WindowElementHeight, GuiMetrics::WindowElementHeight},
                     [this, callback](){
             m_Checked = !m_Checked;
             callback(m_Checked);

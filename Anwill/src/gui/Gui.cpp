@@ -67,19 +67,19 @@ namespace Anwill {
 
     std::shared_ptr<GuiText> Gui::Text(const std::string& text, bool onNewRow, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiText>(windowID, onNewRow, text, GuiMetrics::FontSize);
+        return AddElementToWindow<GuiText>(windowID, onNewRow, false, text, GuiMetrics::FontSize);
     }
 
     std::shared_ptr<GuiText> Gui::Text(const std::string& text,
                                        const std::shared_ptr<GuiContainer>& container,
                                        bool onNewRow)
     {
-        return container->AddElement<GuiText>(onNewRow, text, GuiMetrics::FontSize);
+        return container->AddElement<GuiText>(onNewRow, false, text, GuiMetrics::FontSize);
     }
 
     std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text, const std::function<void()>& callback, bool onNewRow, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiTextButton>(windowID, onNewRow, text, GuiMetrics::FontSize, callback);
+        return AddElementToWindow<GuiTextButton>(windowID, onNewRow, false, text, GuiMetrics::FontSize, callback);
     }
 
     std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text,
@@ -87,30 +87,30 @@ namespace Anwill {
                                                const std::function<void()>& callback,
                                                bool onNewRow)
     {
-        return container->AddElement<GuiTextButton>(onNewRow, text, GuiMetrics::FontSize, callback);
+        return container->AddElement<GuiTextButton>(onNewRow, false, text, GuiMetrics::FontSize, callback);
     }
 
     std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially,
                                                const std::function<void(bool)> &callback,
                                                bool onNewRow,
                                                GuiWindowID windowID) {
-        return AddElementToWindow<GuiCheckbox>(windowID, onNewRow, checkedInitially, callback);
+        return AddElementToWindow<GuiCheckbox>(windowID, onNewRow, false, checkedInitially, callback);
     }
 
     std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::shared_ptr<GuiContainer> &container,
                                                const std::function<void(bool)> &callback, bool onNewRow) {
-        return container->AddElement<GuiCheckbox>(onNewRow, checkedInitially, callback);
+        return container->AddElement<GuiCheckbox>(onNewRow, false, checkedInitially, callback);
     }
 
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiDropdown>(windowID, text, GuiMetrics::FontSize);
+        return AddElementToWindow<GuiDropdown>(windowID, true, true, text, GuiMetrics::FontSize);
     }
 
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text,
                                                const std::shared_ptr<GuiContainer>& container)
     {
-        return container->AddElement<GuiDropdown>(text, GuiMetrics::FontSize);
+        return container->AddElement<GuiDropdown>(true, true, text, GuiMetrics::FontSize);
     }
 
     GuiWindowID Gui::CreateWindow(const std::string& title)

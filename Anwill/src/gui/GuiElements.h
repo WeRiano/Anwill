@@ -82,7 +82,7 @@ namespace Anwill {
         static std::shared_ptr<Shader> s_PrimitiveShader;
         static std::unique_ptr<Font> s_Font;
 
-        GuiElement(bool onNewRow, bool forceNextToNewRow);
+        GuiElement();
 
         virtual void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) = 0;
         /**
@@ -102,22 +102,16 @@ namespace Anwill {
          * @brief Check if element is currently in the state of being hovered by something
          */
         bool IsHovered() const;
-        bool OnNewRow() const;
-        bool ForceNextToNewRow() const;
 
     protected:
-        // Position is relative to assigned grid position.
-        // Size is absolute and tells manager how much space you occupy.
-        // If m_ForceNextToNewRow is true your width will not be used
         bool m_IsHovered, m_IsPressed;
-        bool m_OnNewRow, m_ForceNextToNewRow;
     };
 
     class GuiText : public GuiElement {
     public:
         static std::shared_ptr<Shader> s_Shader;
 
-        GuiText(bool onNewRow, const std::string& text, unsigned int textSize);
+        GuiText(const std::string& text, unsigned int textSize);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
@@ -137,8 +131,7 @@ namespace Anwill {
 
     class GuiButton : public GuiElement {
     public:
-        GuiButton(bool onNewRow,
-                  const Math::Vec2f& size,
+        GuiButton(const Math::Vec2f& size,
                   const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
@@ -163,7 +156,7 @@ namespace Anwill {
     public:
         static std::shared_ptr<Shader> s_Shader;
 
-        GuiTextButton(bool onNewRow, const std::string& text,
+        GuiTextButton(const std::string& text,
                       unsigned int textSize, const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
@@ -177,12 +170,15 @@ namespace Anwill {
     public:
         static Mesh s_CheckmarkMesh;
 
-        GuiCheckbox(bool onNewRow,
-                    bool startAsChecked,
+        GuiCheckbox(bool startAsChecked,
                     const std::function<void(bool)>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
     private:
         bool m_Checked;
+    };
+
+    class GuiSlider : public GuiElement {
+
     };
 }

@@ -14,26 +14,22 @@ namespace Anwill {
         bool IsHidingElements() const;
 
         template <class E, typename... Args>
-        std::shared_ptr<E> AddElement(Args&&... args) {
-            if(m_Elements.empty()) {
+        std::shared_ptr<E> AddElement(bool onNewRow, bool forceNextToNewRow, Args&&... args) {
+            if(m_Elements.empty() || (onNewRow || m_NewRowChecks.back().second)) {
                 m_GridDepth++;
-                m_Elements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...));
-            } else {
-                auto penultimateElement = m_Elements.back();
-                m_Elements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...));
-                auto newElement = m_Elements.back();
-                if(penultimateElement->ForceNextToNewRow() || newElement->OnNewRow()) {
-                    m_GridDepth++;
-                }
             }
+            m_Elements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...));
+            m_NewRowChecks.emplace_back(onNewRow, forceNextToNewRow);
             return std::dynamic_pointer_cast<E>(m_Elements.back());
         }
 
-        void ToggleMinimize();
     protected:
         unsigned int m_GridDepth;
         std::vector<std::shared_ptr<GuiElement>> m_Elements;
         std::vector<Math::Vec2f> m_ElementPosCache;
+        // first bool describes if the element wants to be on this row,
+        // second bool describes if it wants the next element to be on a new row
+        std::vector<std::pair<bool, bool>> m_NewRowChecks;
         volatile bool m_HideElements;
 
         virtual std::shared_ptr<GuiElement> GetHoverElementInternal(const Math::Vec2f& mousePos,

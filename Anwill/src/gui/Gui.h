@@ -79,10 +79,5 @@ namespace Anwill {
             }
             return s_Windows[windowIndex]->AddElement<E>(std::forward<Args>(args)...);
         }
-
-        template <class E, typename... Args>
-        static std::shared_ptr<E> AddElement(std::shared_ptr<GuiContainer> container, Args&&... args) {
-            return container->AddElement<E>(std::forward<Args>(args)...);
-        }
     };
 }
