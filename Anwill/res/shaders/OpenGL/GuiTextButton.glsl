@@ -32,10 +32,10 @@ void main()
     }
 
     if(u_Pressing) {
-        color = vec4(0.1f, 0.40f, 1.0f, 1.0f);
+        color = vec4(0.28f, 0.28f, 1.00f, 1.0f);
     } else if(u_Hovering) {
-        color = vec4(0.3f, 0.48f, 1.0f, 1.0f);
+        color = vec4(0.20f, 0.20f, 0.95f, 1.0f);
     } else {
-        color = vec4(0.0f, 0.22f, 0.8f, 1.0f);
+        color = vec4(0.15f, 0.15f, 0.6f, 1.0f);
     }
 }

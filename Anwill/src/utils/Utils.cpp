@@ -1,6 +1,9 @@
 #include "Utils.h"
 
 #include <set>
+#include <cmath>
+#include <sstream>
+#include <iomanip>
 
 namespace Anwill {
 
@@ -47,5 +50,14 @@ namespace Anwill {
         return str;
     }
 
+    std::string Utils::RoundToString(float value, unsigned int decimals)
+    {
+        float coeff = pow(10, decimals);
+        float fResult = static_cast<int>(value * coeff + 0.5f);
+        fResult = static_cast<float>(fResult) / coeff;
 
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(decimals) << fResult;
+        return stream.str();
+    }
 }

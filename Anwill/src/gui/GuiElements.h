@@ -8,6 +8,7 @@
 #include "gfx/Font.h"
 #include "gfx/Renderer2D.h"
 #include "math/Mat4f.h"
+#include "utils/Utils.h"
 
 namespace Anwill {
 
@@ -63,16 +64,24 @@ namespace Anwill {
     public:
         static void RenderRightArrow(const Math::Vec2f& assignedPos,
                                      const Math::Vec2f& assignedSize,
-                                     const Math::Vec2f& assignedMaxSize);
+                                     const Math::Vec2f& assignedMaxSize,
+                                     const Math::Vec3f& color);
         static void RenderDownArrow(const Math::Vec2f& assignedPos,
-                                     const Math::Vec2f& assignedSize,
-                                     const Math::Vec2f& assignedMaxSize);
+                                    const Math::Vec2f& assignedSize,
+                                    const Math::Vec2f& assignedMaxSize,
+                                    const Math::Vec3f& color);
         static void RenderCross(const Math::Vec2f& assignedPos,
-                                     const Math::Vec2f& assignedSize,
-                                     const Math::Vec2f& assignedMaxSize);
+                                const Math::Vec2f& assignedSize,
+                                const Math::Vec2f& assignedMaxSize,
+                                const Math::Vec3f& color);
         static void RenderCheckmark(const Math::Vec2f& assignedPos,
-                                   const Math::Vec2f& assignedSize,
-                                   const Math::Vec2f& assignedMaxSize);
+                                    const Math::Vec2f& assignedSize,
+                                    const Math::Vec2f& assignedMaxSize,
+                                    const Math::Vec3f& color);
+        static void RenderRectangle(const Math::Vec2f& assignedPos,
+                                    const Math::Vec2f& assignedSize,
+                                    const Math::Vec2f& assignedMaxSize,
+                                    const Math::Vec3f& color);
     };
 
     class GuiElement {
@@ -93,10 +102,12 @@ namespace Anwill {
         virtual unsigned int GetGridDepth() const = 0;
 
         virtual void StartHovering();
+        virtual void OnHover(const Math::Vec2f& mousePos);
         virtual void StopHovering();
+
         virtual void StartPressing();
-        virtual void StopPressing();
-        virtual void Release();
+        virtual void OnPress(const Math::Vec2f& mousePos);
+        virtual void Release(); // Stop Pressing
 
         /**
          * @brief Check if element is currently in the state of being hovered by something
@@ -174,11 +185,23 @@ namespace Anwill {
                     const std::function<void(bool)>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+
     private:
         bool m_Checked;
     };
 
-    class GuiSlider : public GuiElement {
+    class GuiSlider : public GuiButton {
+    public:
+        GuiSlider(float min, float max);
 
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+
+        void OnPress(const Math::Vec2f& mousePos) override;
+
+    private:
+        static const Math::Vec2f s_MarkerSize;
+
+        GuiText m_ValueText;
+        float m_Min, m_Max, m_LastCursorXPos;
     };
 }

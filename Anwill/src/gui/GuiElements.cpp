@@ -1,6 +1,7 @@
 #include "gui/GuiElements.h"
 #include "math/Algo.h"
 #include "core/Log.h"
+#include "utils/Utils.h"
 
 namespace Anwill {
 
@@ -12,12 +13,15 @@ namespace Anwill {
     std::shared_ptr<Shader> GuiText::s_Shader;
     std::shared_ptr<Shader> GuiTextButton::s_Shader;
     Mesh GuiCheckbox::s_CheckmarkMesh;
+    const Math::Vec2f GuiSlider::s_MarkerSize = {13.0f,
+                                                 GuiMetrics::WindowElementHeight - 1.5f * 2.0f};
 
     // ---------- ICON ----------
 
     void GuiIcon::RenderRightArrow(const Math::Vec2f& assignedPos,
                                    const Math::Vec2f& assignedSize,
-                                   const Math::Vec2f& assignedMaxSize) {
+                                   const Math::Vec2f& assignedMaxSize,
+                                   const Math::Vec3f& color) {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                        {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
         iconTransform = Math::Mat4f::RotateZ(iconTransform, 90);
@@ -27,12 +31,14 @@ namespace Anwill {
         Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
         GuiElement::s_PrimitiveShader->Bind();
         GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        GuiElement::s_PrimitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
     }
 
     void GuiIcon::RenderDownArrow(const Math::Vec2f& assignedPos,
                                   const Math::Vec2f& assignedSize,
-                                  const Math::Vec2f& assignedMaxSize) {
+                                  const Math::Vec2f& assignedMaxSize,
+                                  const Math::Vec3f& color) {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                        {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
@@ -41,18 +47,21 @@ namespace Anwill {
         Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
         GuiElement::s_PrimitiveShader->Bind();
         GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        GuiElement::s_PrimitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiElement::s_TriangleMesh, iconTransform);
     }
 
     void GuiIcon::RenderCross(const Math::Vec2f& assignedPos,
                               const Math::Vec2f& assignedSize,
-                              const Math::Vec2f& assignedMaxSize) {
+                              const Math::Vec2f& assignedMaxSize,
+                              const Math::Vec3f& color) {
         // TODO
     }
 
     void GuiIcon::RenderCheckmark(const Math::Vec2f &assignedPos,
-                                 const Math::Vec2f &assignedSize,
-                                 const Math::Vec2f &assignedMaxSize) {
+                                  const Math::Vec2f &assignedSize,
+                                  const Math::Vec2f &assignedMaxSize,
+                                  const Math::Vec3f& color) {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                        {assignedSize.GetX(), assignedSize.GetY(), 1.0f});
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
@@ -61,7 +70,22 @@ namespace Anwill {
         Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
         GuiElement::s_PrimitiveShader->Bind();
         GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        GuiElement::s_PrimitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiCheckbox::s_CheckmarkMesh, iconTransform);
+    }
+
+    void GuiIcon::RenderRectangle(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
+                                  const Math::Vec2f& assignedMaxSize, const Math::Vec3f& color)
+    {
+        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), assignedSize);
+        iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
+                                                              + (Math::Vec2f(assignedSize.GetX(), -assignedSize.GetY()) * 0.5f));
+
+        Math::Vec2f cutoffPos = GuiMetrics::GetCutoffPos(assignedPos, assignedMaxSize);
+        GuiElement::s_PrimitiveShader->Bind();
+        GuiElement::s_PrimitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        GuiElement::s_PrimitiveShader->SetUniformVec3f(color, "u_Color");
+        Renderer2D::Submit(GuiElement::s_PrimitiveShader, GuiCheckbox::s_RectMesh, iconTransform);
     }
 
     // ---------- ELEMENT ----------
@@ -80,18 +104,27 @@ namespace Anwill {
         m_IsHovered = false;
     }
 
+    void GuiElement::OnHover(const Math::Vec2f& mousePos)
+    {
+        AW_INFO("Hovering!");
+        // Default behavior is nothing
+    }
+
     void GuiElement::StartPressing()
     {
+        //AW_INFO("Start pressing ...");
         m_IsPressed = true;
     }
 
-    void GuiElement::StopPressing()
+    void GuiElement::OnPress(const Math::Vec2f& mousePos)
     {
-        m_IsPressed = false;
+        AW_INFO("Pressing!");
+        // Default behavior is nothing
     }
 
     void GuiElement::Release()
     {
+        AW_INFO("Stop pressing ...");
         m_IsPressed = false;
     }
 
@@ -222,8 +255,10 @@ namespace Anwill {
                              const std::function<void(bool)>& callback)
         : GuiButton({GuiMetrics::WindowElementHeight, GuiMetrics::WindowElementHeight},
                     [this, callback](){
-            m_Checked = !m_Checked;
-            callback(m_Checked);
+            if(m_IsHovered) {
+                m_Checked = !m_Checked;
+                callback(m_Checked);
+            }
         }), m_Checked(startAsChecked)
     {}
 
@@ -235,6 +270,46 @@ namespace Anwill {
         GuiIcon::RenderCheckmark(assignedPos + Math::Vec2f(GuiMetrics::CheckboxElementMargin, -GuiMetrics::CheckboxElementMargin * 2.0f),
                                  {m_ButtonSize.GetX() - GuiMetrics::CheckboxElementMargin * 2.0f,
                                   m_ButtonSize.GetY() - GuiMetrics::CheckboxElementMargin * 4.0f},
-                                 assignedMaxSize);
+                                 assignedMaxSize,
+                                 {1.0f, 1.0f, 1.0f});
+    }
+
+    // ---------- SLIDER ----------
+
+    GuiSlider::GuiSlider(float min, float max)
+        : GuiButton({GuiMetrics::WindowElementHeight * 4.0f,
+                     GuiMetrics::WindowElementHeight},
+                    [](){}),
+          m_ValueText(Utils::RoundToString(min, 3), GuiMetrics::FontSize),
+          m_Min(min), m_Max(max)
+    {}
+
+    void GuiSlider::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
+    {
+        // Render background button
+        GuiButton::Render(assignedPos, assignedMaxSize);
+
+        // Render "slider" (marker) rectangle
+        Math::Vec2f markerPos = {m_LastCursorXPos - s_MarkerSize.GetX() * 0.5f,
+                                 -(m_ButtonSize.GetY() - s_MarkerSize.GetY()) * 0.5f + 1.0f};
+        markerPos = {Utils::Clamp(markerPos.GetX(), 0.0f, GetWidth() - s_MarkerSize.GetX()),
+                     markerPos.GetY()};
+        GuiIcon::RenderRectangle(assignedPos + markerPos, s_MarkerSize,
+                                 assignedMaxSize - markerPos, {0.45f, 0.45f, 1.0f});
+
+        // Render text
+        float centeredTextXPos = m_ButtonSize.GetX() * 0.5f - m_ValueText.GetWidth() * 0.5f;
+        m_ValueText.Render(assignedPos + Math::Vec2f(centeredTextXPos, 0.0f),
+                      assignedMaxSize - Math::Vec2f(GuiMetrics::ButtonTextMargin, 0.0f));
+    }
+
+    void GuiSlider::OnPress(const Math::Vec2f& mousePos)
+    {
+        m_LastCursorXPos = mousePos.GetX();
+        float sliderValue = Utils::ScaleToRange(mousePos.GetX(), m_Min, m_Max,
+                                                s_MarkerSize.GetX() * 0.5f,
+                                                GetWidth() - s_MarkerSize.GetX() * 0.5f);
+        sliderValue = Utils::Clamp(sliderValue, m_Min, m_Max);
+        m_ValueText.SetText(Utils::RoundToString(sliderValue, 3));
     }
 }

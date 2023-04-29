@@ -24,6 +24,7 @@ namespace Anwill {
     public:
         static void Init(const WindowSettings& ws);
         static void Render();
+        static void Update();
 
         // Client functions (API)
         static GuiWindowID CreateWindow(const std::string& title);
@@ -47,6 +48,12 @@ namespace Anwill {
                                                      const std::shared_ptr<GuiContainer>& container,
                                                      const std::function<void(bool)>& callback = [](bool checked){},
                                                      bool onNewRow = true);
+        static std::shared_ptr<GuiSlider> Slider(float min,
+                                                 float max,
+                                                 GuiWindowID windowID = 0);
+        static std::shared_ptr<GuiSlider> Slider(float min,
+                                                 float max,
+                                                 const std::shared_ptr<GuiContainer>& container);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);
 
@@ -55,19 +62,32 @@ namespace Anwill {
         static GuiWindowID s_LastWindowID;
         static std::vector<std::shared_ptr<GuiWindow>> s_Windows;
 
-        // Gui state stuff
-        static Math::Vec2f s_MousePos;
-        static bool s_Moving, s_ScalingX, s_ScalingY;
-        static bool s_HoveringDiagonalScaling, s_HoveringHeader;
-        static int s_HoveringWindowIndex;
-        static std::shared_ptr<GuiElement> s_HoverElement;
+        struct State {
+        public:
+            // Hovers
+            bool HoveringDiagonalScaling = false;
+            bool HoveringWindowHeader = false;
+            int HoveringWindowIndex = -1;
+
+            // Actions
+            bool MovingWindow = false;
+            bool ScalingHorizontally = false;
+            bool ScalingVertically = false;
+
+            // Elements
+            std::shared_ptr<GuiElement> HoverElement, PressElement;
+            Math::Vec2f HoverElementPos, PressElementPos;
+            Math::Vec2f MousePos;
+        };
+
+        static State s_State;
 
         static void OnMouseMove(std::unique_ptr<Event>& event);
         static void OnMousePress(std::unique_ptr<Event>& event);
         static void OnMouseRelease(std::unique_ptr<Event>& event);
         static void OnWindowResize(std::unique_ptr<Event>& event);
 
-        static void HandleHoveringAndPressing(const Math::Vec2f& mousePos);
+        static void SetHoverState(const Math::Vec2f& mousePos);
         static bool MoveOrResizeSelectedWindow(const Math::Vec2f& newMousePos);
         static int GetWindowIndex(GuiWindowID id);
 

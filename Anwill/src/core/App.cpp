@@ -61,6 +61,7 @@ namespace Anwill {
 
             m_LayerStack.Update();
 
+            Gui::Update();
             Gui::Render();
 
             m_Window->PostRenderUpdate();

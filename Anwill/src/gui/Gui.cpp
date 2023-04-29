@@ -13,14 +13,7 @@ namespace Anwill {
     std::unique_ptr<OrthographicCamera> Gui::s_Camera;
     std::vector<std::shared_ptr<GuiWindow>> Gui::s_Windows;
     GuiWindowID Gui::s_LastWindowID = 0;
-    Math::Vec2f Gui::s_MousePos;
-    bool Gui::s_Moving = false;
-    bool Gui::s_ScalingX = false;
-    bool Gui::s_ScalingY = false;
-    bool Gui::s_HoveringDiagonalScaling = false;
-    bool Gui::s_HoveringHeader = false;
-    int Gui::s_HoveringWindowIndex;
-    std::shared_ptr<GuiElement> Gui::s_HoverElement;
+    Gui::State Gui::s_State;
 
     void Gui::Init(const WindowSettings& ws)
     {
@@ -65,6 +58,18 @@ namespace Anwill {
         }
     }
 
+    void Gui::Update()
+    {
+        if(s_State.HoverElement != nullptr)
+        {
+            s_State.HoverElement->OnHover(s_State.MousePos - s_State.HoverElementPos);
+        }
+        if(s_State.PressElement != nullptr)
+        {
+            s_State.PressElement->OnPress(s_State.MousePos - s_State.PressElementPos);
+        }
+    }
+
     std::shared_ptr<GuiText> Gui::Text(const std::string& text, bool onNewRow, GuiWindowID windowID)
     {
         return AddElementToWindow<GuiText>(windowID, onNewRow, false, text, GuiMetrics::FontSize);
@@ -102,6 +107,17 @@ namespace Anwill {
         return container->AddElement<GuiCheckbox>(onNewRow, false, checkedInitially, callback);
     }
 
+    std::shared_ptr<GuiSlider> Gui::Slider(float min, float max, GuiWindowID windowID)
+    {
+        return AddElementToWindow<GuiSlider>(windowID, true, true, min, max);
+    }
+
+    std::shared_ptr<GuiSlider>
+    Gui::Slider(float min, float max, const std::shared_ptr<GuiContainer>& container)
+    {
+        return container->AddElement<GuiSlider>(true, true, min, max);
+    }
+
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
     {
         return AddElementToWindow<GuiDropdown>(windowID, true, true, text, GuiMetrics::FontSize);
@@ -128,43 +144,45 @@ namespace Anwill {
         auto e = static_cast<MouseMoveEvent&>(*event);
         Math::Vec2f newMousePos = {e.GetXPos(), e.GetYPos()};
         if(!MoveOrResizeSelectedWindow(newMousePos)) {
-            // We are NOT resizing or moving a window, so we check if we should next loop ...
-            HandleHoveringAndPressing(newMousePos);
-            // We are not resizing or moving a window, so let's do hover and press stuff
+            // We are NOT resizing or moving a window, so we change the hover state
+            SetHoverState(newMousePos);
         }
-        s_MousePos = newMousePos;
+        s_State.MousePos = newMousePos;
     }
 
     void Gui::OnMousePress(std::unique_ptr<Event>& event)
     {
-        if(s_HoveringWindowIndex == -1) { return; }
-        if(s_HoveringWindowIndex != 0) {
+        if(s_State.HoveringWindowIndex == -1) { return; }
+        if(s_State.HoveringWindowIndex != 0) {
             // Select window if we are hovering a window and the window is not already selected
             std::rotate(s_Windows.begin(),
-                        s_Windows.begin() + s_HoveringWindowIndex, s_Windows.begin() + s_HoveringWindowIndex + 1);
-            s_HoveringWindowIndex = 0;
+                        s_Windows.begin() + s_State.HoveringWindowIndex, s_Windows.begin() + s_State.HoveringWindowIndex + 1);
+            s_State.HoveringWindowIndex = 0;
         }
-        if(s_HoveringHeader) {
-            s_Moving = true;
+        if(s_State.HoveringWindowHeader) {
+            s_State.MovingWindow = true;
         }
-        if(s_HoveringDiagonalScaling) {
-            s_ScalingX = true;
-            s_ScalingY = true;
+        if(s_State.HoveringDiagonalScaling) {
+            s_State.ScalingHorizontally = true;
+            s_State.ScalingVertically = true;
         } else
         {
-            if(s_HoverElement != nullptr) {
-                s_HoverElement->StartPressing();
+            if(s_State.HoverElement != nullptr) {
+                s_State.PressElement = s_State.HoverElement;
+                s_State.PressElementPos = s_State.HoverElementPos;
+                s_State.PressElement->StartPressing();
             }
         }
     }
 
     void Gui::OnMouseRelease(std::unique_ptr<Event>& event)
     {
-        s_Moving = false;
-        s_ScalingX = false;
-        s_ScalingY = false;
-        if(s_HoverElement != nullptr) {
-            s_HoverElement->Release();
+        s_State.MovingWindow = false;
+        s_State.ScalingHorizontally = false;
+        s_State.ScalingVertically = false;
+        if(s_State.PressElement != nullptr) {
+            s_State.PressElement->Release();
+            s_State.PressElement = nullptr;
         }
     }
 
@@ -175,66 +193,62 @@ namespace Anwill {
         s_Camera->SetProjection((float) e.GetNewWidth(), (float) e.GetNewHeight());
     }
 
-    void Gui::HandleHoveringAndPressing(const Math::Vec2f& mousePos)
+    void Gui::SetHoverState(const Math::Vec2f& mousePos)
     {
-        bool lastIterHoveringDiagonalScaling = s_HoveringDiagonalScaling;
-        bool lastIterHoveringHeader = s_HoveringHeader;
+        // We just "reset" mouse to arrow each loop now. Prob slower but w/e for now
+        SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
+
+        bool lastIterHoveringDiagonalScaling = s_State.HoveringDiagonalScaling;
+        bool lastIterHoveringHeader = s_State.HoveringWindowHeader;
         for (int i = 0; i < s_Windows.size(); i++)
         {
-            if(!s_Windows[i]->IsHidingElements() && s_Windows[i]->IsHoveringResize(s_MousePos)) {
+            if(!s_Windows[i]->IsHidingElements() && s_Windows[i]->IsHoveringResize(s_State.MousePos)) {
                 if(!lastIterHoveringDiagonalScaling) {
                     SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
-                    s_HoveringDiagonalScaling = true;
+                    s_State.HoveringDiagonalScaling = true;
                 }
-                s_HoveringWindowIndex = i;
+                s_State.HoveringWindowIndex = i;
                 return;
             }
-            if(s_Windows[i]->IsHoveringHeader(s_MousePos)) {
+            if(s_Windows[i]->IsHoveringHeader(s_State.MousePos)) {
                 if(!lastIterHoveringHeader) {
                     SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand);
-                    s_HoveringHeader = true;
+                    s_State.HoveringWindowHeader = true;
                 }
-                s_HoveringWindowIndex = i;
+                s_State.HoveringWindowIndex = i;
                 return;
             }
             if(s_Windows[i]->IsHoveringWindow(mousePos)) {
-                if(lastIterHoveringDiagonalScaling || lastIterHoveringHeader) {
-                    // We were somewhere else last iteration
-                    SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
-                }
                 // Update which window we are currently hovering
-                s_HoveringWindowIndex = i;
+                s_State.HoveringWindowIndex = i;
                 // Remember which element we hovered last iteration
-                std::shared_ptr<GuiElement> lastIterHoverElement = s_HoverElement;
+                std::shared_ptr<GuiElement> lastIterHoverElement = s_State.HoverElement;
                 // Update which element we are hovering right now
-                s_HoverElement = s_Windows[i]->GetHoverElement(mousePos);
-                if(s_HoverElement != lastIterHoverElement) {
-                    if(s_HoverElement != nullptr) {
-                        s_HoverElement->StartHovering();
+                s_State.HoverElement = s_Windows[i]->GetHoverElement(s_State.HoverElementPos,
+                                                                     mousePos);
+                if(s_State.HoverElement != lastIterHoverElement) {
+                    if(s_State.HoverElement != nullptr) {
+                        s_State.HoverElement->StartHovering();
                     }
                     if(lastIterHoverElement != nullptr) {
                         lastIterHoverElement->StopHovering();
-                        lastIterHoverElement->StopPressing();
                     }
                 }
                 // We can only hover 1 window and 1 element so no need to continue.
-                s_HoveringDiagonalScaling = false;
-                s_HoveringHeader = false;
+                s_State.HoveringDiagonalScaling = false;
+                s_State.HoveringWindowHeader = false;
                 return;
             }
         }
-        // We are not hovering anything
-        s_HoveringDiagonalScaling = false;
-        s_HoveringHeader = false;
-        s_HoveringWindowIndex = -1;
-        if(lastIterHoveringDiagonalScaling || lastIterHoveringHeader) {
-            SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
-        }
-        if(s_HoverElement != nullptr) {
+
+        // We are not hovering anything at this point
+        s_State.HoveringDiagonalScaling = false;
+        s_State.HoveringWindowHeader = false;
+        s_State.HoveringWindowIndex = -1;
+        if(s_State.HoverElement != nullptr) {
             // If we did not hit a window, but we are hovering something from last iteration we stop hovering that
-            s_HoverElement->StopHovering();
-            s_HoverElement->StopPressing();
-            s_HoverElement = nullptr;
+            s_State.HoverElement->StopHovering();
+            s_State.HoverElement = nullptr;
         }
     }
 
@@ -244,12 +258,12 @@ namespace Anwill {
             return false;
         }
 
-        Math::Vec2f mouseDelta = newMousePos - s_MousePos;
+        Math::Vec2f mouseDelta = newMousePos - s_State.MousePos;
         Math::Vec2f maxPos = GuiMetrics::windowSize;
-        if(s_Moving) {
+        if(s_State.MovingWindow) {
             s_Windows[0]->Move(mouseDelta, {0.0f, 0.0f}, maxPos);
             return true;
-        } else if(s_ScalingX || s_ScalingY)
+        } else if(s_State.ScalingHorizontally || s_State.ScalingVertically)
         {
             Math::Vec2f windowPos = s_Windows[0]->GetPos();
             s_Windows[0]->Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {100.0f, 100.0f},

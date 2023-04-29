@@ -8,7 +8,8 @@ namespace Anwill {
     public:
         GuiContainer();
 
-        virtual std::shared_ptr<GuiElement> GetHoverElement(const Math::Vec2f& mousePos) const = 0;
+        virtual std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
+                                                    const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Math::Vec2f& firstPos);
         bool IsHidingElements() const;
@@ -31,9 +32,6 @@ namespace Anwill {
         // second bool describes if it wants the next element to be on a new row
         std::vector<std::pair<bool, bool>> m_NewRowChecks;
         volatile bool m_HideElements;
-
-        virtual std::shared_ptr<GuiElement> GetHoverElementInternal(const Math::Vec2f& mousePos,
-                                                                    const Math::Vec2f& posOffset) const;
     };
 
     class GuiDropdown : public GuiTextButton, public GuiContainer {
@@ -48,7 +46,6 @@ namespace Anwill {
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
-        std::shared_ptr<GuiElement> GetHoverElement(const Math::Vec2f& mousePos) const override;
 
     private:
         static constexpr float s_IconWidthHeight = GuiMetrics::WindowElementHeight;
@@ -63,8 +60,8 @@ namespace Anwill {
         GuiWindow(const std::string& title, GuiWindowID id,
                   const Math::Vec2f& position, const Math::Vec2f& size);
 
-        std::shared_ptr<GuiElement> GetHoverElement(const Math::Vec2f& mousePos) const override;
-
+        std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
+                                                    const Math::Vec2f& mousePos) const override;
         void Render(bool selected);
         bool IsHoveringHeader(const Math::Vec2f& mousePos);
         bool IsHoveringResize(const Math::Vec2f& mousePos);

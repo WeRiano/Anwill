@@ -30,11 +30,12 @@ BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
 
     m_Camera.Move(100.0f, 0.0f);
 
+    /*
     for(int i = 0; i < m_SheetArr.size(); i++) {
         AW_INFO("{0}", i);
         m_SheetArr[i] = Anwill::SpriteSheet::Create(
                 "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48);
-    }
+    } */
 
 }
 
@@ -43,13 +44,12 @@ void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
     Anwill::Renderer2D::BeginScene(m_Camera);
     m_SpriteAnimation.Tick(GetUpdateDelta(timestamp));
 
-    /*
     if(m_IsBatchRendering) {
         BatchRendering();
     } else {
         SlowRendering();
-    }*/
-    TestBatchTextureRendering();
+    }
+    //TestBatchTextureRendering();
 
     MoveCamera();
 
@@ -165,7 +165,7 @@ void BatchRendererHelloWorld::TestBatchTextureRendering() {
 
 void BatchRendererHelloWorld::MoveCamera()
 {
-    float speed = 1.0f;
+    float speed = 5.0f;
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W)) {
         m_Camera.Move(0.0f, speed);
     }

@@ -2,6 +2,13 @@
 
 #include <string>
 
+// Need to use this to pass a non-static member function as a parameter.
+// Member functions need to be called on an object which is passed as an implicit
+// argument to the function. If you want to bind a non-static member
+// function, global function or lambda, don't use this. Just pass it like normal.
+#define AW_BIND_THIS_MEMBER_FUNC(fn) [this](auto&&... args) -> decltype(auto) \
+{ return this->fn(std::forward<decltype(args)>(args)...); }
+
 namespace Anwill {
 
     /**
@@ -26,6 +33,8 @@ namespace Anwill {
         static std::string UniqueCharsSubstr(const std::string& str,
                                               const unsigned int maxUniqueChars);
 
+        static std::string RoundToString(float value, unsigned int decimals);
+
         /**
          * @brief inclusive ([0, 1])
          * @tparam T
@@ -42,6 +51,22 @@ namespace Anwill {
         template <typename T>
         static double NormalizeBetween0And1d(T value, T min, T max) {
             return static_cast<double>(value - min) / static_cast<double>(max - min);
+        }
+
+        template <typename T>
+        static float ScaleToRange(T value, T targetMin, T targetMax, T sourceMin, T sourceMax) {
+            return (targetMax - targetMin) * (value - sourceMin) / (sourceMax - sourceMin) + targetMin;
+        }
+
+        template <typename T>
+        static T Clamp(T value, T min, T max) {
+            if(value < min) {
+                return min;
+            }
+            if(value > max) {
+                return max;
+            }
+            return value;
         }
     };
 }

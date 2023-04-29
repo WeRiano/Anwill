@@ -12,22 +12,26 @@ namespace Anwill {
         : m_GridDepth(1), m_HideElements(true)
     {}
 
-    std::shared_ptr<GuiElement> GuiContainer::GetHoverElementInternal(const Math::Vec2f& mousePos,
-                                                                      const Math::Vec2f& posOffset) const
+    std::shared_ptr<GuiElement> GuiContainer::GetHoverElement(Math::Vec2f& hoverElementPos,
+                                                              const Math::Vec2f& mousePos) const
     {
         if(m_HideElements) { return nullptr; }
         for(unsigned int i = 0; i < m_Elements.size(); i++) {
-            auto &element = m_Elements[i];
-            if (element->IsHovering(mousePos - (posOffset + m_ElementPosCache[i]))) {
+            auto& element = m_Elements[i];
+            if (element->IsHovering(mousePos - (m_ElementPosCache[i]))) {
+                hoverElementPos = m_ElementPosCache[i];
                 return element;
             }
             if (dynamic_cast<GuiContainer *>(element.get()) != nullptr) {
                 // If element is a container we need to check with those elements
                 auto container = std::dynamic_pointer_cast<GuiContainer>(element);
+                Math::Vec2f elementPosInsideContainer = {};
                 auto maybeResult = container->GetHoverElement(
-                        mousePos - (posOffset + m_ElementPosCache[i]));
+                        elementPosInsideContainer,
+                        mousePos - (m_ElementPosCache[i]));
                 if (maybeResult != nullptr) {
                     // If we found an element we return it, otherwise we continue
+                    hoverElementPos = m_ElementPosCache[i] + elementPosInsideContainer;
                     return maybeResult;
                 }
             }
@@ -82,11 +86,13 @@ namespace Anwill {
         if(m_HideElements) {
             GuiIcon::RenderRightArrow(assignedPos,
                                       Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
-                                      assignedMaxSize);
+                                      assignedMaxSize,
+                                      {1.0f, 1.0f, 1.0f});
         } else {
             GuiIcon::RenderDownArrow(assignedPos,
                                      Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
-                                     assignedMaxSize);
+                                     assignedMaxSize,
+                                     {1.0f, 1.0f, 1.0f});
         }
 
         // Render text slightly to the right compared to a regular text button
@@ -122,11 +128,6 @@ namespace Anwill {
         return m_HideElements ? 1 : m_GridDepth;
     }
 
-    std::shared_ptr<GuiElement> GuiDropdown::GetHoverElement(const Math::Vec2f& mousePos) const
-    {
-        return GetHoverElementInternal(mousePos, {});
-    }
-
     // -------- WINDOW --------
 
     GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size)
@@ -147,12 +148,18 @@ namespace Anwill {
         m_HideElements = false;
     }
 
-    std::shared_ptr<GuiElement> GuiWindow::GetHoverElement(const Math::Vec2f& mousePos) const
+    std::shared_ptr<GuiElement> GuiWindow::GetHoverElement(Math::Vec2f& hoverElementPos,
+                                                           const Math::Vec2f& mousePos) const
     {
+        // Two things in addition to GuiContainer implementation:
+        //  1. We have a static minimize button element that we have to consider
+        //  2. We have to consider the position of the window since it is the "outer" most container
         if(m_MinimizeButton->IsHovering(mousePos - m_Pos)) {
             return m_MinimizeButton;
         }
-        return GetHoverElementInternal(mousePos, m_Pos);
+        auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos, mousePos - m_Pos);
+        hoverElementPos = hoverElementPos + m_Pos;
+        return hoverElement;
     }
 
     void GuiWindow::Render(bool selected)
@@ -174,12 +181,15 @@ namespace Anwill {
         if(m_HideElements) {
             GuiIcon::RenderRightArrow(m_Pos,
                                       Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
-                                      m_Size - Math::Vec2f(GuiMetrics::WindowCutoffMargin, GuiMetrics::WindowCutoffMargin));
+                                      m_Size - Math::Vec2f(GuiMetrics::WindowCutoffMargin,
+                                                           GuiMetrics::WindowCutoffMargin),
+                                      {1.0f, 1.0f, 1.0f});
             return;
         } else {
             GuiIcon::RenderDownArrow(m_Pos,
                                      Math::Vec2f(s_IconWidthHeight, s_IconWidthHeight) * 0.5f,
-                                     m_Size - Math::Vec2f(GuiMetrics::WindowCutoffMargin, GuiMetrics::WindowCutoffMargin));
+                                     m_Size - Math::Vec2f(GuiMetrics::WindowCutoffMargin, GuiMetrics::WindowCutoffMargin),
+                                     {1.0f, 1.0f, 1.0f});
         }
 
 

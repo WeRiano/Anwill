@@ -18,12 +18,13 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Text("Dropdown element 3", dd1, true);
     Anwill::Gui::Button("Dropdown element 4", dd1, [](){}, false);
     Anwill::Gui::Text("Dropdown element 5", dd1, false);
-    Anwill::Gui::Button("Dropdown element 6", dd1, [](){}, true);
-    Anwill::Gui::Text("Dropdown element 7", dd1, true);
-    Anwill::Gui::Button("Dropdown element 8", dd1, [](){}, true);
+    Anwill::Gui::Button("This is another button that does nothing!", dd1);
+    Anwill::Gui::Checkbox(true, dd1, [](bool){}, true);
+    Anwill::Gui::Slider(0.0f, 1337.42f, dd1);
 
     Anwill::Gui::Button("This is another button that does nothing!");
     Anwill::Gui::Checkbox(true);
+    Anwill::Gui::Slider(0.0f, 420.69f);
 
     button->SetCallback([this, text](){
         m_Counter++;
@@ -38,9 +39,9 @@ GuiTest::GuiTest(const unsigned int ups)
     auto id2 = Anwill::Gui::CreateWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
     Anwill::Gui::Text("Some text inside window! Cool!", true, id2);
 
-    Anwill::Gui::Text("More stupid text ... which is also super cool hehe xd", true, id2);
+    Anwill::Gui::Text("More text!", true, id2);
     Anwill::Gui::Text("AWESOME TEXT IN CAPSLOCK! AND SOME NUMBERS! 123456", true, id2);
-    Anwill::Gui::Text("More stupid text ... which is also super cool hehe xd", true, id2);
+    Anwill::Gui::Text("More text to test spacing ...", true, id2);
 }
 
 void GuiTest::Update(const Anwill::Timestamp& timestamp)

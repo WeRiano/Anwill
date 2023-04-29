@@ -108,4 +108,9 @@ namespace Anwill::Math {
     {
         return m_Y;
     }
+
+    std::string Vec2f::ToString() const
+    {
+        return std::string("[" + std::to_string(GetX()) + ", " + std::to_string(GetY()) + "]");
+    }
 }

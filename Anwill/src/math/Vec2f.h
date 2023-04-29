@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace Anwill::Math {
 
     class Vec3f;
@@ -25,6 +27,8 @@ namespace Anwill::Math {
         float GetLength() const;
         float GetX() const;
         float GetY() const;
+        std::string ToString() const;
+
     private:
         float m_X, m_Y;
     };
