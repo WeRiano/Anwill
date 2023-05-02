@@ -54,6 +54,12 @@ namespace Anwill {
         static std::shared_ptr<GuiSlider> Slider(float min,
                                                  float max,
                                                  const std::shared_ptr<GuiContainer>& container);
+        static std::shared_ptr<GuiSlider> Slider(int min,
+                                                 int max,
+                                                 GuiWindowID windowID = 0);
+        static std::shared_ptr<GuiSlider> Slider(int min,
+                                                 int max,
+                                                 const std::shared_ptr<GuiContainer>& container);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);
 

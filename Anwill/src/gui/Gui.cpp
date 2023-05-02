@@ -118,6 +118,16 @@ namespace Anwill {
         return container->AddElement<GuiSlider>(true, true, min, max);
     }
 
+    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, GuiWindowID windowID)
+    {
+        return AddElementToWindow<GuiSlider>(windowID, true, true, min, max);
+    }
+
+    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, const std::shared_ptr<GuiContainer>& container)
+    {
+        return container->AddElement<GuiSlider>(true, true, min, max);
+    }
+
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
     {
         return AddElementToWindow<GuiDropdown>(windowID, true, true, text, GuiMetrics::FontSize);

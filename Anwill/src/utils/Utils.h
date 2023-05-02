@@ -33,7 +33,8 @@ namespace Anwill {
         static std::string UniqueCharsSubstr(const std::string& str,
                                               const unsigned int maxUniqueChars);
 
-        static std::string RoundToString(float value, unsigned int decimals);
+        static std::string RoundFloatToString(float value, unsigned int decimals);
+        static int RoundToInt(float value);
 
         /**
          * @brief inclusive ([0, 1])

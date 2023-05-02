@@ -25,6 +25,7 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Button("This is another button that does nothing!");
     Anwill::Gui::Checkbox(true);
     Anwill::Gui::Slider(0.0f, 420.69f);
+    Anwill::Gui::Slider(1, 5);
 
     button->SetCallback([this, text](){
         m_Counter++;

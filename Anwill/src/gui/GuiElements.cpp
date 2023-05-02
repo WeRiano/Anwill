@@ -106,7 +106,7 @@ namespace Anwill {
 
     void GuiElement::OnHover(const Math::Vec2f& mousePos)
     {
-        AW_INFO("Hovering!");
+        //AW_INFO("Hovering!");
         // Default behavior is nothing
     }
 
@@ -118,13 +118,13 @@ namespace Anwill {
 
     void GuiElement::OnPress(const Math::Vec2f& mousePos)
     {
-        AW_INFO("Pressing!");
+        //AW_INFO("Pressing!");
         // Default behavior is nothing
     }
 
     void GuiElement::Release()
     {
-        AW_INFO("Stop pressing ...");
+        //AW_INFO("Stop pressing ...");
         m_IsPressed = false;
     }
 
@@ -277,11 +277,19 @@ namespace Anwill {
     // ---------- SLIDER ----------
 
     GuiSlider::GuiSlider(float min, float max)
-        : GuiButton({GuiMetrics::WindowElementHeight * 4.0f,
+        : GuiButton({GuiMetrics::WindowElementHeight * 7.0f,
                      GuiMetrics::WindowElementHeight},
                     [](){}),
-          m_ValueText(Utils::RoundToString(min, 3), GuiMetrics::FontSize),
-          m_Min(min), m_Max(max)
+          m_ValueText(Utils::RoundFloatToString(min, 3), GuiMetrics::FontSize),
+          m_Min(min), m_Max(max), m_Mode(Mode::FLOAT)
+    {}
+
+    GuiSlider::GuiSlider(int min, int max)
+        : GuiButton({GuiMetrics::WindowElementHeight * 7.0f,
+                     GuiMetrics::WindowElementHeight},
+                     [](){}),
+          m_ValueText(std::to_string(min), GuiMetrics::FontSize),
+          m_Min(static_cast<double>(min)), m_Max(static_cast<double>(max)), m_Mode(Mode::INT)
     {}
 
     void GuiSlider::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
@@ -306,10 +314,28 @@ namespace Anwill {
     void GuiSlider::OnPress(const Math::Vec2f& mousePos)
     {
         m_LastCursorXPos = mousePos.GetX();
-        float sliderValue = Utils::ScaleToRange(mousePos.GetX(), m_Min, m_Max,
-                                                s_MarkerSize.GetX() * 0.5f,
-                                                GetWidth() - s_MarkerSize.GetX() * 0.5f);
-        sliderValue = Utils::Clamp(sliderValue, m_Min, m_Max);
-        m_ValueText.SetText(Utils::RoundToString(sliderValue, 3));
+
+        if(m_Mode == Mode::FLOAT)
+        {
+            float sliderValue = Utils::ScaleToRange(mousePos.GetX(),
+                                                    static_cast<float>(m_Min),
+                                                    static_cast<float>(m_Max),
+                                                    s_MarkerSize.GetX() * 0.5f,
+                                                    GetWidth() - s_MarkerSize.GetX() * 0.5f);
+            sliderValue = Utils::Clamp(sliderValue,
+                                       static_cast<float>(m_Min),
+                                       static_cast<float>(m_Max));
+            m_ValueText.SetText(Utils::RoundFloatToString(sliderValue, 3));
+        } else if (m_Mode == Mode::INT) {
+            float sliderValue = Utils::ScaleToRange(mousePos.GetX(),
+                                                    static_cast<float>(m_Min),
+                                                    static_cast<float>(m_Max),
+                                                    s_MarkerSize.GetX() * 0.5f,
+                                                    GetWidth() - s_MarkerSize.GetX() * 0.5f);
+            sliderValue = Utils::Clamp(sliderValue,
+                                       static_cast<float>(m_Min),
+                                       static_cast<float>(m_Max));
+            m_ValueText.SetText(std::to_string(Utils::RoundToInt(sliderValue)));
+        }
     }
 }

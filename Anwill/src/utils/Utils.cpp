@@ -50,7 +50,7 @@ namespace Anwill {
         return str;
     }
 
-    std::string Utils::RoundToString(float value, unsigned int decimals)
+    std::string Utils::RoundFloatToString(float value, unsigned int decimals)
     {
         float coeff = pow(10, decimals);
         float fResult = static_cast<int>(value * coeff + 0.5f);
@@ -59,5 +59,10 @@ namespace Anwill {
         std::stringstream stream;
         stream << std::fixed << std::setprecision(decimals) << fResult;
         return stream.str();
+    }
+
+    int Utils::RoundToInt(float value)
+    {
+        return static_cast<int>(value + 0.5f);
     }
 }
