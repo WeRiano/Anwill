@@ -42,23 +42,27 @@ namespace Anwill {
                                                      const std::function<void()>& callback = [](){},
                                                      bool onNewRow = true);
         static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially,
-                                                     const std::function<void(bool)>& callback = [](bool checked){},
+                                                     const std::function<void(bool)>& callback,
                                                      bool onNewRow = true, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially,
                                                      const std::shared_ptr<GuiContainer>& container,
-                                                     const std::function<void(bool)>& callback = [](bool checked){},
+                                                     const std::function<void(bool)>& callback,
                                                      bool onNewRow = true);
         static std::shared_ptr<GuiSlider> Slider(float min,
                                                  float max,
+                                                 float* sliderValue,
                                                  GuiWindowID windowID = 0);
         static std::shared_ptr<GuiSlider> Slider(float min,
                                                  float max,
+                                                 float* sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);
         static std::shared_ptr<GuiSlider> Slider(int min,
                                                  int max,
+                                                 int* sliderValue,
                                                  GuiWindowID windowID = 0);
         static std::shared_ptr<GuiSlider> Slider(int min,
                                                  int max,
+                                                 int* sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);

@@ -11,4 +11,6 @@ public:
 
 private:
     unsigned int m_Counter;
+    float m_FloatSliderValue;
+    std::shared_ptr<Anwill::GuiText> m_SliderTestText;
 };

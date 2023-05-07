@@ -107,30 +107,32 @@ namespace Anwill {
         return container->AddElement<GuiCheckbox>(onNewRow, false, checkedInitially, callback);
     }
 
-    std::shared_ptr<GuiSlider> Gui::Slider(float min, float max, GuiWindowID windowID)
+    std::shared_ptr<GuiSlider> Gui::Slider(float min, float max, float* sliderValue, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiSlider>(windowID, true, true, min, max);
+        return AddElementToWindow<GuiFloatSlider>(windowID, true, true, min, max, sliderValue);
     }
 
     std::shared_ptr<GuiSlider>
-    Gui::Slider(float min, float max, const std::shared_ptr<GuiContainer>& container)
+    Gui::Slider(float min, float max, float* sliderValue, const std::shared_ptr<GuiContainer>& container)
     {
-        return container->AddElement<GuiSlider>(true, true, min, max);
+        return container->AddElement<GuiFloatSlider>(true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, GuiWindowID windowID)
+    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, int* sliderValue, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiSlider>(windowID, true, true, min, max);
+        return AddElementToWindow<GuiIntSlider>(windowID, true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, const std::shared_ptr<GuiContainer>& container)
+    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, int* sliderValue,
+                                           const std::shared_ptr<GuiContainer>& container)
     {
-        return container->AddElement<GuiSlider>(true, true, min, max);
+        return container->AddElement<GuiIntSlider>(true, true, min, max, sliderValue);
     }
 
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiDropdown>(windowID, true, true, text, GuiMetrics::FontSize);
+        return AddElementToWindow<GuiDropdown>(windowID, true, true, text,
+                                               GuiMetrics::FontSize);
     }
 
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text,

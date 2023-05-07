@@ -1,7 +1,7 @@
 #include "GuiTest.h"
 
 GuiTest::GuiTest(const unsigned int ups)
-        : Layer(ups), m_Counter(0)
+        : Layer(ups), m_Counter(0), m_FloatSliderValue(0.0f)
 {
     Anwill::Renderer::SetClearColor({0.3f, 0.4f, 0.5f});
 
@@ -20,14 +20,17 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Text("Dropdown element 5", dd1, false);
     Anwill::Gui::Button("This is another button that does nothing!", dd1);
     Anwill::Gui::Checkbox(true, dd1, [](bool){}, true);
-    Anwill::Gui::Slider(0.0f, 1337.42f, dd1);
+    float floatSliderValue;
+    Anwill::Gui::Slider(0.0f, 1337.42f, &floatSliderValue, dd1);
 
     Anwill::Gui::Button("This is another button that does nothing!");
-    Anwill::Gui::Checkbox(true);
-    Anwill::Gui::Slider(0.0f, 420.69f);
-    Anwill::Gui::Slider(1, 5);
+    Anwill::Gui::Checkbox(true, [](bool b){});
+    Anwill::Gui::Slider(0.0f, 420.69f, &m_FloatSliderValue);
+    int intSliderValue;
+    Anwill::Gui::Slider(1, 5, &intSliderValue);
+    m_SliderTestText = Anwill::Gui::Text("Oh wow, the FloatSlider has a value of " + std::to_string(m_FloatSliderValue));
 
-    button->SetCallback([this, text](){
+    button->SetCallback([this, text](){  
         m_Counter++;
         text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });
@@ -47,6 +50,6 @@ GuiTest::GuiTest(const unsigned int ups)
 
 void GuiTest::Update(const Anwill::Timestamp& timestamp)
 {
-
     Layer::Update(timestamp);
+    m_SliderTestText->SetText("Oh wow, the FloatSlider has a value of " + std::to_string(m_FloatSliderValue));
 }

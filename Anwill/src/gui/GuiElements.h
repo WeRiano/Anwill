@@ -192,26 +192,38 @@ namespace Anwill {
 
     class GuiSlider : public GuiButton {
     public:
-        GuiSlider(float min, float max);
-        GuiSlider(int min, int max);
+        GuiSlider();
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+
+        virtual void OnPress(const Math::Vec2f& mousePos) override;
+
+    protected:
+        static const Math::Vec2f s_MarkerSize;
+
+        GuiText m_ValueText;
+        float m_LastCursorXPos;
+    };
+
+    class GuiFloatSlider : public GuiSlider {
+    public:
+        GuiFloatSlider(float min, float max, float* sliderValue);
 
         void OnPress(const Math::Vec2f& mousePos) override;
 
     private:
-        // Int
-        enum class Mode : unsigned int {
-            NONE = 0,
-            FLOAT = 1,
-            INT = 2,
-        };
+        float m_Min, m_Max;
+        float* m_ClientValuePointer;
+    };
 
-        static const Math::Vec2f s_MarkerSize;
+    class GuiIntSlider : public GuiSlider {
+    public:
+        GuiIntSlider(int min, int max, int* sliderValue);
 
-        Mode m_Mode;
-        GuiText m_ValueText;
-        double m_Min, m_Max;
-        float m_LastCursorXPos;
+        void OnPress(const Math::Vec2f& mousePos) override;
+
+    private:
+        int m_Min, m_Max;
+        int* m_ClientValuePointer;
     };
 }
