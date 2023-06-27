@@ -9,12 +9,15 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Text("Hey! This is some text.");
     Anwill::Gui::Text("Bonjour! This is some more text.", false);
     auto button = Anwill::Gui::Button("This is a button. Click it!");
-    auto text = Anwill::Gui::Text("You have clicked the button " + std::to_string(m_Counter) + " times.", false);
+    auto text = Anwill::Gui::Text("You have clicked the button " + std::to_string(m_Counter) + " times.",
+                                  false);
     Anwill::Gui::Button("This is a useless button.");
 
     auto dd1 = Anwill::Gui::Dropdown("This is an awesome dropdown!");
     auto dd1Button = Anwill::Gui::Button("This is a button. Click it!", dd1);
-    auto dd1Text = Anwill::Gui::Text("You have clicked the button " + std::to_string(m_Counter) + " times.", dd1, false);
+    auto dd1Text = Anwill::Gui::Text("You have clicked the button " + std::to_string(m_Counter) + " times.",
+                                     dd1,
+                                     false);
     Anwill::Gui::Text("Dropdown element 3", dd1, true);
     Anwill::Gui::Button("Dropdown element 4", dd1, [](){}, false);
     Anwill::Gui::Text("Dropdown element 5", dd1, false);

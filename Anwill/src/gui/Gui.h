@@ -13,7 +13,6 @@
 #include "gfx/Mesh.h"
 #include "gfx/Renderer2D.h"
 #include "gui/GuiElements.h"
-#include "gui/GuiContainers.h"
 
 #undef CreateWindow
 
@@ -75,19 +74,19 @@ namespace Anwill {
         struct State {
         public:
             // Hovers
-            bool HoveringDiagonalScaling = false;
-            bool HoveringWindowHeader = false;
-            int HoveringWindowIndex = -1;
+            bool hoveringDiagonalScaling = false;
+            bool hoveringWindowHeader = false;
+            int hoveringWindowIndex = -1;
 
             // Actions
-            bool MovingWindow = false;
-            bool ScalingHorizontally = false;
-            bool ScalingVertically = false;
+            bool movingWindow = false;
+            bool scalingHorizontally = false;
+            bool scalingVertically = false;
 
             // Elements
-            std::shared_ptr<GuiElement> HoverElement, PressElement;
-            Math::Vec2f HoverElementPos, PressElementPos;
-            Math::Vec2f MousePos;
+            std::shared_ptr<GuiElement> hoverElement, pressElement;
+            Math::Vec2f hoverElementPos, pressElementPos;
+            Math::Vec2f mousePos, gameWindowSize;
         };
 
         static State s_State;

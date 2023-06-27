@@ -24,6 +24,8 @@ namespace Anwill {
         // This is static for now since
         static std::shared_ptr<Shader> s_Shader;
 
+        static void Init();
+
         Font(const std::string& filePath);
 
         /**
