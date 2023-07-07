@@ -33,7 +33,6 @@ namespace Anwill {
         }
 
         std::set<unsigned char> uniqueCharSet;
-        unsigned int index = 0;
 
         std::string::const_iterator c;
         for(c = str.begin(); c != str.end(); c++)
@@ -41,10 +40,9 @@ namespace Anwill {
             if(!uniqueCharSet.contains(*c)) {
                 uniqueCharSet.insert(*c);
                 if (uniqueCharSet.size() == maxUniqueChars) {
-                    return str.substr(0, index + 1);
+                    return str.substr(0, maxUniqueChars);
                 }
             }
-            index++;
         }
 
         return str;

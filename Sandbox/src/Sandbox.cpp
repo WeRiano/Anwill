@@ -44,7 +44,7 @@ Anwill::App* Anwill::CreateApp()
     // Define graphics API, Window Settings and more
     WindowSettings ws{1200, 900, "Sandbox"};
 
-    // Change? Just feed 1 struct with information to App or something.
+    // Make this more apparent. What is required exactly?
     Anwill::Renderer::SetAPI(Anwill::GraphicsAPI::API::OpenGL);
     return new Sandbox(ws);
 }

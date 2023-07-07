@@ -33,7 +33,6 @@ void main()
     vec3 textColor = vec3(1.0f, 1.0f, 1.0f);
     // We only care about the "x" element because our bitmap is monochrome/an 'alpha'
     // map (each pixel is 0-255, I think)
-    vec4 sampled = vec4(1.0f, 1.0f, 1.0f, texture(u_TextBitmaps[v_FragBitmapIndex],
-                        v_FragTexCoords).x);
+    vec4 sampled = vec4(1.0f, 1.0f, 1.0f, texture(u_TextBitmaps[v_FragBitmapIndex], v_FragTexCoords).x);
     FragColor = vec4(textColor, 1.0f) * sampled;
 }

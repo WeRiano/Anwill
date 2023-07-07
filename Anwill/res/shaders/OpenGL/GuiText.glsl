@@ -29,7 +29,6 @@ out vec4 FragColor;
 uniform mat4 u_Transform;
 uniform sampler2D u_TextBitmaps[AW_MAX_FRAGMENT_SAMPLERS];
 uniform vec2 u_CutoffPos;
-uniform int u_IntArr[512];
 
 void main()
 {

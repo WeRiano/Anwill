@@ -14,7 +14,7 @@ namespace Anwill {
     {
         s_API = api;
         BatchDataInit();
-        Font::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/Font.glsl");
+        //Font::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/Font.glsl");
     }
 
     void Renderer2D::DrawBatch()
@@ -114,13 +114,13 @@ namespace Anwill {
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
 
-        int batchStartXPos = 0;
+        Math::Vec2f batchStartPos = {};
         auto maxTextSlots = *ShaderMacros::GetMacro<unsigned int>("AW_MAX_FRAGMENT_SAMPLERS");
         std::string remainingText = text; // Everything is remaining at the start
         while (!remainingText.empty()) {
             auto thisStr = Utils::UniqueCharsSubstr(remainingText, maxTextSlots);
             // Prepare and draw the text
-            batchStartXPos = font.Prepare(thisStr, shader, batchStartXPos);
+            batchStartPos = font.Prepare(thisStr, shader, batchStartPos);
             s_API->Draw(font, text);
             // Grab the next batch
             remainingText = remainingText.substr(thisStr.size());

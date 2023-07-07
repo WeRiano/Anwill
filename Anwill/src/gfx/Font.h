@@ -21,11 +21,6 @@ namespace Anwill {
     class Font
     {
     public:
-        // This is static for now since
-        static std::shared_ptr<Shader> s_Shader;
-
-        static void Init();
-
         Font(const std::string& filePath);
 
         /**
@@ -34,8 +29,8 @@ namespace Anwill {
          * @param shader the shader that should be used when rendering the text
          * @return The final advance x coordinate where additional text *should* continue
          */
-        int Prepare(const std::string& text, const std::shared_ptr<Shader>& shader,
-                      int startXPos);
+        Math::Vec2f Prepare(const std::string& text, const std::shared_ptr<Shader>& shader,
+                      const Math::Vec2f& startXPos);
 
         /**
          * @brief Get the distance of some text in the positive y direction, positive
@@ -46,10 +41,21 @@ namespace Anwill {
         void Done();
 
         static float GetScaleValue(unsigned int fontSize);
+
     private:
         std::shared_ptr<VertexBuffer> m_VB;
         std::shared_ptr<VertexArray> m_VA;
         std::map<unsigned char, Glyph> m_Characters;
         unsigned int m_ID;
+        float m_NewlineHeight;
+
+        unsigned int GetTextureSlot(std::map<unsigned char, unsigned int> map,
+                                    unsigned int& textureSlotCounter,
+                                    const std::shared_ptr<Shader>& shader,
+                                    unsigned char c);
+        void SetCharVertices(float* vertices, Math::Vec2f& advance, const Glyph& glyph, unsigned int offset,
+                             unsigned int textureSlot);
+        void SetEscapeCharVertices(float* vertices, Math::Vec2f& advance, unsigned char escapeChar,
+                                   unsigned int offset, unsigned int textureSlot);
     };
 }
