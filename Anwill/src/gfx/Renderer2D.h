@@ -25,7 +25,7 @@ namespace Anwill {
         static void BeginScene(const Camera& camera);
 
         static void Submit(const std::shared_ptr<Shader>& shader, Font& font,
-                           const std::string& text, const Math::Mat4f& transform);
+                           const std::string& text, const Math::Mat4f& transform, float maxWidth = 0);
         static void Submit(const std::shared_ptr<Shader>& shader,
                            const std::shared_ptr<VertexArray>& vertexArray,
                            const std::shared_ptr<IndexBuffer>& indexBuffer,

@@ -25,21 +25,26 @@ void main()
     vec2 size = vec2( length(vec2(u_Transform[0][0], u_Transform[0][1])),
     length(vec2(u_Transform[1][0], u_Transform[1][1])) );
     // Can get width and size in the same way (I think!)
-    float borderSize = AW_GUI_WINDOW_BORDER_SIZE;
-    float headerSize = AW_GUI_WINDOW_HEADER_SIZE;
+    float borderSize = AW_GUI_TOOLTIP_BORDER_SIZE;
     float radius = borderSize;
     vec2 tr = vec2(centre.x + size.x / 2 - borderSize, centre.y + size.y / 2 - borderSize);
     vec2 br = vec2(centre.x + size.x / 2 - borderSize, centre.y - size.y / 2 + borderSize);
     vec2 bl = vec2(centre.x - size.x / 2 + borderSize, centre.y - size.y / 2 + borderSize);
     vec2 tl = vec2(centre.x - size.x / 2 + borderSize, centre.y + size.y / 2 - borderSize);
 
-    // Smooth corners
+
     if ((gl_FragCoord.x > tr.x && gl_FragCoord.y > tr.y && length(gl_FragCoord.xy - tr) > radius) ||
-    (gl_FragCoord.x > br.x && gl_FragCoord.y < br.y && length(gl_FragCoord.xy - br) > radius) ||
-    (gl_FragCoord.x < bl.x && gl_FragCoord.y < bl.y && length(gl_FragCoord.xy - bl) > radius) ||
-    (gl_FragCoord.x < tl.x && gl_FragCoord.y > tl.y && length(gl_FragCoord.xy - tl) > radius) ) {
-        discard;
-    } else if(gl_FragCoord.y > centre.y + size.y / 2 - headerSize) {
+        (gl_FragCoord.x > br.x && gl_FragCoord.y < br.y && length(gl_FragCoord.xy - br) > radius) ||
+        (gl_FragCoord.x < bl.x && gl_FragCoord.y < bl.y && length(gl_FragCoord.xy - bl) > radius) ||
+        (gl_FragCoord.x < tl.x && gl_FragCoord.y > tl.y && length(gl_FragCoord.xy - tl) > radius)) {
+        // Smooth corners
+            discard;
+    } else if( (gl_FragCoord.y > centre.y + size.y / 2 - borderSize) ||
+               (gl_FragCoord.x > centre.x + size.x / 2 - borderSize) ||
+               (gl_FragCoord.y < centre.y - size.y / 2 + borderSize) ||
+               (gl_FragCoord.x < centre.x - size.x / 2 + borderSize)) {
+        color = vec4(0.66f, 0.66f, 0.66f, 0.7f);
+    } else {
         color = vec4(0.1f, 0.1f, 0.1f, 0.7f);
     }
 }

@@ -13,6 +13,7 @@ private:
     Anwill::Font m_Font;
     std::shared_ptr<Anwill::Shader> m_Shader;
     Anwill::OrthographicCamera m_Camera;
+    Anwill::Math::Vec2f m_GameWindowSize;
 
     void MoveCamera();
 };

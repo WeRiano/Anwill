@@ -8,21 +8,21 @@ FontHelloWorld::FontHelloWorld(unsigned int ups, const Anwill::WindowSettings& w
     float cameraMoveX = (float) ws.width / 2.0f;
     float cameraMoveY = (float) ws.height / 2.0f;
     m_Camera.Move(-cameraMoveX, -cameraMoveY);
+    m_GameWindowSize = { (float) ws.width, (float) ws.height };
 }
 
 void FontHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_Camera);
 
-    auto scale = Anwill::Font::GetScaleValue(60);
+    auto scale = m_Font.GetScaleValue(40);
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
                                                 {scale, scale, 0.0f});
-    transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, 0.0f, 0.0f});
+    transform = Anwill::Math::Mat4f::Translate(transform, {-40.0f, 0.0f, 0.0f});
     Anwill::Renderer2D::Submit(m_Shader, m_Font,
-                             "ABCDEFGHIJKLMNOPQRSTUVXY\\nZ1234567890n!?+-`\\t\"< >=abcdefghijklmnopqrstuvxyz",
+                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvxyz<>?!+-\n\t[](){}",
                              transform);
 
-    // ABCDEFGHIJKLMNOPQRSTUVXYZ1234567890n!?+-`"<>=abcdefghijklmnopqrstuvxyz
     MoveCamera();
 
     Layer::Update(timestamp);

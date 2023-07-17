@@ -36,6 +36,12 @@ namespace Anwill::Math {
         m_Y += other.m_Y;
     }
 
+    void Vec2f::operator*=(const float other)
+    {
+        m_X *= other;
+        m_Y *= other;
+    }
+
     Vec2f operator-(const Vec2f rhs)
     {
         return {rhs.GetX(), rhs.GetY()};

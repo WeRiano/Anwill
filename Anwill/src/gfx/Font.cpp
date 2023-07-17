@@ -36,10 +36,10 @@ namespace Anwill {
             return;
         }
 
-        FT_Set_Pixel_Sizes(ftFace, 0, 42);
+        FT_Set_Pixel_Sizes(ftFace, 0, m_PixelHeight);
 
-        //m_NewlineHeight = ftFace->height;
-        m_NewlineHeight = ftFace->height / 64;
+        m_Height = (ftFace->height / 64);
+        m_NewlineSpaceCoefficient = 1.2f;
 
         for(unsigned char c = 0; c < 128; c++)
         {
@@ -84,7 +84,7 @@ namespace Anwill {
     }
 
     Math::Vec2f Font::Prepare(const std::string& text, const std::shared_ptr<Shader>& shader,
-                      const Math::Vec2f& startPos)
+                      const Math::Vec2f& startPos, float maxWidth)
     {
         // Vertex setup
 
@@ -99,9 +99,6 @@ namespace Anwill {
         std::map<unsigned char, unsigned int> textureSlotMap;
         unsigned int newTextureSlotCounter = 0;
 
-        // Flag that keeps track if we've encountered an escape character
-        bool isEscaping = false;
-
         // Loop through each character in the text
         for(unsigned int i = 0; i < text.size(); i++)
         {
@@ -109,22 +106,17 @@ namespace Anwill {
             unsigned int thisIterationTextSlot = GetTextureSlot(textureSlotMap, newTextureSlotCounter,
                                                                 shader, c);
             unsigned int offset = i * glyphSize;
-            Glyph g = m_Characters[c];
+            Glyph glyph = m_Characters[c];
+            int nextGlyphStart = ((glyph.advance) >> 6);
 
-            if(isEscaping) {
-                // Last iter we encountered a backslash
-                // Look at what escape char we got and act accordingly
-                SetEscapeCharVertices(vertices, advance, c, offset, thisIterationTextSlot);
-                isEscaping = false;
-                continue;
-            }
-            if(c == '\\') {
-                // We encountered a backslash this iter. Escaping next iter.
-                isEscaping = true;
+            if(SetEscapeCharVertices(vertices, advance, c, offset, thisIterationTextSlot)) {
                 continue;
             }
 
-            SetCharVertices(vertices, advance, g, offset, thisIterationTextSlot);
+            if( maxWidth > 0.0f && (float) nextGlyphStart > maxWidth ) {
+                advance = { startPos.GetX(), advance.GetY() + m_Height };
+            }
+            SetCharVertices(vertices, advance, glyph, offset, thisIterationTextSlot);
         }
 
         // Update the GPU with new vertex array
@@ -155,7 +147,7 @@ namespace Anwill {
         return result;
     }
 
-    unsigned int Font::GetStringWidth(const std::string& text)
+    unsigned int Font::GetTextWidth(const std::string& text)
     {
         unsigned int curWidth = 0;
         for(unsigned int i = 0; i < text.size(); i++)
@@ -167,6 +159,55 @@ namespace Anwill {
         return curWidth;
     }
 
+    Math::Vec2f Font::GetTextSize(const std::string& text, float maxRowWidth)
+    {
+        unsigned int curWidth = 0, resultWidth = 0;
+        unsigned int curHeight = m_Height;
+        for(unsigned int i = 0; i < text.size(); i++)
+        {
+            char c = text[i];
+            Glyph g = m_Characters[c];
+
+            if(SetEscapeCharSize(c, curWidth, resultWidth, curHeight)) {
+                continue;
+            }
+
+            unsigned int thisIterWidth = curWidth + (g.advance >> 6);
+            if((float) thisIterWidth > maxRowWidth) {
+                // We can't continue, need to make newline
+                curHeight += m_Height * m_NewlineSpaceCoefficient;
+                if(curWidth > resultWidth) {
+                    resultWidth = curWidth;
+                }
+                curWidth = 0;
+            }
+            curWidth += (g.advance >> 6);
+        }
+        return { (float) resultWidth, (float) curHeight };
+    }
+
+    Math::Vec2f Font::GetTextSize(const std::string& text)
+    {
+        unsigned int curWidth = 0, resultWidth = 0;
+        unsigned int curHeight = m_Height;
+        for(unsigned int i = 0; i < text.size(); i++)
+        {
+            char c = text[i];
+            Glyph g = m_Characters[c];
+
+            if(SetEscapeCharSize(c, curWidth, resultWidth, curHeight)) {
+                continue;
+            }
+
+            curWidth += (g.advance >> 6);
+        }
+        if(curWidth > resultWidth)
+        {
+            resultWidth = curWidth;
+        }
+        return { (float) resultWidth, (float) curHeight };
+    }
+
     void Font::Done()
     {
         m_VA->Unbind();
@@ -174,10 +215,20 @@ namespace Anwill {
 
     float Font::GetScaleValue(unsigned int fontSize)
     {
-        return (float) fontSize / 42.0f;
+        return (float) fontSize / ((float) m_PixelHeight);
     }
 
-    unsigned int Font::GetTextureSlot(std::map<unsigned char, unsigned int> map,
+    float Font::GetFontHeight()
+    {
+        return m_Height;
+    }
+
+    void Font::SetNewlineSpace(float multiplier)
+    {
+        m_NewlineSpaceCoefficient = multiplier;
+    }
+
+    unsigned int Font::GetTextureSlot(std::map<unsigned char, unsigned int>& map,
                               unsigned int& textureSlotCounter,
                               const std::shared_ptr<Shader>& shader,
                               unsigned char c)
@@ -185,26 +236,23 @@ namespace Anwill {
         // Getting the correct texture slot. If we have encountered the character previously, it will
         // be stored in textureSlotMap. Otherwise, we create a new one.
 
-        shader->Bind();
+        unsigned int result;
         if (map.contains(c)) {
             // This character has already been used, lets find out which texture slot it uses
-            return map[c];
+            result = map[c];
         } else {
             // We create a new texture slot and use it (feed it to the shader).
-            unsigned int result = textureSlotCounter;
+            result = textureSlotCounter++;
             map[c] = result;
-            textureSlotCounter++;
-
             m_Characters[c].texture->Bind(result);
-            shader->SetUniform1i(result, "u_TextBitmaps[" + std::to_string(result) + "]");
-            return result;
+            shader->SetUniform1i((int) result, "u_TextBitmaps[" + std::to_string(result) + "]");
         }
+        return result;
     }
 
     void Font::SetCharVertices(float* vertices, Math::Vec2f& advance, const Glyph& glyph,
                                unsigned int offset, unsigned int textureSlot)
     {
-
         float x0 = glyph.x0 + advance.GetX();
         float x1 = glyph.x1 + advance.GetX();
         float y0 = glyph.y0 - advance.GetY();
@@ -253,13 +301,12 @@ namespace Anwill {
         advance = {advance.GetX() + ((glyph.advance) >> 6), advance.GetY()};
     }
 
-    void Font::SetEscapeCharVertices(float* vertices, Math::Vec2f& advance, unsigned char escapeChar,
+    bool Font::SetEscapeCharVertices(float* vertices, Math::Vec2f& advance, unsigned char escapeChar,
                                      unsigned int offset, unsigned int textureSlot)
     {
-
         switch(escapeChar) {
             // A tab character, which is equal to 4 spaces.
-            case 't':
+            case '\t':
             {
                 const unsigned char spaceChar = 32; // I think this is always true ...
                 for(unsigned int i = 0; i < 4; i++)
@@ -267,17 +314,47 @@ namespace Anwill {
                     Glyph spaceGlyph = m_Characters[spaceChar];
                     SetCharVertices(vertices, advance, spaceGlyph, offset, textureSlot);
                 }
-                break;
+                return true;
             }
             // Newline character.
-            case 'n': {
-                advance = {0.0f, advance.GetY() + m_NewlineHeight};
-                break;
+            case '\n': {
+                advance = {0.0f, advance.GetY() + m_Height * m_NewlineSpaceCoefficient};
+                return true;
             }
             default:
             {
-                AW_ERROR("Escape character not recognized.");
-                break;
+                return false;
+            }
+        }
+    }
+
+    bool Font::SetEscapeCharSize(unsigned char escapeChar, unsigned int& width, unsigned int& maxWidth,
+                                 unsigned int& height)
+    {
+        // Look at what escape char we got and set width and height accordingly
+        switch(escapeChar) {
+            // A tab character, which is equal to 4 spaces.
+            case '\t':
+            {
+                const unsigned char spaceChar = 32; // I think this is always true ...
+                for(unsigned int i = 0; i < 4; i++)
+                {
+                    Glyph spaceGlyph = m_Characters[spaceChar];
+                    width += (spaceGlyph.advance >> 6);
+                }
+                return true;
+            }
+            // Newline character.
+            case '\n': {
+                height += (unsigned int) m_Height * m_NewlineSpaceCoefficient;
+                if(width > maxWidth)
+                    maxWidth = width;
+                width = 0;
+                return true;
+            }
+            default:
+            {
+                return false;
             }
         }
     }

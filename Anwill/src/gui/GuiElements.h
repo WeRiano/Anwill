@@ -37,6 +37,16 @@ namespace Anwill {
                                     const Math::Vec3f& color);
     };
 
+    class GuiTooltip {
+    public:
+        GuiTooltip(const std::string& tooltipText, unsigned int tooltipTextSize);
+
+        void Render(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize);
+    private:
+        std::string m_TooltipText;
+        float m_TooltipTextScale;
+    };
+
     class GuiElement {
     public:
         GuiElement();
@@ -57,13 +67,14 @@ namespace Anwill {
         virtual void OnPress(const Math::Vec2f& mousePos);
         virtual void Release(); // Stop Pressing
 
-        /**
-         * @brief Check if element is currently in the state of being hovered by something
-         */
-        bool IsHovered() const;
+        virtual void OnHoverRender(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize);
+        void EmplaceTooltip(const std::string& tooltipText, unsigned int tooltipTextSize);
 
     protected:
         bool m_IsHovered, m_IsPressed;
+
+    private:
+        std::unique_ptr<GuiTooltip> m_Tooltip;
     };
 
     class GuiText : public GuiElement {
@@ -82,8 +93,7 @@ namespace Anwill {
 
     private:
         std::string m_Text;
-        float m_TextScale; // Scaling factor to render in given textSize
-        float m_TextWidth; // Horizontal space occupied by the text
+        float m_TextScale, m_TextWidth; // Calculate TextScale each iteration? Cheap.
     };
 
     class GuiButton : public GuiElement {
@@ -165,21 +175,6 @@ namespace Anwill {
     private:
         int m_Min, m_Max;
         int* m_ClientValuePointer;
-    };
-
-    class GuiTooltip : public GuiText {
-    public:
-        GuiTooltip(const std::string& text, unsigned int textSize,
-                   const std::string& tooltipText, unsigned int tooltipTextSize);
-
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
-
-        void OnHover(const Math::Vec2f& mousePos) override;
-    private:
-        // Offset from cursor to the top left corner of the tooltip window
-
-        Math::Vec2f m_LastCursorPos;
-        GuiText m_TooltipText;
     };
 
     class GuiContainer {

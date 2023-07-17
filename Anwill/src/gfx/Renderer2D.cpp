@@ -108,7 +108,8 @@ namespace Anwill {
     }
 
     void Renderer2D::Submit(const std::shared_ptr<Shader>& shader, Font& font,
-                          const std::string& text, const Math::Mat4f& transform)
+                            const std::string& text, const Math::Mat4f& transform,
+                            const float maxWidth)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
@@ -118,15 +119,16 @@ namespace Anwill {
         auto maxTextSlots = *ShaderMacros::GetMacro<unsigned int>("AW_MAX_FRAGMENT_SAMPLERS");
         std::string remainingText = text; // Everything is remaining at the start
         while (!remainingText.empty()) {
+            //UNIQUE CHARS SUBSTR IS SUS
             auto thisStr = Utils::UniqueCharsSubstr(remainingText, maxTextSlots);
             // Prepare and draw the text
-            batchStartPos = font.Prepare(thisStr, shader, batchStartPos);
-            s_API->Draw(font, text);
+            batchStartPos = font.Prepare(thisStr, shader, batchStartPos, maxWidth);
+            s_API->Draw(font, thisStr);
+            font.Done();
             // Grab the next batch
             remainingText = remainingText.substr(thisStr.size());
         }
 
-        font.Done();
         shader->Unbind();
     }
 

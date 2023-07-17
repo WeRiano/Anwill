@@ -8,7 +8,7 @@
 namespace Anwill {
 
     /**
-     * Colors, margins, padding, shaders, meshes, etc.
+     * Colors, margins, padding, shaders, meshes, etc. Anything that alters the look of the GUI
      */
     struct GuiStyling
     {
@@ -27,7 +27,7 @@ namespace Anwill {
         static std::shared_ptr<Shader> textShader, textButtonShader;
 
         // --- Checkbox ---
-        static float checkboxElementMargin;
+        static float checkboxIconMargin;
         static Mesh checkmarkMesh;
 
         // --- Slider ---
@@ -35,9 +35,11 @@ namespace Anwill {
 
         // --- Tooltip ---
         // Offset from cursor to the top left corner of the tooltip window
-        static Math::Vec2f tooltipOffset;
-        // Padding between the edge of the tooltip window and the tooltip text
-        static Math::Vec2f tooltipTextPadding;
+        static float tooltipOffset;
+        static float tooltipBorderSize;
+
+        // Padding between the edge of the tooltip window and the tooltip text.
+        static Math::Vec2f tooltipWindowMargin;
         static std::shared_ptr<Shader> tooltipShader;
 
         // --- Dropdown ---

@@ -86,6 +86,8 @@ namespace Anwill {
             // Elements
             std::shared_ptr<GuiElement> hoverElement, pressElement;
             Math::Vec2f hoverElementPos, pressElementPos;
+
+            // Misc
             Math::Vec2f mousePos, gameWindowSize;
         };
 
@@ -97,7 +99,8 @@ namespace Anwill {
         static void OnWindowResize(std::unique_ptr<Event>& event);
 
         static void SetHoverState(const Math::Vec2f& mousePos);
-        static bool MoveOrResizeSelectedWindow(const Math::Vec2f& newMousePos);
+        static void SetPressState();
+        static void ResetPressState();
         static int GetWindowIndex(GuiWindowID id);
 
         template <class E, typename... Args>

@@ -3,7 +3,6 @@
 #include "utils/Profiler.h"
 #include "gui/Gui.h"
 #include "gfx/Renderer.h"
-#include "gfx/ShaderMacros.h"
 #include "events/MouseEvents.h"
 #include "events/WindowEvents.h"
 #include "events/SystemEvents.h"
@@ -17,10 +16,9 @@ namespace Anwill {
 
     void Gui::Init(const WindowSettings& ws)
     {
-        ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", GuiStyling::windowBorderSize);
-        ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", GuiStyling::windowHeaderSize);
-
         s_Camera = std::make_unique<OrthographicCamera>((float) ws.width, (float) ws.height);
+        s_State.gameWindowSize = {(float) ws.width, (float) ws.height};
+
         GuiStyling::Init();
 
         SystemEvents::Subscribe<MouseMoveEvent>(OnMouseMove);
@@ -43,6 +41,13 @@ namespace Anwill {
                 last = true;
             }
             s_Windows[i]->Render(last);
+        }
+
+        if(s_State.hoverElement != nullptr)
+        {
+            auto k = s_State.hoverElementPos;
+            s_State.hoverElement->OnHoverRender(s_State.mousePos,
+                                                s_State.gameWindowSize);
         }
     }
 
@@ -143,8 +148,20 @@ namespace Anwill {
         AW_PROFILE_FUNC();
         auto e = static_cast<MouseMoveEvent&>(*event);
         Math::Vec2f newMousePos = {e.GetXPos(), e.GetYPos()};
-        if(!MoveOrResizeSelectedWindow(newMousePos)) {
-            // We are NOT resizing or moving a window, so we change the hover state
+        Math::Vec2f mouseDelta = newMousePos - s_State.mousePos;
+        Math::Vec2f maxPos = s_State.gameWindowSize;
+
+        if(s_State.movingWindow) {
+            // If state is set to move window, we move the window.
+            s_Windows[0]->Move(mouseDelta, {0.0f, 0.0f}, maxPos);
+        } else if(s_State.scalingHorizontally || s_State.scalingVertically)
+        {
+            // If state is set to scale window, we scale window.
+            Math::Vec2f windowPos = s_Windows[0]->GetPos();
+            s_Windows[0]->Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {000.0f, 000.0f},
+                                 {maxPos.GetX() - windowPos.GetX(), windowPos.GetY()});
+        } else {
+            // Otherwise we update the hover state.
             SetHoverState(newMousePos);
         }
         s_State.mousePos = newMousePos;
@@ -152,38 +169,12 @@ namespace Anwill {
 
     void Gui::OnMousePress(std::unique_ptr<Event>& event)
     {
-        if(s_State.hoveringWindowIndex == -1) { return; }
-        if(s_State.hoveringWindowIndex != 0) {
-            // Select window if we are hovering a window and the window is not already selected
-            std::rotate(s_Windows.begin(),
-                        s_Windows.begin() + s_State.hoveringWindowIndex, s_Windows.begin() + s_State.hoveringWindowIndex + 1);
-            s_State.hoveringWindowIndex = 0;
-        }
-        if(s_State.hoveringWindowHeader) {
-            s_State.movingWindow = true;
-        }
-        if(s_State.hoveringDiagonalScaling) {
-            s_State.scalingHorizontally = true;
-            s_State.scalingVertically = true;
-        } else
-        {
-            if(s_State.hoverElement != nullptr) {
-                s_State.pressElement = s_State.hoverElement;
-                s_State.pressElementPos = s_State.hoverElementPos;
-                s_State.pressElement->StartPressing();
-            }
-        }
+        SetPressState();
     }
 
     void Gui::OnMouseRelease(std::unique_ptr<Event>& event)
     {
-        s_State.movingWindow = false;
-        s_State.scalingHorizontally = false;
-        s_State.scalingVertically = false;
-        if(s_State.pressElement != nullptr) {
-            s_State.pressElement->Release();
-            s_State.pressElement = nullptr;
-        }
+        ResetPressState();
     }
 
     void Gui::OnWindowResize(std::unique_ptr<Event>& event)
@@ -216,6 +207,7 @@ namespace Anwill {
                 return;
             }
             if(s_Windows[i]->IsHoveringWindow(mousePos)) {
+                SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
                 // Update which window we are currently hovering
                 s_State.hoveringWindowIndex = i;
                 // Remember which element we hovered last iteration
@@ -252,25 +244,40 @@ namespace Anwill {
         }
     }
 
-    bool Gui::MoveOrResizeSelectedWindow(const Math::Vec2f& newMousePos)
+    void Gui::SetPressState()
     {
-        if(s_Windows.empty()) {
-            return false;
+        if(s_State.hoveringWindowIndex == -1) { return; }
+        if(s_State.hoveringWindowIndex != 0) {
+            // Select window if we are hovering a window and the window is not already selected
+            std::rotate(s_Windows.begin(),
+                        s_Windows.begin() + s_State.hoveringWindowIndex, s_Windows.begin() + s_State.hoveringWindowIndex + 1);
+            s_State.hoveringWindowIndex = 0;
         }
-
-        Math::Vec2f mouseDelta = newMousePos - s_State.mousePos;
-        Math::Vec2f maxPos = s_State.gameWindowSize;
-        if(s_State.movingWindow) {
-            s_Windows[0]->Move(mouseDelta, {0.0f, 0.0f}, maxPos);
-            return true;
-        } else if(s_State.scalingHorizontally || s_State.scalingVertically)
+        if(s_State.hoveringWindowHeader) {
+            s_State.movingWindow = true;
+        }
+        if(s_State.hoveringDiagonalScaling) {
+            s_State.scalingHorizontally = true;
+            s_State.scalingVertically = true;
+        } else
         {
-            Math::Vec2f windowPos = s_Windows[0]->GetPos();
-            s_Windows[0]->Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {100.0f, 100.0f},
-                                {maxPos.GetX() - windowPos.GetX(), windowPos.GetY()});
-            return true;
+            if(s_State.hoverElement != nullptr) {
+                s_State.pressElement = s_State.hoverElement;
+                s_State.pressElementPos = s_State.hoverElementPos;
+                s_State.pressElement->StartPressing();
+            }
         }
-        return false;
+    }
+
+    void Gui::ResetPressState()
+    {
+        s_State.movingWindow = false;
+        s_State.scalingHorizontally = false;
+        s_State.scalingVertically = false;
+        if(s_State.pressElement != nullptr) {
+            s_State.pressElement->Release();
+            s_State.pressElement = nullptr;
+        }
     }
 
     int Gui::GetWindowIndex(GuiWindowID id)

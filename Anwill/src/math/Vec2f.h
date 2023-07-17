@@ -16,6 +16,7 @@ namespace Anwill::Math {
         Vec2f operator+(const Vec2f& other) const;
         Vec2f operator-(const Vec2f& other) const;
         void operator+=(const Vec2f& other);
+        void operator*=(const float other);
         operator Vec3f() const;
 
         float ScalarProjection(Vec2f vec2f) const;
