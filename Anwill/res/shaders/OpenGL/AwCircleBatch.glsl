@@ -35,7 +35,7 @@ layout(location = 0) out vec4 FragColor;
 
 uniform sampler2D u_Textures[AW_MAX_FRAGMENT_SAMPLERS];
 
-bool IsInsideEllipse(vec2 point, vec2 origin, vec2 radius)
+bool IsOutsideEllipse(vec2 point, vec2 origin, vec2 radius)
 {
     return (((point.x - origin.x)*(point.x - origin.x))*((radius.y * radius.y)) +
             ((point.y - origin.y)*(point.y - origin.y))*((radius.x * radius.x))) >=
@@ -46,7 +46,7 @@ void main()
 {
     vec2 delta = vec2(gl_FragCoord.xy - (v_Centre));
 
-    if (IsInsideEllipse(gl_FragCoord.xy, v_Centre, v_Radius))
+    if (IsOutsideEllipse(gl_FragCoord.xy, v_Centre, v_Radius))
     {
         discard;
     }

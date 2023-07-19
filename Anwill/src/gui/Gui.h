@@ -27,12 +27,14 @@ namespace Anwill {
 
         // Client functions (API)
         static GuiWindowID CreateWindow(const std::string& title);
+
         static std::shared_ptr<GuiText> Text(const std::string& text,
                                              bool onNewRow = true,
                                              GuiWindowID windowID = 0);
         static std::shared_ptr<GuiText> Text(const std::string& text,
                                              const std::shared_ptr<GuiContainer>& container,
                                              bool onNewRow = true);
+
         static std::shared_ptr<GuiTextButton> Button(const std::string& text,
                                                      const std::function<void()>& callback = [](){},
                                                      bool onNewRow = true, GuiWindowID windowID = 0);
@@ -40,13 +42,15 @@ namespace Anwill {
                                                      const std::shared_ptr<GuiContainer>& container,
                                                      const std::function<void()>& callback = [](){},
                                                      bool onNewRow = true);
-        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially,
+
+        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially, const std::string& text,
                                                      const std::function<void(bool)>& callback,
                                                      bool onNewRow = true, GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially,
+        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially, const std::string& text,
                                                      const std::shared_ptr<GuiContainer>& container,
                                                      const std::function<void(bool)>& callback,
                                                      bool onNewRow = true);
+
         static std::shared_ptr<GuiSlider> Slider(float min,
                                                  float max,
                                                  float* sliderValue,
@@ -63,6 +67,7 @@ namespace Anwill {
                                                  int max,
                                                  int* sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);
+
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);
 

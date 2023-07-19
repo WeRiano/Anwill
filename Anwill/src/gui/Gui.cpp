@@ -19,7 +19,7 @@ namespace Anwill {
         s_Camera = std::make_unique<OrthographicCamera>((float) ws.width, (float) ws.height);
         s_State.gameWindowSize = {(float) ws.width, (float) ws.height};
 
-        GuiStyling::Init();
+        GuiStyling::InitGlobalStyling();
 
         SystemEvents::Subscribe<MouseMoveEvent>(OnMouseMove);
         SystemEvents::Subscribe<MouseButtonPressEvent>(OnMousePress);
@@ -65,19 +65,19 @@ namespace Anwill {
 
     std::shared_ptr<GuiText> Gui::Text(const std::string& text, bool onNewRow, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiText>(windowID, onNewRow, false, text, GuiStyling::fontSize);
+        return AddElementToWindow<GuiText>(windowID, onNewRow, false, text, GuiStyling::Text::fontSize);
     }
 
     std::shared_ptr<GuiText> Gui::Text(const std::string& text,
                                        const std::shared_ptr<GuiContainer>& container,
                                        bool onNewRow)
     {
-        return container->AddElement<GuiText>(onNewRow, false, text, GuiStyling::fontSize);
+        return container->AddElement<GuiText>(onNewRow, false, text, GuiStyling::Text::fontSize);
     }
 
     std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text, const std::function<void()>& callback, bool onNewRow, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiTextButton>(windowID, onNewRow, false, text, GuiStyling::fontSize, callback);
+        return AddElementToWindow<GuiTextButton>(windowID, onNewRow, false, text, GuiStyling::Text::fontSize, callback);
     }
 
     std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text,
@@ -85,19 +85,22 @@ namespace Anwill {
                                                const std::function<void()>& callback,
                                                bool onNewRow)
     {
-        return container->AddElement<GuiTextButton>(onNewRow, false, text, GuiStyling::fontSize, callback);
+        return container->AddElement<GuiTextButton>(onNewRow, false, text, GuiStyling::Text::fontSize, callback);
     }
 
-    std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially,
-                                               const std::function<void(bool)> &callback,
+    std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::string& text,
+                                               const std::function<void(bool)>& callback,
                                                bool onNewRow,
                                                GuiWindowID windowID) {
-        return AddElementToWindow<GuiCheckbox>(windowID, onNewRow, false, checkedInitially, callback);
+        return AddElementToWindow<GuiCheckbox>(windowID, onNewRow, false, checkedInitially, text,
+                                               GuiStyling::Text::fontSize, callback);
     }
 
-    std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::shared_ptr<GuiContainer> &container,
-                                               const std::function<void(bool)> &callback, bool onNewRow) {
-        return container->AddElement<GuiCheckbox>(onNewRow, false, checkedInitially, callback);
+    std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::string& text,
+                                               const std::shared_ptr<GuiContainer>& container,
+                                               const std::function<void(bool)>& callback, bool onNewRow) {
+        return container->AddElement<GuiCheckbox>(onNewRow, false, checkedInitially, text,
+                                                  GuiStyling::Text::fontSize, callback);
     }
 
     std::shared_ptr<GuiSlider> Gui::Slider(float min, float max, float* sliderValue, GuiWindowID windowID)
@@ -125,13 +128,13 @@ namespace Anwill {
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
     {
         return AddElementToWindow<GuiDropdown>(windowID, true, true, text,
-                                               GuiStyling::fontSize);
+                                               GuiStyling::Text::fontSize);
     }
 
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text,
                                                const std::shared_ptr<GuiContainer>& container)
     {
-        return container->AddElement<GuiDropdown>(true, true, text, GuiStyling::fontSize);
+        return container->AddElement<GuiDropdown>(true, true, text, GuiStyling::Text::fontSize);
     }
 
     GuiWindowID Gui::CreateWindow(const std::string& title)

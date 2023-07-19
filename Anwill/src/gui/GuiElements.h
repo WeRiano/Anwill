@@ -108,21 +108,18 @@ namespace Anwill {
         void Release() override;
 
         void SetCallback(const std::function<void()>& callback);
-
+        void SetStyle(const GuiStyling::Button& style);
     protected:
         Math::Vec2f m_ButtonSize;
         std::function<void()> m_Callback;
+        GuiStyling::Button m_Style;
     };
 
     class GuiTextButton : public GuiButton {
-        /*
-         * Inherited behavior from GuiText:
-         *  - Has text
-         *  - Renders based on width of text
-         */
     public:
         GuiTextButton(const std::string& text,
-                      unsigned int textSize, const std::function<void()>& callback);
+                      unsigned int textSize,
+                      const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
         void SetText(const std::string& text);
@@ -131,14 +128,16 @@ namespace Anwill {
         GuiText m_Text;
     };
 
-    class GuiCheckbox : public GuiButton {
+    class GuiCheckbox : public GuiButton  {
     public:
-        GuiCheckbox(bool startAsChecked,
+        GuiCheckbox(bool checked, const std::string& text, unsigned int textSize,
                     const std::function<void(bool)>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        float GetWidth() const override;
 
-    private:
+    protected:
+        GuiText m_Text;
         bool m_Checked;
     };
 
@@ -175,6 +174,18 @@ namespace Anwill {
     private:
         int m_Min, m_Max;
         int* m_ClientValuePointer;
+    };
+
+    class GuiRadioButton : public GuiCheckbox {
+    public:
+        GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
+                       const int onSelectValue, const std::function<void(bool)>& callback);
+
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize);
+
+    protected:
+        int& m_Reference;
+        const int m_OnSelectValue;
     };
 
     class GuiContainer {

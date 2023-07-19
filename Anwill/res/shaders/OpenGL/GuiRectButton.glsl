@@ -20,6 +20,9 @@ uniform bool u_Hovering;
 uniform bool u_Pressing;
 uniform mat4 u_Transform;
 uniform vec2 u_CutoffPos;
+uniform vec3 u_Color;
+uniform vec3 u_HoverColor;
+uniform vec3 u_PressColor;
 
 void main()
 {
@@ -32,10 +35,18 @@ void main()
     }
 
     if(u_Pressing) {
+        color = vec4(u_PressColor, 1.0f);
+    } else if(u_Hovering) {
+        color = vec4(u_HoverColor, 1.0f);
+    } else {
+        color = vec4(u_Color, 1.0f);
+    }
+
+    /*if(u_Pressing) {
         color = vec4(0.28f, 0.28f, 1.00f, 1.0f);
     } else if(u_Hovering) {
         color = vec4(0.20f, 0.20f, 0.95f, 1.0f);
     } else {
         color = vec4(0.15f, 0.15f, 0.6f, 1.0f);
-    }
+    }*/
 }

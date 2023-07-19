@@ -34,12 +34,12 @@ namespace Anwill {
         if(onNewRow) {
             return {
                     originXPos,
-                    curPos.GetY() - ((float) currentElementGridDepth * (GuiStyling::windowElementHeight +
-                                                                        GuiStyling::windowElementVerticalMargin))
+                    curPos.GetY() - ((float) currentElementGridDepth * (GuiStyling::Window::elementHeight +
+                                                                        GuiStyling::Window::elementVerticalMargin))
             };
         } else {
             return {
-                    curPos.GetX() + currentElementWidth + GuiStyling::windowElementHorizontalMargin,
+                    curPos.GetX() + currentElementWidth + GuiStyling::Window::elementHorizontalMargin,
                     curPos.GetY()
             };
         }
@@ -102,7 +102,8 @@ namespace Anwill {
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::checkmarkMesh, iconTransform);
+        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::Checkbox::checkmarkMesh,
+                           iconTransform);
     }
 
     void GuiIcon::RenderRectangle(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
@@ -126,19 +127,21 @@ namespace Anwill {
 
     GuiTooltip::GuiTooltip(const std::string& tooltipText, unsigned int tooltipTextSize)
                            : m_TooltipText(tooltipText),
-                             m_TooltipTextScale(GuiStyling::font->GetScaleValue(tooltipTextSize))
+                             m_TooltipTextScale(GuiStyling::Text::font->GetScaleValue(tooltipTextSize))
     {}
 
     void GuiTooltip::Render(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize)
     {
         // First render the tooltip background window
-        Math::Vec2f backgroundTopLeftCorner = mousePos + Math::Vec2f(GuiStyling::tooltipOffset, 0.0f);
+        Math::Vec2f backgroundTopLeftCorner = mousePos + Math::Vec2f(GuiStyling::Tooltip::offset, 0.0f);
         Math::Vec2f textStartPos = backgroundTopLeftCorner +
-                Math::Vec2f(GuiStyling::tooltipWindowMargin.GetX(), -GuiStyling::tooltipWindowMargin.GetY()) +
-                                   Math::Vec2f(0.0f, -GuiStyling::font->GetFontHeight()) * m_TooltipTextScale;
+                Math::Vec2f(GuiStyling::Tooltip::windowMargin.GetX(),
+                            -GuiStyling::Tooltip::windowMargin.GetY()) +
+                            Math::Vec2f(0.0f, -GuiStyling::Text::font->GetFontHeight())
+                            * m_TooltipTextScale;
 
-        Math::Vec2f textSize = GuiStyling::font->GetTextSize(m_TooltipText) * m_TooltipTextScale;
-        Math::Vec2f backgroundSize = textSize + GuiStyling::tooltipWindowMargin * 2.0f;
+        Math::Vec2f textSize = GuiStyling::Text::font->GetTextSize(m_TooltipText) * m_TooltipTextScale;
+        Math::Vec2f backgroundSize = textSize + GuiStyling::Tooltip::windowMargin * 2.0f;
 
         // Move to fit inside game window
         bool isOutsideX = backgroundTopLeftCorner.GetX() + backgroundSize.GetX() > gameWindowSize.GetX();
@@ -147,11 +150,11 @@ namespace Anwill {
         if(isOutsideX and isOutsideY) {
             float correctedOffsetX = gameWindowSize.GetX() -
                                      (backgroundTopLeftCorner.GetX() + backgroundSize.GetX());
-            correctedOffset = {correctedOffsetX, GuiStyling::tooltipOffset + backgroundSize.GetY()};
+            correctedOffset = {correctedOffsetX, GuiStyling::Tooltip::offset + backgroundSize.GetY()};
         } else if (isOutsideX) {
             float correctedOffsetX = gameWindowSize.GetX() -
                     (backgroundTopLeftCorner.GetX() + backgroundSize.GetX());
-            correctedOffset = {correctedOffsetX, -GuiStyling::tooltipOffset};
+            correctedOffset = {correctedOffsetX, -GuiStyling::Tooltip::offset};
         } else if (isOutsideY) {
             float correctedOffsetY = -(backgroundTopLeftCorner.GetY() - backgroundSize.GetY());
             correctedOffset = {0.0f, correctedOffsetY};
@@ -160,16 +163,16 @@ namespace Anwill {
         Math::Mat4f transform = Math::Mat4f::Scale({}, backgroundSize);
         transform = Math::Mat4f::Translate(transform, backgroundTopLeftCorner + correctedOffset +
                                 Math::Vec2f(backgroundSize.GetX(), -backgroundSize.GetY()) * 0.5f);
-        Renderer2D::Submit(GuiStyling::tooltipShader, GuiStyling::rectMesh, transform);
+        Renderer2D::Submit(GuiStyling::Tooltip::shader, GuiStyling::rectMesh, transform);
 
         // Then render the tooltip text
         transform = Math::Mat4f::Scale({}, {m_TooltipTextScale, m_TooltipTextScale, 0.0f});
         transform = Math::Mat4f::Translate(transform, textStartPos + correctedOffset);
-        GuiStyling::textShader->Bind();
-        GuiStyling::textShader->SetUniformVec2f({gameWindowSize.GetX(), -gameWindowSize.GetY()},
+        GuiStyling::Text::shader->Bind();
+        GuiStyling::Text::shader->SetUniformVec2f({gameWindowSize.GetX(), -gameWindowSize.GetY()},
                                                 "u_CutoffPos");
-        GuiStyling::textShader->Unbind();
-        Renderer2D::Submit(GuiStyling::textShader, *GuiStyling::font, m_TooltipText, transform);
+        GuiStyling::Text::shader->Unbind();
+        Renderer2D::Submit(GuiStyling::Text::shader, *GuiStyling::Text::font, m_TooltipText, transform);
     }
 
     #pragma endregion
@@ -233,10 +236,10 @@ namespace Anwill {
 
     GuiText::GuiText(const std::string& text, unsigned int textSize)
         : GuiElement(),
-          m_TextPos(1.0f, -GuiStyling::windowElementHeight / 2.0f + GuiStyling::textBaselineOffset),
+          m_TextPos(1.0f, -GuiStyling::Window::elementHeight / 2.0f + GuiStyling::Text::baselineOffset),
           m_Text(text),
-          m_TextScale(GuiStyling::font->GetScaleValue(textSize)),
-          m_TextWidth((float) GuiStyling::font->GetTextWidth(text) * m_TextScale)
+          m_TextScale(GuiStyling::Text::font->GetScaleValue(textSize)),
+          m_TextWidth((float) GuiStyling::Text::font->GetTextWidth(text) * m_TextScale)
     {}
 
     void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
@@ -247,9 +250,9 @@ namespace Anwill {
         thisTransform = Math::Mat4f::Translate(thisTransform, m_TextPos + assignedPos);
 
         // Render
-        GuiStyling::textShader->Bind();
-        GuiStyling::textShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
-        Renderer2D::Submit(GuiStyling::textShader, *GuiStyling::font, m_Text, thisTransform);
+        GuiStyling::Text::shader->Bind();
+        GuiStyling::Text::shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        Renderer2D::Submit(GuiStyling::Text::shader, *GuiStyling::Text::font, m_Text, thisTransform);
     }
 
     bool GuiText::IsHovering(const Math::Vec2f& mousePos) const {
@@ -268,7 +271,7 @@ namespace Anwill {
 
     void GuiText::SetText(const std::string& text) {
         m_Text = text;
-        m_TextWidth = (float) GuiStyling::font->GetTextWidth(text) * m_TextScale;
+        m_TextWidth = (float) GuiStyling::Text::font->GetTextWidth(text) * m_TextScale;
     }
 
     #pragma endregion
@@ -289,11 +292,15 @@ namespace Anwill {
                                                                          -m_ButtonSize.GetY() / 2.0f));
 
         // Render button
-        GuiStyling::textButtonShader->Bind();
-        GuiStyling::textButtonShader->SetUniform1i(m_IsHovered, "u_Hovering");
-        GuiStyling::textButtonShader->SetUniform1i(m_IsPressed, "u_Pressing");
-        GuiStyling::textButtonShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
-        Renderer2D::Submit(GuiStyling::textButtonShader, GuiStyling::rectMesh, thisTransform);
+        auto shader = GuiStyling::Button::shaders[(std::size_t) m_Style.shape];
+        shader->Bind();
+        shader->SetUniform1i(m_IsHovered, "u_Hovering");
+        shader->SetUniform1i(m_IsPressed, "u_Pressing");
+        shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        shader->SetUniformVec3f(m_Style.color, "u_Color");
+        shader->SetUniformVec3f(m_Style.hoverColor, "u_HoverColor");
+        shader->SetUniformVec3f(m_Style.pressColor, "u_PressColor");
+        Renderer2D::Submit(shader, GuiStyling::rectMesh, thisTransform);
     }
 
     bool GuiButton::IsHovering(const Math::Vec2f& mousePos) const
@@ -325,6 +332,11 @@ namespace Anwill {
         m_Callback = callback;
     }
 
+    void GuiButton::SetStyle(const GuiStyling::Button& style)
+    {
+        m_Style = style;
+    }
+
     #pragma endregion
 
     #pragma region TextButton
@@ -334,7 +346,7 @@ namespace Anwill {
         : GuiButton({}, callback),
           m_Text(text, textSize)
     {
-        m_ButtonSize = {m_Text.GetWidth() + GuiStyling::buttonTextPadding * 2.0f, GuiStyling::windowElementHeight};
+        m_ButtonSize = {m_Text.GetWidth() + GuiStyling::TextButton::textPadding * 2.0f, GuiStyling::Window::elementHeight};
     }
 
     void GuiTextButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
@@ -342,41 +354,51 @@ namespace Anwill {
         GuiButton::Render(assignedPos, assignedMaxSize);
 
         // Render text
-        Math::Vec2f padding = Math::Vec2f(GuiStyling::buttonTextPadding, 0.0f);
+        Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
         m_Text.Render(assignedPos + padding,
                       assignedMaxSize - padding);
     }
 
     void GuiTextButton::SetText(const std::string& text) {
         m_Text.SetText(text);
-        m_ButtonSize = { m_Text.GetWidth() + GuiStyling::buttonTextPadding * 2.0f, m_ButtonSize.GetY() };
+        m_ButtonSize = { m_Text.GetWidth() + GuiStyling::TextButton::textPadding * 2.0f, m_ButtonSize.GetY() };
     }
 
     #pragma endregion
 
     #pragma region Checkbox
 
-    GuiCheckbox::GuiCheckbox(bool startAsChecked,
+    GuiCheckbox::GuiCheckbox(bool checked, const std::string& text, unsigned int textSize,
                              const std::function<void(bool)>& callback)
-        : GuiButton({GuiStyling::windowElementHeight, GuiStyling::windowElementHeight},
+        : GuiButton({GuiStyling::Window::elementHeight, GuiStyling::Window::elementHeight},
                     [this, callback](){
-            if(m_IsHovered) {
-                m_Checked = !m_Checked;
-                callback(m_Checked);
-            }
-        }), m_Checked(startAsChecked)
+            m_Checked = !m_Checked;
+            callback(m_Checked);
+        }),
+        m_Text(text, textSize),
+        m_Checked(checked)
     {}
 
     void GuiCheckbox::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize) {
+        // Render text
+        Math::Vec2f textPosDelta = {m_ButtonSize.GetX() + GuiStyling::Checkbox::textMargin, 0.0f};
+        m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta);
+
+        // Render button
         GuiButton::Render(assignedPos, assignedMaxSize);
 
-        // Render checkmark
+        // Render checkmark if it checked
         if(!m_Checked) { return; }
-        Math::Vec2f margin = {GuiStyling::checkboxIconMargin, GuiStyling::checkboxIconMargin * 2.0f};
+        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 2.0f};
         GuiIcon::RenderCheckmark(assignedPos + Math::Vec2f(margin.GetX(), -margin.GetY()),
                                  m_ButtonSize - margin * 2.0f,
                                  assignedMaxSize - margin,
                                  {1.0f, 1.0f, 1.0f});
+    }
+
+    float GuiCheckbox::GetWidth() const
+    {
+        return GuiButton::GetWidth() + GuiStyling::Checkbox::textMargin + m_Text.GetWidth();
     }
 
     #pragma endregion
@@ -384,8 +406,8 @@ namespace Anwill {
     #pragma region Slider
 
     GuiSlider::GuiSlider()
-        : GuiButton({GuiStyling::windowElementHeight * 7.0f, GuiStyling::windowElementHeight}, [](){}),
-          m_ValueText("", GuiStyling::fontSize)
+        : GuiButton({GuiStyling::Window::elementHeight * 7.0f, GuiStyling::Window::elementHeight}, [](){}),
+          m_ValueText("", GuiStyling::Text::fontSize)
     {}
 
     void GuiSlider::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
@@ -394,17 +416,17 @@ namespace Anwill {
         GuiButton::Render(assignedPos, assignedMaxSize);
 
         // Render "slider" (marker) rectangle
-        Math::Vec2f markerPos = {m_LastCursorXPos - GuiStyling::sliderMarkerSize.GetX() * 0.5f,
-                                 -(m_ButtonSize.GetY() - GuiStyling::sliderMarkerSize.GetY()) * 0.5f + 1.0f};
-        markerPos = {Utils::Clamp(markerPos.GetX(), 0.0f, GetWidth() - GuiStyling::sliderMarkerSize.GetX()),
+        Math::Vec2f markerPos = {m_LastCursorXPos - GuiStyling::Slider::markerSize.GetX() * 0.5f,
+                                 -(m_ButtonSize.GetY() - GuiStyling::Slider::markerSize.GetY()) * 0.5f + 1.0f};
+        markerPos = {Utils::Clamp(markerPos.GetX(), 0.0f, GetWidth() - GuiStyling::Slider::markerSize.GetX()),
                      markerPos.GetY()};
-        GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::sliderMarkerSize,
+        GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::Slider::markerSize,
                                  assignedMaxSize - markerPos, {0.45f, 0.45f, 1.0f});
 
         // Render text
         float centeredTextXPos = m_ButtonSize.GetX() * 0.5f - m_ValueText.GetWidth() * 0.5f;
         m_ValueText.Render(assignedPos + Math::Vec2f(centeredTextXPos, 0.0f),
-                      assignedMaxSize - Math::Vec2f(centeredTextXPos + GuiStyling::buttonTextPadding, 0.0f));
+                      assignedMaxSize - Math::Vec2f(centeredTextXPos + GuiStyling::TextButton::textPadding, 0.0f));
     }
 
     void GuiSlider::OnPress(const Math::Vec2f &mousePos) {
@@ -432,8 +454,8 @@ namespace Anwill {
         float sliderValue = Utils::ScaleToRange(mousePos.GetX(),
                                                 static_cast<float>(m_Min),
                                                 static_cast<float>(m_Max),
-                                                GuiStyling::sliderMarkerSize.GetX() * 0.5f,
-                                                GetWidth() - GuiStyling::sliderMarkerSize.GetX() * 0.5f);
+                                                GuiStyling::Slider::markerSize.GetX() * 0.5f,
+                                                GetWidth() - GuiStyling::Slider::markerSize.GetX() * 0.5f);
         sliderValue = Utils::Clamp(sliderValue,
                                    static_cast<float>(m_Min),
                                    static_cast<float>(m_Max));
@@ -460,13 +482,41 @@ namespace Anwill {
         float sliderValue = Utils::ScaleToRange(mousePos.GetX(),
                                                 static_cast<float>(m_Min),
                                                 static_cast<float>(m_Max),
-                                                GuiStyling::sliderMarkerSize.GetX() * 0.5f,
-                                                GetWidth() - GuiStyling::sliderMarkerSize.GetX() * 0.5f);
+                                                GuiStyling::Slider::markerSize.GetX() * 0.5f,
+                                                GetWidth() - GuiStyling::Slider::markerSize.GetX() * 0.5f);
         sliderValue = Utils::Clamp(sliderValue,
                                    static_cast<float>(m_Min),
                                    static_cast<float>(m_Max));
         *m_ClientValuePointer = sliderValue;
         m_ValueText.SetText(Utils::RoundFloatToString(sliderValue, 3));
+    }
+
+    #pragma endregion
+
+    #pragma region RadioButton
+
+    GuiRadioButton::GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
+                                   const int onSelectValue, const std::function<void(bool)>& callback)
+        : GuiCheckbox(reference == onSelectValue, text, textSize, callback), m_Reference(reference),
+          m_OnSelectValue(onSelectValue)
+    {}
+
+    void GuiRadioButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
+    {
+        // Render text
+        Math::Vec2f textPosDelta = {m_ButtonSize.GetX() + GuiStyling::Checkbox::textMargin, 0.0f};
+        m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta);
+
+        // Render button
+        GuiButton::Render(assignedPos, assignedMaxSize);
+
+        // Render checkmark if it checked
+        if(!m_Checked) { return; }
+        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 2.0f};
+        GuiIcon::RenderCheckmark(assignedPos + Math::Vec2f(margin.GetX(), -margin.GetY()),
+                                 m_ButtonSize - margin * 2.0f,
+                                 assignedMaxSize - margin,
+                                 {1.0f, 1.0f, 1.0f});
     }
 
     #pragma endregion
@@ -487,7 +537,7 @@ namespace Anwill {
                 hoverElementPos = m_ElementPosCache[i];
                 return element;
             }
-            if (dynamic_cast<GuiContainer *>(element.get()) != nullptr) {
+            if (dynamic_cast<GuiContainer*>(element.get()) != nullptr) {
                 // If element is a container we need to check with those elements
                 auto container = std::dynamic_pointer_cast<GuiContainer>(element);
                 Math::Vec2f elementPosInsideContainer = {};
@@ -522,8 +572,8 @@ namespace Anwill {
                                                    wantsNewRow || forcedToNewRow);
             }
             element->Render(assignedPos + elementGridPos,
-                            GetNewMaxSize(elementGridPos + Math::Vec2f(GuiStyling::windowCutoffPadding,
-                                                                       -GuiStyling::windowCutoffPadding),
+                            GetNewMaxSize(elementGridPos + Math::Vec2f(GuiStyling::Window::cutoffPadding,
+                                                                       -GuiStyling::Window::cutoffPadding),
                                           assignedMaxSize));
             m_ElementPosCache.push_back(elementGridPos);
             lastElement = element;
@@ -552,7 +602,6 @@ namespace Anwill {
         GuiButton::Render(assignedPos, assignedMaxSize);
 
         // Render arrow icon
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         if(m_HideElements) {
             GuiIcon::RenderRightArrow(assignedPos,
                                       GuiStyling::iconSize * 0.5f,
@@ -571,8 +620,8 @@ namespace Anwill {
 
         if(m_HideElements) { return; }
         GuiContainer::Render(assignedPos, assignedMaxSize,
-                             { GuiStyling::windowElementIndent,
-                               -GuiStyling::windowElementHeight - GuiStyling::windowElementVerticalMargin });
+                             { GuiStyling::Dropdown::elementIndent,
+                               -GuiStyling::Window::elementHeight - GuiStyling::Window::elementVerticalMargin });
     }
 
     bool GuiDropdown::IsHovering(const Math::Vec2f& mousePos) const
@@ -612,7 +661,7 @@ namespace Anwill {
                                                                if(m_HideElements) {
                                                                    m_LastShowSize = m_Size;
                                                                    m_Size = {m_Size.GetX(),
-                                                                             GuiStyling::windowHeaderSize};
+                                                                             GuiStyling::Window::headerSize};
                                                                } else {
                                                                    m_Size = m_LastShowSize;
                                                                }
@@ -638,45 +687,45 @@ namespace Anwill {
     void GuiWindow::Render(bool selected)
     {
         // Render window
-        GuiStyling::windowShader->Bind();
-        GuiStyling::windowShader->SetUniform1i(selected, "u_Selected");
+        GuiStyling::Window::shader->Bind();
+        GuiStyling::Window::shader->SetUniform1i(selected, "u_Selected");
         auto transform = Math::Mat4f::Translate(Math::Mat4f::Identity(),
                                                 m_Pos + Math::Vec2f(m_Size.GetX() / 2.0f, -m_Size.GetY() / 2.0f));
         transform = Math::Mat4f::Scale(transform, m_Size);
-        Renderer2D::Submit(GuiStyling::windowShader, GuiStyling::rectMesh, transform);
+        Renderer2D::Submit(GuiStyling::Window::shader, GuiStyling::rectMesh, transform);
 
         // Render title
-        m_Title.Render(m_Pos + GuiStyling::windowTitlePos, m_Size - GuiStyling::windowTitlePos
-                                                           - Math::Vec2f(GuiStyling::windowCutoffPadding, GuiStyling::windowCutoffPadding));
+        m_Title.Render(m_Pos + GuiStyling::Window::titlePos, m_Size - GuiStyling::Window::titlePos
+                                                           - Math::Vec2f(GuiStyling::Window::cutoffPadding, GuiStyling::Window::cutoffPadding));
 
         // Render minimize button
         m_MinimizeButton->Render(m_Pos, m_Size);
         if(m_HideElements) {
             GuiIcon::RenderRightArrow(m_Pos,
                                       GuiStyling::iconSize * 0.5f,
-                                      m_Size - Math::Vec2f(GuiStyling::windowCutoffPadding,
-                                                           GuiStyling::windowCutoffPadding),
+                                      m_Size - Math::Vec2f(GuiStyling::Window::cutoffPadding,
+                                                           GuiStyling::Window::cutoffPadding),
                                       {1.0f, 1.0f, 1.0f});
             return;
         } else {
             GuiIcon::RenderDownArrow(m_Pos,
                                      GuiStyling::iconSize * 0.5f,
-                                     m_Size - Math::Vec2f(GuiStyling::windowCutoffPadding, GuiStyling::windowCutoffPadding),
+                                     m_Size - Math::Vec2f(GuiStyling::Window::cutoffPadding, GuiStyling::Window::cutoffPadding),
                                      {1.0f, 1.0f, 1.0f});
         }
 
 
         GuiContainer::Render(m_Pos, m_Size,
-                             {GuiStyling::windowElementIndent,
-                              -(GuiStyling::windowHeaderSize + GuiStyling::windowElementVerticalMargin) });
+                             {GuiStyling::Window::elementIndent,
+                              -(GuiStyling::Window::headerSize + GuiStyling::Window::elementVerticalMargin) });
     }
 
     bool GuiWindow::IsHoveringHeader(const Math::Vec2f& mousePos)
     {
-        return Math::Algo::IsPointInsideRectangle({m_Pos.GetX() + GuiStyling::windowTitlePos.GetX(), m_Pos.GetY()},
+        return Math::Algo::IsPointInsideRectangle({m_Pos.GetX() + GuiStyling::Window::titlePos.GetX(), m_Pos.GetY()},
                                                   {m_Pos.GetX() + m_Size.GetX(), m_Pos.GetY()},
-                                                  {m_Pos.GetX() + m_Size.GetX(), m_Pos.GetY() - GuiStyling::windowHeaderSize},
-                                                  {m_Pos.GetX() + GuiStyling::windowTitlePos.GetX(), m_Pos.GetY() - GuiStyling::windowHeaderSize},
+                                                  {m_Pos.GetX() + m_Size.GetX(), m_Pos.GetY() - GuiStyling::Window::headerSize},
+                                                  {m_Pos.GetX() + GuiStyling::Window::titlePos.GetX(), m_Pos.GetY() - GuiStyling::Window::headerSize},
                                                   mousePos);
     }
 
@@ -699,15 +748,15 @@ namespace Anwill {
         return Math::Algo::IsPointInsideRectangle({m_Pos.GetX(), m_Pos.GetY()},
                                                   {m_Pos.GetX() + GuiStyling::iconSize.GetX(), m_Pos.GetY()},
                                                   {m_Pos.GetX() + GuiStyling::iconSize.GetX(), m_Pos.GetY()
-                                                                                               - GuiStyling::windowHeaderSize},
-                                                  {m_Pos.GetX(), m_Pos.GetY() - GuiStyling::windowHeaderSize},
+                                                  - GuiStyling::Window::headerSize},
+                                                  {m_Pos.GetX(), m_Pos.GetY() - GuiStyling::Window::headerSize},
                                                   mousePos);
     }
 
     void GuiWindow::Move(const Math::Vec2f& delta, const Math::Vec2f& minPos, const Math::Vec2f& maxPos)
     {
         if(!(m_Pos.GetY() + delta.GetY() > maxPos.GetY() ||
-             m_Pos.GetY() - GuiStyling::windowHeaderSize + delta.GetY() < minPos.GetY())) {
+             m_Pos.GetY() - GuiStyling::Window::headerSize + delta.GetY() < minPos.GetY())) {
             m_Pos = {m_Pos.GetX(), m_Pos.GetY() + delta.GetY()};
         }
         if(!(m_Pos.GetX() + delta.GetX() < minPos.GetX() ||

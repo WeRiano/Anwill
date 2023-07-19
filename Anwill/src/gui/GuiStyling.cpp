@@ -3,70 +3,82 @@
 
 namespace Anwill {
 
-    float GuiStyling::windowHeaderSize, GuiStyling::windowElementIndent,
-    GuiStyling::windowElementVerticalMargin, GuiStyling::windowElementHorizontalMargin,
-    GuiStyling::windowCutoffPadding, GuiStyling::textBaselineOffset, GuiStyling::buttonTextPadding,
-    GuiStyling::checkboxIconMargin, GuiStyling::windowElementHeight, GuiStyling::windowBorderSize,
-    GuiStyling::tooltipBorderSize, GuiStyling::tooltipOffset;
-    unsigned int GuiStyling::fontSize;
-    Math::Vec2f GuiStyling::iconSize, GuiStyling::windowTitlePos,
-    GuiStyling::tooltipWindowMargin, GuiStyling::sliderMarkerSize;
-    std::unique_ptr<Font> GuiStyling::font;
-    std::shared_ptr<Shader> GuiStyling::textShader, GuiStyling::textButtonShader, GuiStyling::primitiveShader,
-    GuiStyling::windowShader, GuiStyling::tooltipShader;
-    Mesh GuiStyling::checkmarkMesh, GuiStyling::triangleMesh, GuiStyling::rectMesh;
+    float GuiStyling::Window::headerSize, GuiStyling::Window::elementIndent,
+    GuiStyling::Window::elementVerticalMargin, GuiStyling::Window::elementHorizontalMargin,
+    GuiStyling::Window::cutoffPadding, GuiStyling::Text::baselineOffset, GuiStyling::TextButton::textPadding,
+    GuiStyling::Checkbox::iconMargin, GuiStyling::Window::elementHeight, GuiStyling::Window::borderSize,
+    GuiStyling::Tooltip::borderSize, GuiStyling::Tooltip::offset, GuiStyling::Checkbox::textMargin,
+    GuiStyling::Dropdown::elementIndent;
 
-    void GuiStyling::Init()
+    unsigned int GuiStyling::Text::fontSize;
+
+    Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos,
+    GuiStyling::Tooltip::windowMargin, GuiStyling::Slider::markerSize;
+
+    std::unique_ptr<Font> GuiStyling::Text::font;
+
+    std::shared_ptr<Shader> GuiStyling::Text::shader, GuiStyling::primitiveShader,
+    GuiStyling::Window::shader, GuiStyling::Tooltip::shader;
+
+    Mesh GuiStyling::Checkbox::checkmarkMesh, GuiStyling::triangleMesh, GuiStyling::rectMesh;
+
+    std::array<std::shared_ptr<Shader>, (size_t) GuiStyling::Button::Shape::Size> GuiStyling::Button::shaders;
+
+    void GuiStyling::InitGlobalStyling()
     {
+        // --- Tooltip ---
+        Tooltip::offset = 15.0f;
+        Tooltip::windowMargin = {10.0f, 10.0f};
+        Tooltip::borderSize = 2.0f;
+        ShaderMacros::SetMacro("AW_GUI_TOOLTIP_BORDER_SIZE", Tooltip::borderSize);
+
         // --- Text ---
-        fontSize = 13;
-        textBaselineOffset = -(float) fontSize * 0.45f;
-        buttonTextPadding = 5.0f; // X distance from button edge to text
+        Text::fontSize = 13;
+        Text::baselineOffset = -(float) Text::fontSize * 0.45f;
+        TextButton::textPadding = 5.0f; // X distance from button edge to text
 
         // --- Checkbox ---
-        checkboxIconMargin = 2.0f;
+        Checkbox::textMargin = 5.0f;
+        Checkbox::iconMargin = 2.0f;
 
-        // --- Window ---
-        windowElementIndent = 5.0f;
-        windowElementHeight = 30.0f;
-        windowElementVerticalMargin = 3.0f;
-        windowElementHorizontalMargin = 6.0f;
-        windowCutoffPadding = 4.0f;
-        windowBorderSize = 8.0f;
-        windowHeaderSize = windowElementHeight;
-        iconSize = { windowElementHeight, windowElementHeight };
-        windowTitlePos = { windowBorderSize + iconSize.GetX(),
-                           windowElementHeight / 2.0f - windowHeaderSize / 2.0f };
-        ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", windowBorderSize);
-        ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", windowHeaderSize);
+        // --- Dropdown --
+        Dropdown::elementIndent = 10.0f;
+
+        Window::elementIndent = 5.0f;
+        Window::elementHeight = 30.0f;
+        Window::elementVerticalMargin = 3.0f;
+        Window::elementHorizontalMargin = 6.0f;
+        Window::cutoffPadding = 4.0f;
+        Window::borderSize = 8.0f;
+        Window::headerSize = Window::elementHeight;
+        iconSize = { Window::elementHeight, Window::elementHeight };
+        Window::titlePos = { Window::borderSize + iconSize.GetX(),
+                           Window::elementHeight / 2.0f - Window::headerSize / 2.0f };
+        ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", Window::borderSize);
+        ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", Window::headerSize);
 
         // --- Slider ---
-        sliderMarkerSize = {13.0f, windowElementHeight - 1.5f * 2.0f};
-
-        // --- Tooltip ---
-        tooltipOffset = 15.0f;
-        tooltipWindowMargin = {10.0f, 10.0f};
-        tooltipBorderSize = 2.0f;
-        ShaderMacros::SetMacro("AW_GUI_TOOLTIP_BORDER_SIZE", tooltipBorderSize);
+        Slider::markerSize = {13.0f, Window::elementHeight - 1.5f * 2.0f};
 
         // Custom objects
             // Mesh
         rectMesh = Mesh::CreateRectMesh(1.0f, 1.0f);
         triangleMesh = Mesh::CreateTriangleMesh({0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f});
-        checkmarkMesh = Mesh::CreateCheckmarkMesh(1.0f, 1.0f);
+        Checkbox::checkmarkMesh = Mesh::CreateCheckmarkMesh(1.0f, 1.0f);
 
             // Shaders
         primitiveShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiPrimitiveColor.glsl");
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
         GuiStyling::primitiveShader->Unbind();
-        textShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiText.glsl");
-        textButtonShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTextButton.glsl");
-        windowShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
-        tooltipShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTooltip.glsl");
+        Text::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiText.glsl");
+        Button::shaders[(std::size_t) Button::Shape::Rectangle] = Shader::Create("Anwill/res/shaders/OpenGL/GuiRectButton.glsl");
+        Button::shaders[(std::size_t) Button::Shape::Circle] = Shader::Create("Anwill/res/shaders/OpenGL/GuiCircleButton.glsl");
+        Window::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
+        Tooltip::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTooltip.glsl");
 
             // Fonts
-        font = std::make_unique<Font>("Sandbox/assets/fonts/arial.ttf");
-        font->SetNewlineSpace(1.4f);
+        Text::font = std::make_unique<Font>("Sandbox/assets/fonts/arial.ttf");
+        Text::font->SetNewlineSpace(1.4f);
     }
 }

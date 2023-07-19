@@ -22,12 +22,13 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Button("Dropdown element 4", dd1, [](){}, false);
     Anwill::Gui::Text("Dropdown element 5", dd1, false);
     Anwill::Gui::Button("This is another button that does nothing!", dd1);
-    Anwill::Gui::Checkbox(true, dd1, [](bool){}, true);
+    Anwill::Gui::Checkbox(true, "Checkbox", dd1, [](bool b){});
     float floatSliderValue;
     Anwill::Gui::Slider(0.0f, 1337.42f, &floatSliderValue, dd1);
 
     auto uselessButton = Anwill::Gui::Button("This is another button that does nothing!");
-    Anwill::Gui::Checkbox(true, [](bool b){});
+    Anwill::Gui::Checkbox(true, "Checkbox", [](bool b){});
+    Anwill::Gui::Button("Test", [](){}, false);
     Anwill::Gui::Slider(0.0f, 420.69f, &m_FloatSliderValue);
     int intSliderValue;
     Anwill::Gui::Slider(1, 5, &intSliderValue);
@@ -54,7 +55,7 @@ GuiTest::GuiTest(const unsigned int ups)
                                   "In in orci. Phasellus eget ipsum.\nProin non magna nec erat vestibulum congue. Etiam pellentesque. "
                                   "Praesent sagittis porta ante.\nVestibulum nonummy viverra augue. In hac habitasse platea dictumst.\n"
                                   "Nulla a ipsum. Phasellus nulla velit, dignissim a, dignissim ut, sagittis et, mi.",
-                                  Anwill::GuiStyling::fontSize); // TODO: FIX FONT SIZE
+                                  Anwill::GuiStyling::Text::fontSize); // TODO: FIX FONT SIZE
 
     auto id2 = Anwill::Gui::CreateWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
     Anwill::Gui::Text("Some text inside window! Cool!", true, id2);
