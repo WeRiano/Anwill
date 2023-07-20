@@ -125,6 +125,28 @@ namespace Anwill {
         return container->AddElement<GuiIntSlider>(true, true, min, max, sliderValue);
     }
 
+    std::shared_ptr<GuiRadioButton> Gui::RadioButton(const std::string& text,
+                                                     int& reference,
+                                                     int onSelectValue,
+                                                     const std::function<void()>& callback,
+                                                     bool onNewRow,
+                                                     GuiWindowID windowID)
+    {
+        return AddElementToWindow<GuiRadioButton>(windowID, onNewRow, false, text, GuiStyling::Text::fontSize,
+                                                  reference, onSelectValue, callback);
+    }
+
+    std::shared_ptr<GuiRadioButton> Gui::RadioButton(const std::string& text,
+                                                     int& reference,
+                                                     int onSelectValue,
+                                                     const std::shared_ptr<GuiContainer>& container,
+                                                     bool onNewRow,
+                                                     const std::function<void()>& callback)
+    {
+        return container->AddElement<GuiRadioButton>(onNewRow, false, text, GuiStyling::Text::fontSize,
+                                                   reference, onSelectValue, callback);
+    }
+
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
     {
         return AddElementToWindow<GuiDropdown>(windowID, true, true, text,

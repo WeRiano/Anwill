@@ -34,13 +34,15 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Slider(1, 5, &intSliderValue);
     m_SliderTestText = Anwill::Gui::Text("Oh wow, the FloatSlider has a value of " + std::to_string(m_FloatSliderValue));
 
-    button->SetCallback([this, text](){  
+    button->SetCallback([this, text, dd1Text](){
         m_Counter++;
         text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
+        dd1Text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });
 
-    dd1Button->SetCallback([this, dd1Text](){
+    dd1Button->SetCallback([this, text, dd1Text](){
         m_Counter++;
+        text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
         dd1Text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });
 
@@ -54,8 +56,14 @@ GuiTest::GuiTest(const unsigned int ups)
                                   "Sed ac purus. Aliquam hendrerit.\nVestibulum eget augue sit amet wisi tincidunt cursus. "
                                   "In in orci. Phasellus eget ipsum.\nProin non magna nec erat vestibulum congue. Etiam pellentesque. "
                                   "Praesent sagittis porta ante.\nVestibulum nonummy viverra augue. In hac habitasse platea dictumst.\n"
-                                  "Nulla a ipsum. Phasellus nulla velit, dignissim a, dignissim ut, sagittis et, mi.",
-                                  Anwill::GuiStyling::Text::fontSize); // TODO: FIX FONT SIZE
+                                  "Nulla a ipsum. Phasellus nulla velit, dignissim a, dignissim ut, sagittis et, mi.");
+
+    int* e = new int;
+    *e = 0;
+    //int e = 0;
+    Anwill::Gui::RadioButton("Radio 1", *e, 1);
+    Anwill::Gui::RadioButton("Radio 2", *e, 2, [](){}, false);
+    Anwill::Gui::RadioButton("Radio 3", *e, 3, [](){}, false);
 
     auto id2 = Anwill::Gui::CreateWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
     Anwill::Gui::Text("Some text inside window! Cool!", true, id2);

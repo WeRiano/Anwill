@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "gui/GuiElements.h"
 #include "math/Algo.h"
 #include "core/Log.h"
@@ -102,8 +104,7 @@ namespace Anwill {
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::Checkbox::checkmarkMesh,
-                           iconTransform);
+        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::checkmarkMesh, iconTransform);
     }
 
     void GuiIcon::RenderRectangle(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
@@ -120,6 +121,31 @@ namespace Anwill {
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::rectMesh, iconTransform);
     }
+
+    void GuiIcon::RenderEllipse(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
+                                const Math::Vec2f& assignedMaxSize, const Math::Vec3f& color)
+    {
+        Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), assignedSize);
+        iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
+                                                              + (Math::Vec2f(assignedSize.GetX(),
+                                                                             -assignedSize.GetY()) * 0.5f));
+
+        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
+        GuiStyling::circleShader->Bind();
+        GuiStyling::circleShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        GuiStyling::circleShader->SetUniformVec3f(color, "u_Color");
+        Renderer2D::Submit(GuiStyling::circleShader, GuiStyling::rectMesh, iconTransform);
+    }
+
+    typedef std::function<void(const Math::Vec2f&, const Math::Vec2f&, const Math::Vec2f&,
+                               const Math::Vec3f&)> RenderIconFunction;
+
+    static std::array<RenderIconFunction,
+                      (size_t) GuiStyling::Checkbox::CheckmarkType::Size> renderIconFunctions = {
+            GuiIcon::RenderCheckmark,
+            GuiIcon::RenderRectangle,
+            GuiIcon::RenderEllipse
+    };
 
     #pragma endregion
 
@@ -225,9 +251,9 @@ namespace Anwill {
         }
     }
 
-    void GuiElement::EmplaceTooltip(const std::string& tooltipText, unsigned int tooltipTextSize)
+    void GuiElement::EmplaceTooltip(const std::string& tooltipText)
     {
-        m_Tooltip = std::make_unique<GuiTooltip>(tooltipText, tooltipTextSize);
+        m_Tooltip = std::make_unique<GuiTooltip>(tooltipText, GuiStyling::Text::fontSize);
     }
 
     #pragma endregion
@@ -292,14 +318,14 @@ namespace Anwill {
                                                                          -m_ButtonSize.GetY() / 2.0f));
 
         // Render button
-        auto shader = GuiStyling::Button::shaders[(std::size_t) m_Style.shape];
+        auto shader = GuiStyling::Button::shaders[(std::size_t) m_ButtonStyle.buttonShape];
         shader->Bind();
         shader->SetUniform1i(m_IsHovered, "u_Hovering");
         shader->SetUniform1i(m_IsPressed, "u_Pressing");
         shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
-        shader->SetUniformVec3f(m_Style.color, "u_Color");
-        shader->SetUniformVec3f(m_Style.hoverColor, "u_HoverColor");
-        shader->SetUniformVec3f(m_Style.pressColor, "u_PressColor");
+        shader->SetUniformVec3f(m_ButtonStyle.buttonColor, "u_Color");
+        shader->SetUniformVec3f(m_ButtonStyle.buttonHoverColor, "u_HoverColor");
+        shader->SetUniformVec3f(m_ButtonStyle.buttonPressColor, "u_PressColor");
         Renderer2D::Submit(shader, GuiStyling::rectMesh, thisTransform);
     }
 
@@ -332,11 +358,6 @@ namespace Anwill {
         m_Callback = callback;
     }
 
-    void GuiButton::SetStyle(const GuiStyling::Button& style)
-    {
-        m_Style = style;
-    }
-
     #pragma endregion
 
     #pragma region TextButton
@@ -346,7 +367,8 @@ namespace Anwill {
         : GuiButton({}, callback),
           m_Text(text, textSize)
     {
-        m_ButtonSize = {m_Text.GetWidth() + GuiStyling::TextButton::textPadding * 2.0f, GuiStyling::Window::elementHeight};
+        m_ButtonSize = {m_Text.GetWidth() + GuiStyling::TextButton::textPadding * 2.0f,
+                        GuiStyling::Window::elementHeight};
     }
 
     void GuiTextButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
@@ -375,8 +397,8 @@ namespace Anwill {
             m_Checked = !m_Checked;
             callback(m_Checked);
         }),
-        m_Text(text, textSize),
-        m_Checked(checked)
+          m_Text(text, textSize),
+          m_Checked(checked)
     {}
 
     void GuiCheckbox::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize) {
@@ -389,14 +411,57 @@ namespace Anwill {
 
         // Render checkmark if it checked
         if(!m_Checked) { return; }
-        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 2.0f};
-        GuiIcon::RenderCheckmark(assignedPos + Math::Vec2f(margin.GetX(), -margin.GetY()),
+        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 1.0f};
+        RenderIconFunction renderFunc = renderIconFunctions[(size_t) m_CheckboxStyle.checkmarkType];
+        renderFunc(assignedPos + Math::Vec2f(margin.GetX(), -margin.GetY()),
                                  m_ButtonSize - margin * 2.0f,
                                  assignedMaxSize - margin,
-                                 {1.0f, 1.0f, 1.0f});
+                                 m_CheckboxStyle.checkmarkColor);
     }
 
     float GuiCheckbox::GetWidth() const
+    {
+        return GuiButton::GetWidth() + GuiStyling::Checkbox::textMargin + m_Text.GetWidth();
+    }
+
+    #pragma endregion
+
+    #pragma region RadioButton
+
+    GuiRadioButton::GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
+                                   const int onSelectValue, const std::function<void()>& callback)
+            : GuiButton({GuiStyling::Window::elementHeight, GuiStyling::Window::elementHeight},
+                        [this, callback](){
+                            if(m_Reference != m_OnSelectValue) {
+                                callback();
+                                m_Reference = m_OnSelectValue;
+                            }
+                        }),
+              m_Text(text, textSize),
+              m_Reference(reference),
+              m_OnSelectValue(onSelectValue)
+    {
+        m_ButtonStyle.buttonShape = GuiStyling::Button::Shape::Ellipse;
+    }
+
+    void GuiRadioButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
+    {
+        Math::Vec2f textPosDelta = {m_ButtonSize.GetX() + GuiStyling::Checkbox::textMargin, 0.0f};
+        m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta);
+
+        // Render button
+        GuiButton::Render(assignedPos, assignedMaxSize);
+
+        // Render checkmark if radiobutton is selected
+        if(m_Reference != m_OnSelectValue) { return; }
+        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 1.0f};
+        GuiIcon::RenderEllipse(assignedPos + Math::Vec2f(margin.GetX(), -margin.GetY()),
+                   m_ButtonSize - margin * 2.0f,
+                   assignedMaxSize - margin,
+                   m_RadioButtonStyle.checkmarkColor);
+    }
+
+    float GuiRadioButton::GetWidth() const
     {
         return GuiButton::GetWidth() + GuiStyling::Checkbox::textMargin + m_Text.GetWidth();
     }
@@ -421,7 +486,7 @@ namespace Anwill {
         markerPos = {Utils::Clamp(markerPos.GetX(), 0.0f, GetWidth() - GuiStyling::Slider::markerSize.GetX()),
                      markerPos.GetY()};
         GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::Slider::markerSize,
-                                 assignedMaxSize - markerPos, {0.45f, 0.45f, 1.0f});
+                                 assignedMaxSize - markerPos, m_SliderStyle.markerColor);
 
         // Render text
         float centeredTextXPos = m_ButtonSize.GetX() * 0.5f - m_ValueText.GetWidth() * 0.5f;
@@ -489,34 +554,6 @@ namespace Anwill {
                                    static_cast<float>(m_Max));
         *m_ClientValuePointer = sliderValue;
         m_ValueText.SetText(Utils::RoundFloatToString(sliderValue, 3));
-    }
-
-    #pragma endregion
-
-    #pragma region RadioButton
-
-    GuiRadioButton::GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
-                                   const int onSelectValue, const std::function<void(bool)>& callback)
-        : GuiCheckbox(reference == onSelectValue, text, textSize, callback), m_Reference(reference),
-          m_OnSelectValue(onSelectValue)
-    {}
-
-    void GuiRadioButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
-    {
-        // Render text
-        Math::Vec2f textPosDelta = {m_ButtonSize.GetX() + GuiStyling::Checkbox::textMargin, 0.0f};
-        m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta);
-
-        // Render button
-        GuiButton::Render(assignedPos, assignedMaxSize);
-
-        // Render checkmark if it checked
-        if(!m_Checked) { return; }
-        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 2.0f};
-        GuiIcon::RenderCheckmark(assignedPos + Math::Vec2f(margin.GetX(), -margin.GetY()),
-                                 m_ButtonSize - margin * 2.0f,
-                                 assignedMaxSize - margin,
-                                 {1.0f, 1.0f, 1.0f});
     }
 
     #pragma endregion
@@ -606,12 +643,12 @@ namespace Anwill {
             GuiIcon::RenderRightArrow(assignedPos,
                                       GuiStyling::iconSize * 0.5f,
                                       assignedMaxSize,
-                                      {1.0f, 1.0f, 1.0f});
+                                      GuiStyling::iconColor);
         } else {
             GuiIcon::RenderDownArrow(assignedPos,
                                      GuiStyling::iconSize * 0.5f,
                                      assignedMaxSize,
-                                     {1.0f, 1.0f, 1.0f});
+                                     GuiStyling::iconColor);
         }
 
         // Render text slightly to the right compared to a regular text button
@@ -705,13 +742,13 @@ namespace Anwill {
                                       GuiStyling::iconSize * 0.5f,
                                       m_Size - Math::Vec2f(GuiStyling::Window::cutoffPadding,
                                                            GuiStyling::Window::cutoffPadding),
-                                      {1.0f, 1.0f, 1.0f});
+                                      GuiStyling::iconColor);
             return;
         } else {
             GuiIcon::RenderDownArrow(m_Pos,
                                      GuiStyling::iconSize * 0.5f,
                                      m_Size - Math::Vec2f(GuiStyling::Window::cutoffPadding, GuiStyling::Window::cutoffPadding),
-                                     {1.0f, 1.0f, 1.0f});
+                                     GuiStyling::iconColor);
         }
 
 

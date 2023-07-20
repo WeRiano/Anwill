@@ -35,6 +35,10 @@ namespace Anwill {
                                     const Math::Vec2f& assignedSize,
                                     const Math::Vec2f& assignedMaxSize,
                                     const Math::Vec3f& color);
+        static void RenderEllipse(const Math::Vec2f& assignedPos,
+                                 const Math::Vec2f& assignedSize,
+                                 const Math::Vec2f& assignedMaxSize,
+                                 const Math::Vec3f& color);
     };
 
     class GuiTooltip {
@@ -68,12 +72,10 @@ namespace Anwill {
         virtual void Release(); // Stop Pressing
 
         virtual void OnHoverRender(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize);
-        void EmplaceTooltip(const std::string& tooltipText, unsigned int tooltipTextSize);
+        void EmplaceTooltip(const std::string& tooltipText);
 
     protected:
         bool m_IsHovered, m_IsPressed;
-
-    private:
         std::unique_ptr<GuiTooltip> m_Tooltip;
     };
 
@@ -90,14 +92,14 @@ namespace Anwill {
 
     protected:
         Math::Vec2f m_TextPos;
-
-    private:
         std::string m_Text;
         float m_TextScale, m_TextWidth; // Calculate TextScale each iteration? Cheap.
     };
 
     class GuiButton : public GuiElement {
     public:
+        GuiStyling::Button m_ButtonStyle;
+
         GuiButton(const Math::Vec2f& size,
                   const std::function<void()>& callback);
 
@@ -108,11 +110,9 @@ namespace Anwill {
         void Release() override;
 
         void SetCallback(const std::function<void()>& callback);
-        void SetStyle(const GuiStyling::Button& style);
     protected:
         Math::Vec2f m_ButtonSize;
         std::function<void()> m_Callback;
-        GuiStyling::Button m_Style;
     };
 
     class GuiTextButton : public GuiButton {
@@ -130,6 +130,8 @@ namespace Anwill {
 
     class GuiCheckbox : public GuiButton  {
     public:
+        GuiStyling::Checkbox m_CheckboxStyle;
+
         GuiCheckbox(bool checked, const std::string& text, unsigned int textSize,
                     const std::function<void(bool)>& callback);
 
@@ -141,8 +143,26 @@ namespace Anwill {
         bool m_Checked;
     };
 
+    class GuiRadioButton : public GuiButton {
+    public:
+        GuiStyling::RadioButton m_RadioButtonStyle;
+
+        GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
+                       const int onSelectValue, const std::function<void()>& callback);
+
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        float GetWidth() const override;
+
+    protected:
+        GuiText m_Text;
+        int& m_Reference;
+        const int m_OnSelectValue;
+    };
+
     class GuiSlider : public GuiButton {
     public:
+        GuiStyling::Slider m_SliderStyle;
+
         GuiSlider();
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
@@ -176,18 +196,6 @@ namespace Anwill {
         int* m_ClientValuePointer;
     };
 
-    class GuiRadioButton : public GuiCheckbox {
-    public:
-        GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
-                       const int onSelectValue, const std::function<void(bool)>& callback);
-
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize);
-
-    protected:
-        int& m_Reference;
-        const int m_OnSelectValue;
-    };
-
     class GuiContainer {
     public:
         GuiContainer();
@@ -205,7 +213,7 @@ namespace Anwill {
             }
             m_Elements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...));
             m_NewRowChecks.emplace_back(onNewRow, forceNextToNewRow);
-            return std::dynamic_pointer_cast<E>(m_Elements.back());
+            return std::static_pointer_cast<E>(m_Elements.back());
         }
 
     protected:

@@ -14,7 +14,7 @@
 #include "gfx/Renderer2D.h"
 #include "gui/GuiElements.h"
 
-#undef CreateWindow
+#undef CreateWindow // MICROSOFT WOOOOOOOOOOOOOOO
 
 namespace Anwill {
 
@@ -67,6 +67,18 @@ namespace Anwill {
                                                  int max,
                                                  int* sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);
+
+        static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,
+                                                           int onSelectValue,
+                                                           const std::function<void()>& callback = [](){},
+                                                           bool onNewRow = true,
+                                                           GuiWindowID windowID = 0);
+
+        static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,
+                                                           int onSelectValue,
+                                                           const std::shared_ptr<GuiContainer>& container,
+                                                           bool onNewRow = true,
+                                                           const std::function<void()>& callback = [](){});
 
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);

@@ -16,13 +16,9 @@ void main()
 
 layout(location = 0) out vec4 color;
 
-uniform bool u_Hovering;
-uniform bool u_Pressing;
 uniform mat4 u_Transform;
-uniform vec2 u_CutoffPos;
 uniform vec3 u_Color;
-uniform vec3 u_HoverColor;
-uniform vec3 u_PressColor;
+uniform vec2 u_CutoffPos;
 
 bool IsOutsideEllipse(vec2 point, vec2 origin, vec2 radius)
 {
@@ -35,7 +31,7 @@ void main()
 {
     vec2 centre = vec2(u_Transform[3][0], u_Transform[3][1]);
     vec2 size = vec2( length(vec2(u_Transform[0][0], u_Transform[0][1])),
-                      length(vec2(u_Transform[1][0], u_Transform[1][1])) );
+    length(vec2(u_Transform[1][0], u_Transform[1][1])) );
     vec2 radius = vec2(size.x * 0.5f, size.y * 0.5f);
 
     if(gl_FragCoord.x > u_CutoffPos.x || gl_FragCoord.y < u_CutoffPos.y) {
@@ -47,11 +43,5 @@ void main()
         discard;
     }
 
-    if(u_Pressing) {
-        color = vec4(u_PressColor, 1.0f);
-    } else if(u_Hovering) {
-        color = vec4(u_HoverColor, 1.0f);
-    } else {
-        color = vec4(u_Color, 1.0f);
-    }
+    color = vec4(u_Color, 1.0f);
 }

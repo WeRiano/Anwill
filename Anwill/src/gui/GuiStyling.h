@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "math/Vec2f.h"
 #include "gfx/Mesh.h"
 #include "gfx/Shader.h"
@@ -9,15 +11,14 @@ namespace Anwill {
 
     /**
      * Colors, margins, padding, shaders, meshes, etc. Anything that alters the look of the GUI.
-     *
-     * static members represent global styling, while non-static members are
      */
     struct GuiStyling
     {
         // --- Global/Shared members (Icon and more) ---
         static Math::Vec2f iconSize;
-        static Mesh rectMesh, triangleMesh;
-        static std::shared_ptr<Shader> primitiveShader;
+        static Math::Vec3f iconColor;
+        static Mesh rectMesh, triangleMesh, checkmarkMesh;
+        static std::shared_ptr<Shader> primitiveShader, circleShader;
 
         struct Tooltip {
         public:
@@ -43,7 +44,7 @@ namespace Anwill {
         public:
             enum class Shape : short {
                 Rectangle = 0,
-                Circle,
+                Ellipse,
 
                 Size
             };
@@ -51,10 +52,10 @@ namespace Anwill {
             // Index with Button::Shape
             static std::array<std::shared_ptr<Shader>, (size_t) Shape::Size> shaders;
 
-            Shape shape = Shape::Rectangle;
-            Math::Vec3f color = {0.15f, 0.15f, 0.6f};
-            Math::Vec3f hoverColor = {0.20f, 0.20f, 0.95f};
-            Math::Vec3f pressColor = {0.28f, 0.28f, 1.00f};
+            Shape buttonShape = Shape::Rectangle;
+            Math::Vec3f buttonColor = {0.15f, 0.15f, 0.6f};
+            Math::Vec3f buttonHoverColor = {0.20f, 0.20f, 0.95f};
+            Math::Vec3f buttonPressColor = {0.28f, 0.28f, 1.00f};
         };
 
         struct TextButton {
@@ -62,16 +63,34 @@ namespace Anwill {
             static float textPadding; // X distance from button edge to text
         };
 
-        struct Checkbox {
+        struct Checkbox : public Button {
         public:
+            enum class CheckmarkType : short {
+                Tick = 0,
+                Rectangle,
+                Ellipse,
+                // TODO: Cross?
+
+                Size
+            };
+
             static float textMargin; // Distance between the checkbox button and the text
             static float iconMargin; // Distance between icon and the edge of the box
-            static Mesh checkmarkMesh;
+
+            CheckmarkType checkmarkType = CheckmarkType::Tick;
+            Math::Vec3f checkmarkColor = {0.35f, 0.45f, 1.0f};
+        };
+
+        struct RadioButton {
+        public:
+            Math::Vec3f checkmarkColor = {0.35f, 0.45f, 1.0f};
         };
 
         struct Slider {
         public:
             static Math::Vec2f markerSize;
+
+            Math::Vec3f markerColor = {0.30f, 0.38f, 1.0f};
         };
 
         struct Dropdown {

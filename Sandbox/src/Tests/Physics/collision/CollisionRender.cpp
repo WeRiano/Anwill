@@ -17,7 +17,7 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
     m_RectShader->SetUniformVec2f(Anwill::Math::Vec2f(80.0f, 80.0f), "u_WidthHeight");
     m_RectShader->Unbind();
 
-    m_CircleShader = Anwill::Shader::Create("Sandbox/assets/shaders/Circle.glsl");
+    m_CircleShader = Anwill::Shader::Create("Sandbox/assets/shaders/Ellipse.glsl");
     m_CircleShader->Bind();
     m_CircleShader->SetUniform1f(40.0f, "u_Radius");
     m_CircleShader->SetUniformVec3f(m_Camera.GetPos(), "u_CamPos");
@@ -31,9 +31,9 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
 
     // Even are circles
     auto npc1 = Anwill::Ecs::CreateEntity(); // Rect
-    auto npc2 = Anwill::Ecs::CreateEntity(); // Circle
+    auto npc2 = Anwill::Ecs::CreateEntity(); // Ellipse
     auto npc3 = Anwill::Ecs::CreateEntity(); // Rect
-    auto npc4 = Anwill::Ecs::CreateEntity(); // Circle
+    auto npc4 = Anwill::Ecs::CreateEntity(); // Ellipse
 
     s_Player = Anwill::Ecs::CreateEntity();
 

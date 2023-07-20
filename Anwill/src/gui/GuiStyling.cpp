@@ -15,17 +15,22 @@ namespace Anwill {
     Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos,
     GuiStyling::Tooltip::windowMargin, GuiStyling::Slider::markerSize;
 
+    Math::Vec3f GuiStyling::iconColor;
+
     std::unique_ptr<Font> GuiStyling::Text::font;
 
-    std::shared_ptr<Shader> GuiStyling::Text::shader, GuiStyling::primitiveShader,
+    std::shared_ptr<Shader> GuiStyling::Text::shader, GuiStyling::primitiveShader, GuiStyling::circleShader,
     GuiStyling::Window::shader, GuiStyling::Tooltip::shader;
 
-    Mesh GuiStyling::Checkbox::checkmarkMesh, GuiStyling::triangleMesh, GuiStyling::rectMesh;
+    Mesh GuiStyling::checkmarkMesh, GuiStyling::triangleMesh, GuiStyling::rectMesh;
 
     std::array<std::shared_ptr<Shader>, (size_t) GuiStyling::Button::Shape::Size> GuiStyling::Button::shaders;
 
     void GuiStyling::InitGlobalStyling()
     {
+        // Icon
+        iconColor = {1.0f, 1.0f, 1.0f};
+
         // --- Tooltip ---
         Tooltip::offset = 15.0f;
         Tooltip::windowMargin = {10.0f, 10.0f};
@@ -39,7 +44,7 @@ namespace Anwill {
 
         // --- Checkbox ---
         Checkbox::textMargin = 5.0f;
-        Checkbox::iconMargin = 2.0f;
+        Checkbox::iconMargin = 5.0f;
 
         // --- Dropdown --
         Dropdown::elementIndent = 10.0f;
@@ -64,16 +69,17 @@ namespace Anwill {
             // Mesh
         rectMesh = Mesh::CreateRectMesh(1.0f, 1.0f);
         triangleMesh = Mesh::CreateTriangleMesh({0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f});
-        Checkbox::checkmarkMesh = Mesh::CreateCheckmarkMesh(1.0f, 1.0f);
+        checkmarkMesh = Mesh::CreateCheckmarkMesh(1.0f, 1.0f);
 
             // Shaders
         primitiveShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiPrimitiveColor.glsl");
+        circleShader = Shader::Create("Anwill/res/shaders/OpenGL/GuiCircleColor.glsl");
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
         GuiStyling::primitiveShader->Unbind();
         Text::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiText.glsl");
         Button::shaders[(std::size_t) Button::Shape::Rectangle] = Shader::Create("Anwill/res/shaders/OpenGL/GuiRectButton.glsl");
-        Button::shaders[(std::size_t) Button::Shape::Circle] = Shader::Create("Anwill/res/shaders/OpenGL/GuiCircleButton.glsl");
+        Button::shaders[(std::size_t) Button::Shape::Ellipse] = Shader::Create("Anwill/res/shaders/OpenGL/GuiCircleButton.glsl");
         Window::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
         Tooltip::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTooltip.glsl");
 

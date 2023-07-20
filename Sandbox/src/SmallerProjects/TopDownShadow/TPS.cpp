@@ -23,7 +23,7 @@ TPS::TPS(const unsigned int ups, float chunkWidth, float chunkHeight,
                   -((boardHeight / 2.0f) + deadSpaceHeight / 2.0f));
 
     m_ShadowShader = Anwill::Shader::Create("Sandbox/assets/shaders/TPS.glsl");
-    m_PlayerShader = Anwill::Shader::Create("Sandbox/assets/shaders/Circle.glsl");
+    m_PlayerShader = Anwill::Shader::Create("Sandbox/assets/shaders/Ellipse.glsl");
 
     m_PlayerShader->Bind();
     m_PlayerShader->SetUniform1f(20.0f, "u_Radius");
