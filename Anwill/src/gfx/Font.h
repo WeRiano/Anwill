@@ -48,6 +48,10 @@ namespace Anwill {
         void Done();
         float GetScaleValue(unsigned int fontSize);
         float GetFontHeight();
+        /**
+         * @return The width of the largest glyph in the font.
+         */
+        //float GetFontMaxGlyphWidth();
         void SetNewlineSpace(float multiplier);
 
     private:

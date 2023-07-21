@@ -195,11 +195,27 @@ namespace Anwill {
     void Gui::OnMousePress(std::unique_ptr<Event>& event)
     {
         SetPressState();
+        SetSelectState();
     }
 
     void Gui::OnMouseRelease(std::unique_ptr<Event>& event)
     {
         ResetPressState();
+    }
+
+    void Gui::OnKeyPress(std::unique_ptr<Event>& event)
+    {
+        /* m_SelectElement.OnKeyPress(); */
+    }
+
+    void Gui::OnKeyRepeat(std::unique_ptr<Event>& event)
+    {
+
+    }
+
+    void Gui::OnKeyRelease(std::unique_ptr<Event>& event)
+    {
+
     }
 
     void Gui::OnWindowResize(std::unique_ptr<Event>& event)
@@ -271,17 +287,23 @@ namespace Anwill {
 
     void Gui::SetPressState()
     {
-        if(s_State.hoveringWindowIndex == -1) { return; }
+        if(s_State.hoveringWindowIndex == -1) {
+            // We are not hovering a window at all.
+            return;
+        }
         if(s_State.hoveringWindowIndex != 0) {
-            // Select window if we are hovering a window and the window is not already selected
+            // We are hovering a window that is not the selected window.
+            // Select the window by moving it to the front.
             std::rotate(s_Windows.begin(),
-                        s_Windows.begin() + s_State.hoveringWindowIndex, s_Windows.begin() + s_State.hoveringWindowIndex + 1);
+                        s_Windows.begin() + s_State.hoveringWindowIndex,
+                        s_Windows.begin() + s_State.hoveringWindowIndex + 1);
             s_State.hoveringWindowIndex = 0;
         }
         if(s_State.hoveringWindowHeader) {
+            // We are hovering the header.
             s_State.movingWindow = true;
-        }
-        if(s_State.hoveringDiagonalScaling) {
+        } else if(s_State.hoveringDiagonalScaling) {
+            // We are hovering the resize.
             s_State.scalingHorizontally = true;
             s_State.scalingVertically = true;
         } else
@@ -290,6 +312,24 @@ namespace Anwill {
                 s_State.pressElement = s_State.hoverElement;
                 s_State.pressElementPos = s_State.hoverElementPos;
                 s_State.pressElement->StartPressing();
+            }
+        }
+    }
+
+    void Gui::SetSelectState()
+    {
+        if(s_State.selectElement != s_State.hoverElement) {
+            // 3 cases:
+            // 1. select is null, hover is element
+            // 2. select is element, hover is null
+            // 3. select is element, hover is element
+
+            if (s_State.selectElement != nullptr) {
+                s_State.selectElement->Deselect();
+            }
+            s_State.selectElement = s_State.hoverElement;
+            if(s_State.selectElement != nullptr) {
+                s_State.selectElement->Select();
             }
         }
     }

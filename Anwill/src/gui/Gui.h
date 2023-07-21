@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "events/Event.h"
+#include "events/KeyEvents.h"
 #include "math/Mat4f.h"
 #include "math/Algo.h"
 #include "gfx/Font.h"
@@ -101,8 +102,8 @@ namespace Anwill {
             bool scalingVertically = false;
 
             // Elements
-            std::shared_ptr<GuiElement> hoverElement, pressElement;
-            Math::Vec2f hoverElementPos, pressElementPos;
+            std::shared_ptr<GuiElement> hoverElement, pressElement, selectElement;
+            Math::Vec2f hoverElementPos, pressElementPos, selectElementPos;
 
             // Misc
             Math::Vec2f mousePos, gameWindowSize;
@@ -113,10 +114,14 @@ namespace Anwill {
         static void OnMouseMove(std::unique_ptr<Event>& event);
         static void OnMousePress(std::unique_ptr<Event>& event);
         static void OnMouseRelease(std::unique_ptr<Event>& event);
+        static void OnKeyPress(std::unique_ptr<Event>& event);
+        static void OnKeyRepeat(std::unique_ptr<Event>& event);
+        static void OnKeyRelease(std::unique_ptr<Event>& event);
         static void OnWindowResize(std::unique_ptr<Event>& event);
 
         static void SetHoverState(const Math::Vec2f& mousePos);
         static void SetPressState();
+        static void SetSelectState();
         static void ResetPressState();
         static int GetWindowIndex(GuiWindowID id);
 

@@ -69,13 +69,20 @@ namespace Anwill {
 
         virtual void StartPressing();
         virtual void OnPress(const Math::Vec2f& mousePos);
-        virtual void Release(); // Stop Pressing
+        virtual void Release(); // StopPressing()
+
+        virtual void Select();
+        virtual void Deselect();
+
+        virtual void OnKeyPress();
+        virtual void OnKeyRepeat();
+        virtual void OnKeyRelease();
 
         virtual void OnHoverRender(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize);
         void EmplaceTooltip(const std::string& tooltipText);
 
     protected:
-        bool m_IsHovered, m_IsPressed;
+        bool m_IsHovered, m_IsPressed, m_IsSelected;
         std::unique_ptr<GuiTooltip> m_Tooltip;
     };
 
@@ -194,6 +201,18 @@ namespace Anwill {
     private:
         int m_Min, m_Max;
         int* m_ClientValuePointer;
+    };
+
+    class GuiInputText : public GuiTextButton {
+    public:
+        GuiInputText(const std::string& startText, unsigned int textSize, float pixelWidth);
+
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void OnHover(const Math::Vec2f& mousePos) override;
+        void OnPress(const Math::Vec2f& mousePos) override;
+
+    protected:
+        bool m_Selected;
     };
 
     class GuiContainer {

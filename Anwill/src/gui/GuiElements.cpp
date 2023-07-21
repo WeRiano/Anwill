@@ -221,26 +221,49 @@ namespace Anwill {
 
     void GuiElement::OnHover(const Math::Vec2f& mousePos)
     {
-        //AW_INFO("Hovering!");
         // Default behavior is nothing
     }
 
     void GuiElement::StartPressing()
     {
-        //AW_INFO("Start pressing ...");
         m_IsPressed = true;
     }
 
     void GuiElement::OnPress(const Math::Vec2f& mousePos)
     {
-        //AW_INFO("Pressing!");
         // Default behavior is nothing
     }
 
     void GuiElement::Release()
     {
-        //AW_INFO("Stop pressing ...");
         m_IsPressed = false;
+    }
+
+    void GuiElement::Select()
+    {
+        AW_INFO("Element selected!");
+        m_IsSelected = true;
+    }
+
+    void GuiElement::Deselect()
+    {
+        AW_INFO("Element deslected!");
+        m_IsSelected = false;
+    }
+
+    void GuiElement::OnKeyPress()
+    {
+
+    }
+
+    void GuiElement::OnKeyRepeat()
+    {
+
+    }
+
+    void GuiElement::OnKeyRelease()
+    {
+
     }
 
     void GuiElement::OnHoverRender(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize)
@@ -554,6 +577,36 @@ namespace Anwill {
                                    static_cast<float>(m_Max));
         *m_ClientValuePointer = sliderValue;
         m_ValueText.SetText(Utils::RoundFloatToString(sliderValue, 3));
+    }
+
+    #pragma endregion
+
+    #pragma region InputText
+
+    GuiInputText::GuiInputText(const std::string& startText, unsigned int textSize, float pixelWidth)
+        : GuiTextButton(startText, textSize, [](){}), m_Selected(false)
+    {
+        m_ButtonSize = {pixelWidth, m_ButtonSize.GetY()};
+        m_ButtonStyle.buttonHoverColor = m_ButtonStyle.buttonColor;
+        m_ButtonStyle.buttonPressColor = m_ButtonStyle.buttonColor;
+    }
+
+    void GuiInputText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
+    {
+        GuiTextButton::Render(assignedPos, assignedMaxSize);
+
+        if(!m_Selected) { return; }
+        // TODO: Render "editing bar" (this guy: | )
+    }
+
+    void GuiInputText::OnHover(const Math::Vec2f& mousePos)
+    {
+
+    }
+
+    void GuiInputText::OnPress(const Math::Vec2f& mousePos)
+    {
+        GuiElement::OnPress(mousePos);
     }
 
     #pragma endregion
