@@ -17,8 +17,8 @@ namespace Anwill {
         template <class C, typename... Args>
         void Add(const unsigned int ups, Args&&... args)
         {
-            m_Stack.emplace(m_Stack.begin(), std::move(
-                    std::make_unique<C>(ups, std::forward<Args>(args)...)));
+            m_Stack.emplace(m_Stack.begin(),
+                            std::move(std::make_unique<C>(ups, std::forward<Args>(args)...)));
         }
 
         /**

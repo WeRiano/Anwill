@@ -86,16 +86,16 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
         if(id == s_Player)
         {
             if(s_PlayerIsRound) {
-                Anwill::Renderer2D::Submit(m_CircleShader, s_Mesh, transform);
+                Anwill::Renderer2D::SubmitMesh(m_CircleShader, s_Mesh, transform);
             } else {
-                Anwill::Renderer2D::Submit(m_RectShader, s_Mesh, transform);
+                Anwill::Renderer2D::SubmitMesh(m_RectShader, s_Mesh, transform);
             }
         } else {
             if(id % 2 == 0)
             {
-                Anwill::Renderer2D::Submit(m_CircleShader, s_Mesh, transform);
+                Anwill::Renderer2D::SubmitMesh(m_CircleShader, s_Mesh, transform);
             } else {
-                Anwill::Renderer2D::Submit(m_RectShader, s_Mesh, transform);
+                Anwill::Renderer2D::SubmitMesh(m_RectShader, s_Mesh, transform);
             }
         }
 

@@ -4,8 +4,7 @@
 
 namespace Anwill {
 
-    class WindowCloseEvent : public Event
-    {};
+    class WindowCloseEvent : public Event {};
 
     class WindowResizeEvent : public Event
     {

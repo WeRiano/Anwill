@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "core/KeyCodes.h"
+
 // Need to use this to pass a non-static member function as a parameter.
 // Member functions need to be called on an object which is passed as an implicit
 // argument to the function. If you want to bind a non-static member

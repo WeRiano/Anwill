@@ -17,7 +17,7 @@ void TextureHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_Camera);
 
-    Anwill::Renderer2D::Submit(m_Shader, m_Mesh, Anwill::Math::Mat4f::Identity(), m_Texture);
+    Anwill::Renderer2D::SubmitMesh(m_Shader, m_Mesh, Anwill::Math::Mat4f::Identity(), m_Texture);
 
     float speed = 1.0f;
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W)) {

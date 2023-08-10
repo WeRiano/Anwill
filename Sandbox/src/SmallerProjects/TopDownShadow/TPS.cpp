@@ -62,9 +62,9 @@ void TPS::Update(const Anwill::Timestamp& timestamp)
         m_ShadowShader->Unbind();
     });
 
-    Anwill::Renderer2D::Submit(m_ShadowShader, m_WorldMesh,
-                               Anwill::Math::Mat4f::Identity());
-    Anwill::Renderer2D::Submit(m_PlayerShader, m_PlayerMesh, m_PlayerTransform);
+    Anwill::Renderer2D::SubmitMesh(m_ShadowShader, m_WorldMesh,
+                                   Anwill::Math::Mat4f::Identity());
+    Anwill::Renderer2D::SubmitMesh(m_PlayerShader, m_PlayerMesh, m_PlayerTransform);
 }
 
 void TPS::CreateWallSegments()

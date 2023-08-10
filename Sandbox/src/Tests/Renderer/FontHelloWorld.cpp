@@ -19,9 +19,9 @@ void FontHelloWorld::Update(const Anwill::Timestamp& timestamp)
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
                                                 {scale, scale, 0.0f});
     transform = Anwill::Math::Mat4f::Translate(transform, {-40.0f, 0.0f, 0.0f});
-    Anwill::Renderer2D::Submit(m_Shader, m_Font,
-                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvxyz<>?!+-\n\t[](){}",
-                             transform);
+    Anwill::Renderer2D::SubmitText(m_Shader, m_Font,
+                                   "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrstuvxyz<>?!+-\n\t[](){}",
+                                   transform);
 
     MoveCamera();
 

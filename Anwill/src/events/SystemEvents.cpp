@@ -4,6 +4,7 @@
 #include "KeyEvents.h"
 
 namespace Anwill {
+
     EventQueue SystemEvents::s_SysEvents = EventQueue();
 
     void SystemEvents::Init()
@@ -21,6 +22,7 @@ namespace Anwill {
         s_SysEvents.Register<KeyPressEvent>();
         s_SysEvents.Register<KeyReleaseEvent>();
         s_SysEvents.Register<KeyRepeatEvent>();
+        s_SysEvents.Register<KeyCharEvent>();
     }
 
     void SystemEvents::Pop()

@@ -38,6 +38,8 @@ namespace Anwill {
             static float baselineOffset;
             static std::unique_ptr<Font> font;
             static std::shared_ptr<Shader> shader;
+            static std::shared_ptr<VertexArray> cursorVertexArray;
+            static float cursorHeight;
         };
 
         struct Button {

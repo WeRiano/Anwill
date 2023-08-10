@@ -3,6 +3,7 @@
 #include "utils/Profiler.h"
 #include "gui/Gui.h"
 #include "gfx/Renderer.h"
+#include "events/GuiEvents.h"
 #include "events/MouseEvents.h"
 #include "events/WindowEvents.h"
 #include "events/SystemEvents.h"
@@ -20,11 +21,18 @@ namespace Anwill {
         s_State.gameWindowSize = {(float) ws.width, (float) ws.height};
 
         GuiStyling::InitGlobalStyling();
+        GuiEvents::Init();
 
         SystemEvents::Subscribe<MouseMoveEvent>(OnMouseMove);
         SystemEvents::Subscribe<MouseButtonPressEvent>(OnMousePress);
         SystemEvents::Subscribe<MouseButtonReleaseEvent>(OnMouseRelease);
+        SystemEvents::Subscribe<KeyPressEvent>(OnKeyPress);
+        SystemEvents::Subscribe<KeyRepeatEvent>(OnKeyRepeat);
+        SystemEvents::Subscribe<KeyReleaseEvent>(OnKeyRelease);
+        SystemEvents::Subscribe<KeyCharEvent>(OnKeyChar);
         SystemEvents::Subscribe<WindowResizeEvent>(OnWindowResize);
+
+        GuiEvents::Subscribe<GuiLoseFocusEvent>(OnGuiLoseFocus);
     }
 
     void Gui::Render()
@@ -45,7 +53,6 @@ namespace Anwill {
 
         if(s_State.hoverElement != nullptr)
         {
-            auto k = s_State.hoverElementPos;
             s_State.hoverElement->OnHoverRender(s_State.mousePos,
                                                 s_State.gameWindowSize);
         }
@@ -53,6 +60,7 @@ namespace Anwill {
 
     void Gui::Update()
     {
+        GuiEvents::Pop();
         if(s_State.hoverElement != nullptr)
         {
             s_State.hoverElement->OnHover(s_State.mousePos - s_State.hoverElementPos);
@@ -147,6 +155,21 @@ namespace Anwill {
                                                    reference, onSelectValue, callback);
     }
 
+    std::shared_ptr<GuiInputText> Gui::TextInput(const std::string& defaultText, float pixelWidth, bool onNewRow,
+                                                 GuiWindowID windowID)
+    {
+        return AddElementToWindow<GuiInputText>(windowID, onNewRow, false, defaultText,
+                                                GuiStyling::Text::fontSize, pixelWidth);
+    }
+
+    std::shared_ptr<GuiInputText> Gui::TextInput(const std::string& defaultText, float pixelWidth,
+                                                 const std::shared_ptr<GuiContainer>& container,
+                                                 bool onNewRow)
+    {
+        return container->AddElement<GuiInputText>(onNewRow, false, defaultText, GuiStyling::Text::fontSize,
+                                                   pixelWidth);
+    }
+
     std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text, GuiWindowID windowID)
     {
         return AddElementToWindow<GuiDropdown>(windowID, true, true, text,
@@ -205,17 +228,30 @@ namespace Anwill {
 
     void Gui::OnKeyPress(std::unique_ptr<Event>& event)
     {
-        /* m_SelectElement.OnKeyPress(); */
+        auto e = static_cast<KeyPressEvent&>(*event);
+        if(s_State.selectElement != nullptr)
+            s_State.selectElement->OnKeyPress(e.GetKeyCode());
     }
 
     void Gui::OnKeyRepeat(std::unique_ptr<Event>& event)
     {
-
+        auto e = static_cast<KeyRepeatEvent&>(*event);
+        if(s_State.selectElement != nullptr)
+            s_State.selectElement->OnKeyRepeat(e.GetKeyCode());
     }
 
     void Gui::OnKeyRelease(std::unique_ptr<Event>& event)
     {
+        auto e = static_cast<KeyReleaseEvent&>(*event);
+        if(s_State.selectElement != nullptr)
+            s_State.selectElement->OnKeyRelease(e.GetKeyCode());
+    }
 
+    void Gui::OnKeyChar(std::unique_ptr<Event>& event)
+    {
+        auto e = static_cast<KeyCharEvent&>(*event);
+        if(s_State.selectElement != nullptr)
+            s_State.selectElement->OnKeyChar(e.GetChar());
     }
 
     void Gui::OnWindowResize(std::unique_ptr<Event>& event)
@@ -223,6 +259,12 @@ namespace Anwill {
         auto e = static_cast<WindowResizeEvent&>(*event);
         s_State.gameWindowSize = { (float) e.GetNewWidth(), (float) e.GetNewHeight() };
         s_Camera->SetProjection((float) e.GetNewWidth(), (float) e.GetNewHeight());
+    }
+
+    void Gui::OnGuiLoseFocus(std::unique_ptr<Event>& event)
+    {
+        s_State.selectElement->Deselect();
+        s_State.selectElement = nullptr;
     }
 
     void Gui::SetHoverState(const Math::Vec2f& mousePos)
@@ -319,11 +361,6 @@ namespace Anwill {
     void Gui::SetSelectState()
     {
         if(s_State.selectElement != s_State.hoverElement) {
-            // 3 cases:
-            // 1. select is null, hover is element
-            // 2. select is element, hover is null
-            // 3. select is element, hover is element
-
             if (s_State.selectElement != nullptr) {
                 s_State.selectElement->Deselect();
             }

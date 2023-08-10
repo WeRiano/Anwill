@@ -223,6 +223,11 @@ namespace Anwill {
         return m_Height;
     }
 
+    float Font::GetGlyphWidth(unsigned char c)
+    {
+        return static_cast<float>(m_Characters[c].advance >> 6);
+    }
+
     void Font::SetNewlineSpace(float multiplier)
     {
         m_NewlineSpaceCoefficient = multiplier;

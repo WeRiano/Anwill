@@ -107,9 +107,9 @@ namespace Anwill {
         s_SceneData.CameraPos = camera.GetPos();
     }
 
-    void Renderer2D::Submit(const std::shared_ptr<Shader>& shader, Font& font,
-                            const std::string& text, const Math::Mat4f& transform,
-                            const float maxWidth)
+    void Renderer2D::SubmitText(const std::shared_ptr<Shader>& shader, Font& font,
+                                const std::string& text, const Math::Mat4f& transform,
+                                float maxWidth)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
@@ -123,7 +123,7 @@ namespace Anwill {
             auto thisStr = Utils::UniqueCharsSubstr(remainingText, maxTextSlots);
             // Prepare and draw the text
             batchStartPos = font.Prepare(thisStr, shader, batchStartPos, maxWidth);
-            s_API->Draw(font, thisStr);
+            s_API->DrawFont(font, thisStr);
             font.Done();
             // Grab the next batch
             remainingText = remainingText.substr(thisStr.size());
@@ -133,23 +133,23 @@ namespace Anwill {
     }
 
     void Renderer2D::Submit(const std::shared_ptr<Shader>& shader,
-                          const std::shared_ptr<VertexArray>& vertexArray,
-                          const std::shared_ptr<IndexBuffer>& indexBuffer,
-                          const Math::Mat4f& transform)
+                            const std::shared_ptr<VertexArray>& vertexArray,
+                            const std::shared_ptr<IndexBuffer>& indexBuffer,
+                            const Math::Mat4f& transform)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
 
-        s_API->Draw(vertexArray, indexBuffer);
+        s_API->DrawIndexed(vertexArray, indexBuffer);
 
         shader->Unbind();
     }
 
-    void Renderer2D::Submit(const std::shared_ptr<Shader> &shader,
-                           const Mesh& mesh,
-                           const Math::Mat4f& transform,
-                           const std::shared_ptr<Texture>& texture)
+    void Renderer2D::SubmitMesh(const std::shared_ptr<Shader> &shader,
+                                const Mesh& mesh,
+                                const Math::Mat4f& transform,
+                                const std::shared_ptr<Texture>& texture)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
@@ -159,7 +159,7 @@ namespace Anwill {
             texture->Bind();
         }
 
-        s_API->Draw(mesh);
+        s_API->DrawMesh(mesh);
 
         if(texture != nullptr) {
             texture->Unbind();
@@ -167,10 +167,10 @@ namespace Anwill {
         shader->Unbind();
     }
 
-    void Renderer2D::Submit(const std::shared_ptr<Shader>& shader,
-                            const Mesh& mesh,
-                            const Math::Mat4f& transform,
-                            const std::vector<std::shared_ptr<Texture>>& textures)
+    void Renderer2D::SubmitMesh(const std::shared_ptr<Shader>& shader,
+                                const Mesh& mesh,
+                                const Math::Mat4f& transform,
+                                const std::vector<std::shared_ptr<Texture>>& textures)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
@@ -185,9 +185,27 @@ namespace Anwill {
             }
         }
 
-        s_API->Draw(mesh);
+        s_API->DrawMesh(mesh);
 
         textures[textures.size()-1]->Unbind();
+        shader->Unbind();
+    }
+
+    void Renderer2D::SubmitLines(const std::shared_ptr<Shader>& shader,
+                                 const std::shared_ptr<VertexArray> vertexArray,
+                                 const Math::Mat4f transform,
+                                 unsigned int linesCount)
+    {
+        shader->Bind();
+        shader->SetUniformMat4f(transform, "u_Transform");
+        shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        if(linesCount == 1) {
+            s_API->DrawLine(vertexArray);
+        } else {
+            s_API->DrawLines(vertexArray, linesCount);
+        }
+
         shader->Unbind();
     }
 
@@ -277,7 +295,7 @@ namespace Anwill {
                                   QuadBatchData::quadAttribCount);
         s_QData.IB->DynamicUpdate(s_QData.indicesArr,
                                   s_QData.elementsPushed * 6);
-        s_API->Draw(s_QData.VA, s_QData.IB);
+        s_API->DrawIndexed(s_QData.VA, s_QData.IB);
 
         s_QData.elementsPushed = 0;
         s_QData.verticesArrIndex = 0;
@@ -300,7 +318,7 @@ namespace Anwill {
                                   CircleBatchData::circleAttribCount);
         s_QData.IB->DynamicUpdate(s_QData.indicesArr,
                                   s_CData.elementsPushed * 6);
-        s_API->Draw(s_CData.VA, s_QData.IB);
+        s_API->DrawIndexed(s_CData.VA, s_QData.IB);
 
         s_CData.elementsPushed = 0;
         s_CData.verticesArrIndex = 0;

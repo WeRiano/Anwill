@@ -15,10 +15,13 @@ namespace Anwill {
         void SetClearColor(const Math::Vec3f& color) const override;
         void ClearBuffers() const override;
 
-        void Draw(Font& font, const std::string& text) override;
-        void Draw(const Mesh& mesh) override;
-        void Draw(const std::shared_ptr<VertexArray>& vertexArray,
-                  const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+        void DrawFont(Font& font, const std::string& text) override;
+        void DrawMesh(const Mesh& mesh) override;
+        void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray,
+                         const std::shared_ptr<IndexBuffer>& indexBuffer) override;
+        void DrawLine(const std::shared_ptr<VertexArray>& vertexArray) override;
+        void DrawLines(const std::shared_ptr<VertexArray>& vertexArray,
+                       unsigned int vertexCount) override;
 
         std::shared_ptr<Shader> CreateQuadBatchShader() const override;
         std::shared_ptr<Shader> CreateCircleBatchShader() const override;

@@ -81,6 +81,16 @@ namespace Anwill {
                                                            bool onNewRow = true,
                                                            const std::function<void()>& callback = [](){});
 
+        static std::shared_ptr<GuiInputText> TextInput(const std::string& defaultText,
+                                                         float pixelWidth,
+                                                         bool onNewRow = true,
+                                                         GuiWindowID windowID = 0);
+
+        static std::shared_ptr<GuiInputText> TextInput(const std::string& defaultText,
+                                                         float pixelWidth,
+                                                         const std::shared_ptr<GuiContainer>& container,
+                                                         bool onNewRow = true);
+
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);
 
@@ -117,7 +127,9 @@ namespace Anwill {
         static void OnKeyPress(std::unique_ptr<Event>& event);
         static void OnKeyRepeat(std::unique_ptr<Event>& event);
         static void OnKeyRelease(std::unique_ptr<Event>& event);
+        static void OnKeyChar(std::unique_ptr<Event>& event);
         static void OnWindowResize(std::unique_ptr<Event>& event);
+        static void OnGuiLoseFocus(std::unique_ptr<Event>& event);
 
         static void SetHoverState(const Math::Vec2f& mousePos);
         static void SetPressState();

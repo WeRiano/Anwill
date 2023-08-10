@@ -29,4 +29,12 @@ namespace Anwill {
         KeyCode m_KeyCode;
     };
 
+    class KeyCharEvent : public Event {
+    public:
+        KeyCharEvent(unsigned char c) : m_Char(c) {}
+        inline unsigned char GetChar() const { return m_Char; }
+
+    private:
+        unsigned char m_Char;
+    };
 }

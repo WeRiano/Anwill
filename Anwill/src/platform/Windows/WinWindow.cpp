@@ -165,6 +165,12 @@ namespace Anwill {
             }
         });
 
+        glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint)
+        {
+            KeyCharEvent keyCharEvent(static_cast<char>(codepoint));
+            SystemEvents::Add(keyCharEvent);
+        });
+
         glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
             int height;
             glfwGetWindowSize(window, nullptr, &height);

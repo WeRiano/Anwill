@@ -77,13 +77,13 @@ namespace Anwill {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    void OpenGLGraphicsAPI::Draw(Font& font, const std::string& text)
+    void OpenGLGraphicsAPI::DrawFont(Font& font, const std::string& text)
     {
         glDrawArrays(GL_TRIANGLES, 0, 6 * text.size());
         font.Done();
     }
 
-    void OpenGLGraphicsAPI::Draw(const Mesh &mesh)
+    void OpenGLGraphicsAPI::DrawMesh(const Mesh &mesh)
     {
         mesh.Bind();
         glDrawElements(GL_TRIANGLES, mesh.GetIndexBufferCount(), GL_UNSIGNED_INT,
@@ -91,14 +91,29 @@ namespace Anwill {
         mesh.Unbind();
     }
 
-    void OpenGLGraphicsAPI::Draw(const std::shared_ptr<VertexArray>& vertexArray,
-                                 const std::shared_ptr<IndexBuffer>& indexBuffer)
+    void OpenGLGraphicsAPI::DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray,
+                                        const std::shared_ptr<IndexBuffer>& indexBuffer)
     {
         vertexArray->Bind();
         indexBuffer->Bind();
         glDrawElements(GL_TRIANGLES, indexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
         vertexArray->Unbind();
         indexBuffer->Unbind();
+    }
+
+    void OpenGLGraphicsAPI::DrawLine(const std::shared_ptr<VertexArray>& vertexArray)
+    {
+        vertexArray->Bind();
+        glDrawArrays(GL_LINES, 0, 4);
+        vertexArray->Unbind();
+    }
+
+    void OpenGLGraphicsAPI::DrawLines(const std::shared_ptr<VertexArray>& vertexArray,
+                                      unsigned int vertexCount)
+    {
+        vertexArray->Bind();
+        glDrawArrays(GL_LINE_STRIP, 0, vertexCount);
+        vertexArray->Unbind();
     }
 
     std::shared_ptr<Shader> OpenGLGraphicsAPI::CreateQuadBatchShader() const

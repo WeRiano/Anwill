@@ -114,8 +114,8 @@ void BatchRendererHelloWorld::SlowRendering()
             m_SlowColorShader->SetUniformVec3f(color, "u_Color");
             m_SlowColorShader->Unbind();
 
-            Anwill::Renderer2D::Submit(m_SlowColorShader, m_QuadColorMesh,
-                                       transform);
+            Anwill::Renderer2D::SubmitMesh(m_SlowColorShader, m_QuadColorMesh,
+                                           transform);
             transform = Anwill::Math::Mat4f::Translate(transform,
                                                        {m_QuadWidth, 0.0f, 0.0f});
         }
@@ -132,8 +132,8 @@ void BatchRendererHelloWorld::SlowRendering()
                                                {static_cast<float>(m_CanvasWidth / 2),
                                                 static_cast<float>(m_CanvasHeight / 2),
                                                 0.0f});
-    Anwill::Renderer2D::Submit(m_SlowTextShader, m_QuadTextMesh, transform,
-                               m_TestTexture);
+    Anwill::Renderer2D::SubmitMesh(m_SlowTextShader, m_QuadTextMesh, transform,
+                                   m_TestTexture);
 }
 
 void BatchRendererHelloWorld::TestBatchTextureRendering() {

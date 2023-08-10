@@ -74,9 +74,10 @@ namespace Anwill {
         virtual void Select();
         virtual void Deselect();
 
-        virtual void OnKeyPress();
-        virtual void OnKeyRepeat();
-        virtual void OnKeyRelease();
+        virtual void OnKeyPress(const KeyCode& keyCode);
+        virtual void OnKeyRepeat(const KeyCode& keyCode);
+        virtual void OnKeyRelease(const KeyCode& keyCode);
+        virtual void OnKeyChar(unsigned char c);
 
         virtual void OnHoverRender(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize);
         void EmplaceTooltip(const std::string& tooltipText);
@@ -95,7 +96,10 @@ namespace Anwill {
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
 
-        virtual void SetText(const std::string& text);
+        void SetText(const std::string& text);
+        void AppendCharToText(unsigned char c);
+        void TruncateCharFromText();
+        std::string ToString() const;
 
     protected:
         Math::Vec2f m_TextPos;
@@ -210,9 +214,13 @@ namespace Anwill {
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
         void OnHover(const Math::Vec2f& mousePos) override;
         void OnPress(const Math::Vec2f& mousePos) override;
+        void OnKeyPress(const KeyCode& keyCode) override;
+        void OnKeyRepeat(const KeyCode& keyCode) override;
+        //void OnKeyRelease(const KeyCode& keyCode) override;
+        void OnKeyChar(unsigned char c) override;
 
-    protected:
-        bool m_Selected;
+    private:
+        void KeycodeToAction(const KeyCode& keyCode);
     };
 
     class GuiContainer {

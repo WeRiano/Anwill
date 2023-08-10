@@ -1,8 +1,9 @@
 #include <memory>
 
+#include "core/Log.h"
+#include "events/GuiEvents.h"
 #include "gui/GuiElements.h"
 #include "math/Algo.h"
-#include "core/Log.h"
 #include "utils/Utils.h"
 
 namespace Anwill {
@@ -65,7 +66,7 @@ namespace Anwill {
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
+        Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
     }
 
     void GuiIcon::RenderDownArrow(const Math::Vec2f& assignedPos,
@@ -81,7 +82,7 @@ namespace Anwill {
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
+        Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
     }
 
     void GuiIcon::RenderCross(const Math::Vec2f& assignedPos,
@@ -104,7 +105,7 @@ namespace Anwill {
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::checkmarkMesh, iconTransform);
+        Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::checkmarkMesh, iconTransform);
     }
 
     void GuiIcon::RenderRectangle(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
@@ -119,7 +120,7 @@ namespace Anwill {
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::Submit(GuiStyling::primitiveShader, GuiStyling::rectMesh, iconTransform);
+        Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::rectMesh, iconTransform);
     }
 
     void GuiIcon::RenderEllipse(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
@@ -134,7 +135,7 @@ namespace Anwill {
         GuiStyling::circleShader->Bind();
         GuiStyling::circleShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::circleShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::Submit(GuiStyling::circleShader, GuiStyling::rectMesh, iconTransform);
+        Renderer2D::SubmitMesh(GuiStyling::circleShader, GuiStyling::rectMesh, iconTransform);
     }
 
     typedef std::function<void(const Math::Vec2f&, const Math::Vec2f&, const Math::Vec2f&,
@@ -189,7 +190,7 @@ namespace Anwill {
         Math::Mat4f transform = Math::Mat4f::Scale({}, backgroundSize);
         transform = Math::Mat4f::Translate(transform, backgroundTopLeftCorner + correctedOffset +
                                 Math::Vec2f(backgroundSize.GetX(), -backgroundSize.GetY()) * 0.5f);
-        Renderer2D::Submit(GuiStyling::Tooltip::shader, GuiStyling::rectMesh, transform);
+        Renderer2D::SubmitMesh(GuiStyling::Tooltip::shader, GuiStyling::rectMesh, transform);
 
         // Then render the tooltip text
         transform = Math::Mat4f::Scale({}, {m_TooltipTextScale, m_TooltipTextScale, 0.0f});
@@ -198,7 +199,7 @@ namespace Anwill {
         GuiStyling::Text::shader->SetUniformVec2f({gameWindowSize.GetX(), -gameWindowSize.GetY()},
                                                 "u_CutoffPos");
         GuiStyling::Text::shader->Unbind();
-        Renderer2D::Submit(GuiStyling::Text::shader, *GuiStyling::Text::font, m_TooltipText, transform);
+        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, m_TooltipText, transform);
     }
 
     #pragma endregion
@@ -219,10 +220,7 @@ namespace Anwill {
         m_IsHovered = false;
     }
 
-    void GuiElement::OnHover(const Math::Vec2f& mousePos)
-    {
-        // Default behavior is nothing
-    }
+    void GuiElement::OnHover(const Math::Vec2f& mousePos) {}
 
     void GuiElement::StartPressing()
     {
@@ -230,9 +228,7 @@ namespace Anwill {
     }
 
     void GuiElement::OnPress(const Math::Vec2f& mousePos)
-    {
-        // Default behavior is nothing
-    }
+    {}
 
     void GuiElement::Release()
     {
@@ -241,30 +237,20 @@ namespace Anwill {
 
     void GuiElement::Select()
     {
-        AW_INFO("Element selected!");
+        //AW_INFO("Element selected!");
         m_IsSelected = true;
     }
 
     void GuiElement::Deselect()
     {
-        AW_INFO("Element deslected!");
+        //AW_INFO("Element deselected!");
         m_IsSelected = false;
     }
 
-    void GuiElement::OnKeyPress()
-    {
-
-    }
-
-    void GuiElement::OnKeyRepeat()
-    {
-
-    }
-
-    void GuiElement::OnKeyRelease()
-    {
-
-    }
+    void GuiElement::OnKeyPress(const KeyCode& keyCode) {}
+    void GuiElement::OnKeyRepeat(const KeyCode& keyCode) {}
+    void GuiElement::OnKeyRelease(const KeyCode& keyCode) {}
+    void GuiElement::OnKeyChar(unsigned char) {}
 
     void GuiElement::OnHoverRender(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize)
     {
@@ -301,7 +287,7 @@ namespace Anwill {
         // Render
         GuiStyling::Text::shader->Bind();
         GuiStyling::Text::shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
-        Renderer2D::Submit(GuiStyling::Text::shader, *GuiStyling::Text::font, m_Text, thisTransform);
+        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, m_Text, thisTransform);
     }
 
     bool GuiText::IsHovering(const Math::Vec2f& mousePos) const {
@@ -321,6 +307,27 @@ namespace Anwill {
     void GuiText::SetText(const std::string& text) {
         m_Text = text;
         m_TextWidth = (float) GuiStyling::Text::font->GetTextWidth(text) * m_TextScale;
+    }
+
+    void GuiText::AppendCharToText(unsigned char c)
+    {
+        m_Text.push_back(c);
+        m_TextWidth += GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
+    }
+
+    void GuiText::TruncateCharFromText()
+    {
+        if(!m_Text.empty())
+        {
+            unsigned char c = m_Text.back();
+            m_Text.pop_back();
+            m_TextWidth -= GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
+        }
+    }
+
+    std::string GuiText::ToString() const
+    {
+        return m_Text;
     }
 
     #pragma endregion
@@ -349,7 +356,7 @@ namespace Anwill {
         shader->SetUniformVec3f(m_ButtonStyle.buttonColor, "u_Color");
         shader->SetUniformVec3f(m_ButtonStyle.buttonHoverColor, "u_HoverColor");
         shader->SetUniformVec3f(m_ButtonStyle.buttonPressColor, "u_PressColor");
-        Renderer2D::Submit(shader, GuiStyling::rectMesh, thisTransform);
+        Renderer2D::SubmitMesh(shader, GuiStyling::rectMesh, thisTransform);
     }
 
     bool GuiButton::IsHovering(const Math::Vec2f& mousePos) const
@@ -584,7 +591,7 @@ namespace Anwill {
     #pragma region InputText
 
     GuiInputText::GuiInputText(const std::string& startText, unsigned int textSize, float pixelWidth)
-        : GuiTextButton(startText, textSize, [](){}), m_Selected(false)
+        : GuiTextButton(startText, textSize, [](){})
     {
         m_ButtonSize = {pixelWidth, m_ButtonSize.GetY()};
         m_ButtonStyle.buttonHoverColor = m_ButtonStyle.buttonColor;
@@ -595,8 +602,18 @@ namespace Anwill {
     {
         GuiTextButton::Render(assignedPos, assignedMaxSize);
 
-        if(!m_Selected) { return; }
-        // TODO: Render "editing bar" (this guy: | )
+        if(!m_IsSelected) { return; }
+        Math::Mat4f transform = Math::Mat4f::Scale({}, {1.0f, GuiStyling::Text::cursorHeight, 0.0f});
+        AW_INFO("Text width: {0}, Text: {1}", m_Text.GetWidth(), m_Text.ToString());
+        transform = Math::Mat4f::Translate(transform, assignedPos
+        + Math::Vec2f(m_Text.GetWidth() + GuiStyling::TextButton::textPadding + 2.0f,
+                      -GuiStyling::Window::elementHeight * 0.5f));
+        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
+        GuiStyling::primitiveShader->Bind();
+        GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        GuiStyling::primitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
+        Renderer2D::SubmitLines(GuiStyling::primitiveShader, GuiStyling::Text::cursorVertexArray,
+                                transform, 1);
     }
 
     void GuiInputText::OnHover(const Math::Vec2f& mousePos)
@@ -607,6 +624,36 @@ namespace Anwill {
     void GuiInputText::OnPress(const Math::Vec2f& mousePos)
     {
         GuiElement::OnPress(mousePos);
+    }
+
+    void GuiInputText::OnKeyPress(const KeyCode& keyCode)
+    {
+        KeycodeToAction(keyCode);
+    }
+
+    void GuiInputText::OnKeyRepeat(const KeyCode& keyCode)
+    {
+        KeycodeToAction(keyCode);
+    }
+
+    void GuiInputText::OnKeyChar(unsigned char c)
+    {
+        m_Text.AppendCharToText(c);
+    }
+
+    void GuiInputText::KeycodeToAction(const KeyCode& keyCode)
+    {
+        switch(keyCode) {
+            case KeyCode::Backspace:
+                m_Text.TruncateCharFromText();
+                return;
+            case KeyCode::Enter:
+                // TODO: We have to notify Gui to remove this as selectElement! Uh oh ...
+                GuiEvents::Add(GuiLoseFocusEvent());
+                return;
+            default:
+                return;
+        }
     }
 
     #pragma endregion
@@ -782,7 +829,7 @@ namespace Anwill {
         auto transform = Math::Mat4f::Translate(Math::Mat4f::Identity(),
                                                 m_Pos + Math::Vec2f(m_Size.GetX() / 2.0f, -m_Size.GetY() / 2.0f));
         transform = Math::Mat4f::Scale(transform, m_Size);
-        Renderer2D::Submit(GuiStyling::Window::shader, GuiStyling::rectMesh, transform);
+        Renderer2D::SubmitMesh(GuiStyling::Window::shader, GuiStyling::rectMesh, transform);
 
         // Render title
         m_Title.Render(m_Pos + GuiStyling::Window::titlePos, m_Size - GuiStyling::Window::titlePos
