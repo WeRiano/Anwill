@@ -65,7 +65,7 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::RadioButton("Radio 2", *e, 2, [](){}, false);
     Anwill::Gui::RadioButton("Radio 3", *e, 3, [](){}, false);
 
-    Anwill::Gui::TextInput("", 300.0f);
+    Anwill::Gui::TextInput("", 150.0f);
 
     auto id2 = Anwill::Gui::CreateWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
     Anwill::Gui::Text("Some text inside window! Cool!", true, id2);

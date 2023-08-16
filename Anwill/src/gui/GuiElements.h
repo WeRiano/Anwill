@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include <iostream>
+#include <stack>
 
 #include "gui/GuiStyling.h"
 #include "gfx/Mesh.h"
@@ -97,8 +98,17 @@ namespace Anwill {
         unsigned int GetGridDepth() const override;
 
         void SetText(const std::string& text);
+        void PrependCharToText(unsigned char c);
         void AppendCharToText(unsigned char c);
+        /**
+         * @brief Remove the rightmost char from the string.
+         */
         void TruncateCharFromText();
+        /**
+         * @brief Remove the leftmost char from the string.
+         * @return The popped char.
+         */
+        unsigned char PopCharFromText();
         std::string ToString() const;
 
     protected:
@@ -221,6 +231,8 @@ namespace Anwill {
 
     private:
         void KeycodeToAction(const KeyCode& keyCode);
+
+        std::stack<unsigned char> m_LeftCache, m_RightCache;
     };
 
     class GuiContainer {

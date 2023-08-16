@@ -3,7 +3,7 @@
 DynamicsRender::DynamicsRender(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_Camera(ws.width, ws.height)
 {
-    m_ObjShader = Anwill::Shader::Create("Sandbox/assets/shaders/QuadBatch.glsl");
+    //m_ObjShader = Anwill::Shader::Create("Sandbox/assets/shaders/QuadBatch.glsl");
 }
 
 void DynamicsRender::Update(const Anwill::Timestamp& timestamp)
@@ -12,7 +12,7 @@ void DynamicsRender::Update(const Anwill::Timestamp& timestamp)
 
     Anwill::Renderer2D::BeginScene(m_Camera);
 
-    Anwill::Ecs::ForEach<Anwill::RBody, Anwill::Math::Mat4f>([delta, this]
+    Anwill::Ecs::ForEach<Anwill::RBody, Anwill::Math::Mat4f>([delta]
     (Anwill::EntityID id, Anwill::RBody& rBody, Anwill::Math::Mat4f& transform) {
 
         transform = Anwill::Math::Mat4f::Translate(transform,

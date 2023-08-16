@@ -309,6 +309,12 @@ namespace Anwill {
         m_TextWidth = (float) GuiStyling::Text::font->GetTextWidth(text) * m_TextScale;
     }
 
+    void GuiText::PrependCharToText(unsigned char c)
+    {
+        m_Text = std::string(1, c) + m_Text;
+        m_TextWidth += GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
+    }
+
     void GuiText::AppendCharToText(unsigned char c)
     {
         m_Text.push_back(c);
@@ -323,6 +329,18 @@ namespace Anwill {
             m_Text.pop_back();
             m_TextWidth -= GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
         }
+    }
+
+    unsigned char GuiText::PopCharFromText()
+    {
+        if(!m_Text.empty())
+        {
+            unsigned char result = m_Text.front();
+            m_TextWidth -= GuiStyling::Text::font->GetGlyphWidth(result) * m_TextScale;
+            m_Text.erase(m_Text.begin());
+            return result;
+        }
+        return 0;
     }
 
     std::string GuiText::ToString() const
@@ -604,7 +622,7 @@ namespace Anwill {
 
         if(!m_IsSelected) { return; }
         Math::Mat4f transform = Math::Mat4f::Scale({}, {1.0f, GuiStyling::Text::cursorHeight, 0.0f});
-        AW_INFO("Text width: {0}, Text: {1}", m_Text.GetWidth(), m_Text.ToString());
+        //AW_INFO("Text width: {0}, Text: {1}", m_Text.GetWidth(), m_Text.ToString());
         transform = Math::Mat4f::Translate(transform, assignedPos
         + Math::Vec2f(m_Text.GetWidth() + GuiStyling::TextButton::textPadding + 2.0f,
                       -GuiStyling::Window::elementHeight * 0.5f));
@@ -639,12 +657,21 @@ namespace Anwill {
     void GuiInputText::OnKeyChar(unsigned char c)
     {
         m_Text.AppendCharToText(c);
+        if(m_Text.GetWidth() > (m_ButtonSize.GetX() - GuiStyling::TextButton::textPadding * 2.0f))
+        {
+            unsigned char leftMost = m_Text.PopCharFromText();
+            m_LeftCache.push(leftMost);
+        }
     }
 
     void GuiInputText::KeycodeToAction(const KeyCode& keyCode)
     {
         switch(keyCode) {
             case KeyCode::Backspace:
+                if(!m_LeftCache.empty()) {
+                    m_Text.PrependCharToText(m_LeftCache.top());
+                    m_LeftCache.pop();
+                }
                 m_Text.TruncateCharFromText();
                 return;
             case KeyCode::Enter:
