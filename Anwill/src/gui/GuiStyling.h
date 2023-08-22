@@ -40,6 +40,7 @@ namespace Anwill {
             static std::shared_ptr<Shader> shader;
             static std::shared_ptr<VertexArray> cursorVertexArray;
             static float cursorHeight;
+            static unsigned int cursorShowTimeIntervalMS;
         };
 
         struct Button {

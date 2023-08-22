@@ -56,7 +56,8 @@ namespace Anwill {
     public:
         GuiElement();
 
-        virtual void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) = 0;
+        virtual void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                            const Timestamp& timestamp) = 0;
         /**
          * @brief Check if the mouse cursor is hovering the element
          */
@@ -92,7 +93,8 @@ namespace Anwill {
     public:
         GuiText(const std::string& text, unsigned int textSize);
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
@@ -124,7 +126,8 @@ namespace Anwill {
         GuiButton(const Math::Vec2f& size,
                   const std::function<void()>& callback);
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
@@ -142,7 +145,8 @@ namespace Anwill {
                       unsigned int textSize,
                       const std::function<void()>& callback);
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
         void SetText(const std::string& text);
 
     protected:
@@ -156,7 +160,8 @@ namespace Anwill {
         GuiCheckbox(bool checked, const std::string& text, unsigned int textSize,
                     const std::function<void(bool)>& callback);
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
         float GetWidth() const override;
 
     protected:
@@ -171,7 +176,8 @@ namespace Anwill {
         GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
                        const int onSelectValue, const std::function<void()>& callback);
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
         float GetWidth() const override;
 
     protected:
@@ -186,7 +192,8 @@ namespace Anwill {
 
         GuiSlider();
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
 
         virtual void OnPress(const Math::Vec2f& mousePos) override;
 
@@ -203,7 +210,7 @@ namespace Anwill {
 
     private:
         float m_Min, m_Max;
-        float* m_ClientValuePointer;
+        float* m_Source;
     };
 
     class GuiIntSlider : public GuiSlider {
@@ -221,7 +228,8 @@ namespace Anwill {
     public:
         GuiInputText(const std::string& startText, unsigned int textSize, float pixelWidth);
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
         void OnHover(const Math::Vec2f& mousePos) override;
         void OnPress(const Math::Vec2f& mousePos) override;
         void OnKeyPress(const KeyCode& keyCode) override;
@@ -231,8 +239,12 @@ namespace Anwill {
 
     private:
         void KeycodeToAction(const KeyCode& keyCode);
+        bool IsTextWiderThanBox() const;
+        void CalcCursorTimeInterval(const Timestamp& delta);
 
         std::stack<unsigned char> m_LeftCache, m_RightCache;
+        long double m_TimeCountMS;
+        bool m_ShowCursor;
     };
 
     class GuiContainer {
@@ -242,7 +254,7 @@ namespace Anwill {
         virtual std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                             const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Math::Vec2f& firstPos);
+                    const Math::Vec2f& firstPos, const Timestamp& timestamp);
         bool IsHidingElements() const;
 
         template <class E, typename... Args>
@@ -273,7 +285,8 @@ namespace Anwill {
     public:
         GuiDropdown(const std::string& text, unsigned int textSize);
 
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& timestamp) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
@@ -288,7 +301,7 @@ namespace Anwill {
 
         std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                     const Math::Vec2f& mousePos) const override;
-        void Render(bool selected);
+        void Render(bool isSelected, const Timestamp& timestamp);
         bool IsHoveringHeader(const Math::Vec2f& mousePos);
         bool IsHoveringResize(const Math::Vec2f& mousePos);
         bool IsHoveringWindow(const Math::Vec2f& mousePos);

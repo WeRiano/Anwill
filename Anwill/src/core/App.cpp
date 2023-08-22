@@ -11,7 +11,7 @@
 #include "gfx/Renderer.h"
 #include "gfx/VertexBuffer.h"
 
-#include "gui/Gui.h"
+#include "gui/GuiLayer.h"
 
 #include "utils/Random.h"
 #include "utils/Profiler.h"
@@ -25,7 +25,8 @@ namespace Anwill {
         m_Window = Window::Create(ws);
         Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
-        Gui::Init(ws);
+        if(enableGUI)
+            AddLayer<GuiLayer>(0, ws);
         Ecs::Init();
         Random::Init();
 
@@ -46,7 +47,7 @@ namespace Anwill {
         m_Window->Terminate();
         AW_PROFILE_APP_STOP();
         AW_PROFILE_SAVE_TO_DISK();
-        //AW_PROFILE_PRINT_TO_CONSOLE();
+        AW_PROFILE_PRINT_TO_CONSOLE();
     }
 
     void App::Run()
@@ -61,8 +62,8 @@ namespace Anwill {
 
             m_LayerStack.Update();
 
-            Gui::Update();
-            Gui::Render();
+            //Gui::Update();
+            //Gui::Render();
 
             m_Window->PostRenderUpdate();
 

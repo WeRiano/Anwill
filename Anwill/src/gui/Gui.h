@@ -23,7 +23,7 @@ namespace Anwill {
     {
     public:
         static void Init(const WindowSettings& ws);
-        static void Render();
+        static void Render(const Timestamp& delta);
         static void Update();
 
         // Client functions (API)

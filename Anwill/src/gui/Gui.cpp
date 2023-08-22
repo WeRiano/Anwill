@@ -1,5 +1,6 @@
 #include "core/Assert.h"
 #include "core/Window.h"
+#include "core/Timestamp.h"
 #include "utils/Profiler.h"
 #include "gui/Gui.h"
 #include "gfx/Renderer.h"
@@ -35,20 +36,17 @@ namespace Anwill {
         GuiEvents::Subscribe<GuiLoseFocusEvent>(OnGuiLoseFocus);
     }
 
-    void Gui::Render()
+    void Gui::Render(const Timestamp& delta)
     {
         if(s_Windows.empty()) {
             return;
         }
         AW_PROFILE_FUNC();
         Renderer2D::BeginScene(*s_Camera);
-        bool last = false;
         // Render from back to front and highlight the front window as selected
         for(int i = s_Windows.size() - 1; i >= 0; i--) {
-            if(i == 0) {
-                last = true;
-            }
-            s_Windows[i]->Render(last);
+            bool isLastElement = i == 0;
+            s_Windows[i]->Render(isLastElement, delta);
         }
 
         if(s_State.hoverElement != nullptr)

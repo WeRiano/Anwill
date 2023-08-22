@@ -1,5 +1,5 @@
 add_library(Gui STATIC
-        GuiStyling.cpp Gui.cpp GuiElements.cpp
+        GuiStyling.cpp Gui.cpp GuiElements.cpp GuiLayer.cpp
         )
 
 target_include_directories(Gui PUBLIC

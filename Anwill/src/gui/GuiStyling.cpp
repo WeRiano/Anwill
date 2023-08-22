@@ -10,7 +10,7 @@ namespace Anwill {
     GuiStyling::Tooltip::borderSize, GuiStyling::Tooltip::offset, GuiStyling::Checkbox::textMargin,
     GuiStyling::Dropdown::elementIndent, GuiStyling::Text::cursorHeight;
 
-    unsigned int GuiStyling::Text::fontSize;
+    unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS;
 
     Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos,
     GuiStyling::Tooltip::windowMargin, GuiStyling::Slider::markerSize;
@@ -60,6 +60,7 @@ namespace Anwill {
         TextButton::textPadding = 5.0f; // X distance from button edge to text
         Text::cursorVertexArray = VertexArray::Create();
         Text::cursorHeight = Window::elementHeight - 5.0f;
+        Text::cursorShowTimeIntervalMS = 750;
 
         float unitVerticalLineVertices[] = {
             0.0f, 0.5f,
