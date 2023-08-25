@@ -158,34 +158,7 @@ namespace Anwill {
         }
         return curWidth;
     }
-
-    Math::Vec2f Font::GetTextSize(const std::string& text, float maxRowWidth)
-    {
-        unsigned int curWidth = 0, resultWidth = 0;
-        unsigned int curHeight = m_Height;
-        for(unsigned int i = 0; i < text.size(); i++)
-        {
-            char c = text[i];
-            Glyph g = m_Characters[c];
-
-            if(SetEscapeCharSize(c, curWidth, resultWidth, curHeight)) {
-                continue;
-            }
-
-            unsigned int thisIterWidth = curWidth + (g.advance >> 6);
-            if((float) thisIterWidth > maxRowWidth) {
-                // We can't continue, need to make newline
-                curHeight += m_Height * m_NewlineSpaceCoefficient;
-                if(curWidth > resultWidth) {
-                    resultWidth = curWidth;
-                }
-                curWidth = 0;
-            }
-            curWidth += (g.advance >> 6);
-        }
-        return { (float) resultWidth, (float) curHeight };
-    }
-
+    
     Math::Vec2f Font::GetTextSize(const std::string& text)
     {
         unsigned int curWidth = 0, resultWidth = 0;

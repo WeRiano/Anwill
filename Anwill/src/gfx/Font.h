@@ -38,7 +38,6 @@ namespace Anwill {
          */
         std::string GetLargestSubstr(const std::string& text, unsigned int maxWidth);
         unsigned int GetTextWidth(const std::string& text);
-        Math::Vec2f GetTextSize(const std::string& text, float maxRowWidth);
         /**
          * @brief Get the width and height of some text written in the given @Font.
          * @param text

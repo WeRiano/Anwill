@@ -97,21 +97,25 @@ namespace Anwill {
                     const Timestamp& timestamp) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
+        float GetWidth(unsigned char c) const;
         unsigned int GetGridDepth() const override;
 
-        void SetText(const std::string& text);
-        void PrependCharToText(unsigned char c);
-        void AppendCharToText(unsigned char c);
+        void Set(const std::string& text);
+        void AddCharacter(unsigned char c, unsigned int index);
+        void PrependCharacter(unsigned char c);
+        void AppendCharacter(unsigned char c);
+        unsigned char RemoveCharacter(unsigned int index);
         /**
          * @brief Remove the rightmost char from the string.
          */
-        void TruncateCharFromText();
+        void TruncateCharacter();
         /**
          * @brief Remove the leftmost char from the string.
          * @return The popped char.
          */
-        unsigned char PopCharFromText();
+        unsigned char PopCharacter();
         std::string ToString() const;
+        float GetSubstrWidth(unsigned int startIndex, unsigned int endIndex) const;
 
     protected:
         Math::Vec2f m_TextPos;
@@ -240,10 +244,12 @@ namespace Anwill {
     private:
         void KeycodeToAction(const KeyCode& keyCode);
         bool IsTextWiderThanBox() const;
+        bool IsTextWiderThanBox(unsigned char c ) const;
         void CalcCursorTimeInterval(const Timestamp& delta);
 
         std::stack<unsigned char> m_LeftCache, m_RightCache;
         long double m_TimeCountMS;
+        int m_CursorIndex; // [0, text length)
         bool m_ShowCursor;
     };
 

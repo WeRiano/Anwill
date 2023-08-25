@@ -36,14 +36,14 @@ GuiTest::GuiTest(const unsigned int ups)
 
     button->SetCallback([this, text, dd1Text](){
         m_Counter++;
-        text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
-        dd1Text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
+        text->Set("You have clicked the button " + std::to_string(m_Counter) + " times.");
+        dd1Text->Set("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });
 
     dd1Button->SetCallback([this, text, dd1Text](){
         m_Counter++;
-        text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
-        dd1Text->SetText("You have clicked the button " + std::to_string(m_Counter) + " times.");
+        text->Set("You have clicked the button " + std::to_string(m_Counter) + " times.");
+        dd1Text->Set("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });
 
     uselessButton->EmplaceTooltip("Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut erat.\n"
@@ -74,5 +74,5 @@ GuiTest::GuiTest(const unsigned int ups)
 void GuiTest::Update(const Anwill::Timestamp& timestamp)
 {
     Layer::Update(timestamp);
-    m_SliderTestText->SetText("Oh wow, the FloatSlider has a value of " + std::to_string(m_FloatSliderValue));
+    m_SliderTestText->Set("Oh wow, the FloatSlider has a value of " + std::to_string(m_FloatSliderValue));
 }
