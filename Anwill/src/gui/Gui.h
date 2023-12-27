@@ -52,19 +52,19 @@ namespace Anwill {
                                                      const std::function<void(bool)>& callback,
                                                      bool onNewRow = true);
 
-        static std::shared_ptr<GuiSlider> Slider(float min,
+        static std::shared_ptr<GuiSlider<float>> Slider(float min,
                                                  float max,
                                                  float* sliderValue,
                                                  GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiSlider> Slider(float min,
+        static std::shared_ptr<GuiSlider<float>> Slider(float min,
                                                  float max,
                                                  float* sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);
-        static std::shared_ptr<GuiSlider> Slider(int min,
+        static std::shared_ptr<GuiSlider<int>> Slider(int min,
                                                  int max,
                                                  int* sliderValue,
                                                  GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiSlider> Slider(int min,
+        static std::shared_ptr<GuiSlider<int>> Slider(int min,
                                                  int max,
                                                  int* sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);

@@ -109,26 +109,26 @@ namespace Anwill {
                                                   GuiStyling::Text::fontSize, callback);
     }
 
-    std::shared_ptr<GuiSlider> Gui::Slider(float min, float max, float* sliderValue, GuiWindowID windowID)
+    std::shared_ptr<GuiSlider<float>> Gui::Slider(float min, float max, float* sliderValue, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiFloatSlider>(windowID, true, true, min, max, sliderValue);
+        return AddElementToWindow<GuiSlider<float>>(windowID, true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiSlider>
+    std::shared_ptr<GuiSlider<float>>
     Gui::Slider(float min, float max, float* sliderValue, const std::shared_ptr<GuiContainer>& container)
     {
-        return container->AddElement<GuiFloatSlider>(true, true, min, max, sliderValue);
+        return container->AddElement<GuiSlider<float>>(true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, int* sliderValue, GuiWindowID windowID)
+    std::shared_ptr<GuiSlider<int>> Gui::Slider(int min, int max, int* sliderValue, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiIntSlider>(windowID, true, true, min, max, sliderValue);
+        return AddElementToWindow<GuiSlider<int>>(windowID, true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiSlider> Gui::Slider(int min, int max, int* sliderValue,
+    std::shared_ptr<GuiSlider<int>> Gui::Slider(int min, int max, int* sliderValue,
                                            const std::shared_ptr<GuiContainer>& container)
     {
-        return container->AddElement<GuiIntSlider>(true, true, min, max, sliderValue);
+        return container->AddElement<GuiSlider<int>>(true, true, min, max, sliderValue);
     }
 
     std::shared_ptr<GuiRadioButton> Gui::RadioButton(const std::string& text,

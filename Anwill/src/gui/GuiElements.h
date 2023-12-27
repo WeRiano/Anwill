@@ -193,42 +193,80 @@ namespace Anwill {
         const int m_OnSelectValue;
     };
 
+    template <typename T>
     class GuiSlider : public GuiButton {
     public:
         GuiStyling::Slider m_SliderStyle;
 
-        GuiSlider();
+        GuiSlider(float min, float max, T* source)
+            : m_Min(min), m_Max(max), m_Source(source),
+              GuiButton({GuiStyling::Window::elementHeight * 7.0f, GuiStyling::Window::elementHeight}, [](){}),
+              m_ValueText("", GuiStyling::Text::fontSize)
+        {}
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& delta) override;
+                    const Timestamp& delta) override
+        {
+            // Render background button
+            GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
-        virtual void OnPress(const Math::Vec2f& mousePos) override;
+            // Render "slider" (marker) rectangle
+            const float markerXOffset = GuiStyling::Slider::markerSize.GetX() * 0.5f;
+
+            T markerXPosDelta = Utils::ScaleToRange<T>(*m_Source, markerXOffset,
+                                                       GuiButton::GetWidth() - markerXOffset,
+                                                       m_Min, m_Max);
+            markerXPosDelta = Utils::Clamp(markerXPosDelta, m_Min, m_Max);
+            Math::Vec2f markerPos = {static_cast<float>(markerXPosDelta) - GuiStyling::Slider::markerSize.GetX() * 0.5f,
+                                     -(m_ButtonSize.GetY() - GuiStyling::Slider::markerSize.GetY()) * 0.5f + 1.0f};
+
+            GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::Slider::markerSize,
+                                     assignedMaxSize - markerPos, m_SliderStyle.markerColor);
+
+            // Render text
+            m_ValueText.Set(std::to_string(*m_Source));
+            float centeredTextXPos = m_ButtonSize.GetX() * 0.5f - m_ValueText.GetWidth() * 0.5f;
+            m_ValueText.Render(assignedPos + Math::Vec2f(centeredTextXPos, 0.0f),
+                               assignedMaxSize - Math::Vec2f(centeredTextXPos + GuiStyling::TextButton::textPadding, 0.0f),
+                               delta);
+        }
+
+        virtual void OnPress(const Math::Vec2f& mousePos) override {
+            const float markerXOffset = GuiStyling::Slider::markerSize.GetX() * 0.5f;
+            float t = Utils::ScaleToRange<T>(mousePos.GetX(),
+                                             static_cast<float>(m_Min),
+                                             static_cast<float>(m_Max),
+                                             markerXOffset,
+                                             GetWidth() - markerXOffset);
+            t = Utils::Clamp(t, static_cast<float>(m_Min), static_cast<float>(m_Max));
+            *m_Source = static_cast<T>(t);
+
+            //AW_INFO("GuiSlider OnPress mousePos: ({0}, {1})", mousePos.GetX(), mousePos.GetY());
+        }
 
     protected:
+        T m_Min, m_Max;
+        T* m_Source;
         GuiText m_ValueText;
-        float m_LastCursorXPos;
+        //float m_LastCursorXPos;
     };
 
-    class GuiFloatSlider : public GuiSlider {
+    class GuiFloatSlider : public GuiSlider<float> {
     public:
         GuiFloatSlider(float min, float max, float* sliderValue);
 
         void OnPress(const Math::Vec2f& mousePos) override;
 
     private:
-        float m_Min, m_Max;
-        float* m_Source;
     };
 
-    class GuiIntSlider : public GuiSlider {
+    class GuiIntSlider : public GuiSlider<int> {
     public:
         GuiIntSlider(int min, int max, int* sliderValue);
 
         void OnPress(const Math::Vec2f& mousePos) override;
 
     private:
-        int m_Min, m_Max;
-        int* m_ClientValuePointer;
     };
 
     class GuiInputText : public GuiTextButton {

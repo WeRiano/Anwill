@@ -24,7 +24,7 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Button("This is another button that does nothing!", dd1);
     Anwill::Gui::Checkbox(true, "Checkbox", dd1, [](bool b){});
     float floatSliderValue;
-    Anwill::Gui::Slider(0.0f, 1337.42f, &floatSliderValue, dd1);
+    //Anwill::Gui::Slider(0.0f, 1337.42f, &floatSliderValue, dd1);
 
     auto uselessButton = Anwill::Gui::Button("This is another button that does nothing!");
     Anwill::Gui::Checkbox(true, "Checkbox", [](bool b){});

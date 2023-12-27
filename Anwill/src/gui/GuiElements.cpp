@@ -571,6 +571,7 @@ namespace Anwill {
 
     #pragma region Slider
 
+    /*
     GuiSlider::GuiSlider()
         : GuiButton({GuiStyling::Window::elementHeight * 7.0f, GuiStyling::Window::elementHeight}, [](){}),
           m_ValueText("", GuiStyling::Text::fontSize)
@@ -602,17 +603,17 @@ namespace Anwill {
 
         m_LastCursorXPos = mousePos.GetX();
     }
+     */
 
     #pragma endregion
 
     #pragma region IntSlider
 
+    /*
     GuiIntSlider::GuiIntSlider(int min, int max, int* sliderValue)
-        : m_Min(min), m_Max(max), m_ClientValuePointer(sliderValue)
     {
         int startValue = m_Min;
         m_ValueText.Set(std::to_string(startValue));
-        m_LastCursorXPos = 0.0f;
     }
 
     void GuiIntSlider::OnPress(const Math::Vec2f &mousePos) {
@@ -627,7 +628,6 @@ namespace Anwill {
                                    static_cast<float>(m_Min),
                                    static_cast<float>(m_Max));
         int roundedInt = Utils::RoundToInt(sliderValue);
-        *m_ClientValuePointer = roundedInt;
         m_ValueText.Set(std::to_string(roundedInt));
     }
 
@@ -636,11 +636,9 @@ namespace Anwill {
     #pragma region FloatSlider
 
     GuiFloatSlider::GuiFloatSlider(float min, float max, float* sliderValue)
-        : m_Min(min), m_Max(max), m_Source(sliderValue)
     {
         float startValue = m_Min;
         m_ValueText.Set(Utils::RoundFloatToString(startValue, 3));
-        m_LastCursorXPos = 0.0f;
     }
 
     void GuiFloatSlider::OnPress(const Math::Vec2f& mousePos) {
@@ -657,6 +655,8 @@ namespace Anwill {
         *m_Source = sliderValue;
         m_ValueText.Set(Utils::RoundFloatToString(sliderValue, 3));
     }
+
+     */
 
     #pragma endregion
 

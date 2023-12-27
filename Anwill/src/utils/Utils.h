@@ -57,7 +57,7 @@ namespace Anwill {
         }
 
         template <typename T>
-        static float ScaleToRange(T value, T targetMin, T targetMax, T sourceMin, T sourceMax) {
+        static T ScaleToRange(T value, T targetMin, T targetMax, T sourceMin, T sourceMax) {
             return (targetMax - targetMin) * (value - sourceMin) / (sourceMax - sourceMin) + targetMin;
         }
 
@@ -70,7 +70,7 @@ namespace Anwill {
                 return max;
             }
             return value; */
-            return min * (value < min) + max * (value > max) + value;
+            return min * (value < min) + max * (value > max) + (value >= min && value <= max) * value;
         }
 
         template <typename T>
