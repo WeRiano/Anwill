@@ -63,13 +63,24 @@ namespace Anwill {
 
         template <typename T>
         static T Clamp(T value, T min, T max) {
-            if(value < min) {
+            /* if(value < min) {
                 return min;
             }
             if(value > max) {
                 return max;
             }
-            return value;
+            return value; */
+            return min * (value < min) + max * (value > max) + value;
+        }
+
+        template <typename T>
+        static T Max(T value1, T value2) {
+            return value1 * (value1 >= value2) + value2 * (value1 < value2);
+        }
+
+        template <typename T>
+        static T Min(T value1, T value2) {
+            return value1 * (value1 <= value2) + value2 * (value1 > value2);
         }
     };
 }

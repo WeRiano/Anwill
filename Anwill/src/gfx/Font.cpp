@@ -158,7 +158,7 @@ namespace Anwill {
         }
         return curWidth;
     }
-    
+
     Math::Vec2f Font::GetTextSize(const std::string& text)
     {
         unsigned int curWidth = 0, resultWidth = 0;

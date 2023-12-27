@@ -57,7 +57,7 @@ namespace Anwill {
         GuiElement();
 
         virtual void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                            const Timestamp& timestamp) = 0;
+                            const Timestamp& delta) = 0;
         /**
          * @brief Check if the mouse cursor is hovering the element
          */
@@ -94,17 +94,21 @@ namespace Anwill {
         GuiText(const std::string& text, unsigned int textSize);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& delta, int startIndex, int endIndex);
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         float GetWidth(unsigned char c) const;
+        float GetWidth(unsigned int startIndex, unsigned int size) const;
         unsigned int GetGridDepth() const override;
 
         void Set(const std::string& text);
         void AddCharacter(unsigned char c, unsigned int index);
         void PrependCharacter(unsigned char c);
         void AppendCharacter(unsigned char c);
-        unsigned char RemoveCharacter(unsigned int index);
+        unsigned char RemoveCharacter(unsigned int characterIndex);
+        std::string RemoveCharacters(unsigned int startCharacterIndex, unsigned int endCharacterIndex);
         /**
          * @brief Remove the rightmost char from the string.
          */
@@ -115,7 +119,6 @@ namespace Anwill {
          */
         unsigned char PopCharacter();
         std::string ToString() const;
-        float GetSubstrWidth(unsigned int startIndex, unsigned int endIndex) const;
 
     protected:
         Math::Vec2f m_TextPos;
@@ -131,7 +134,7 @@ namespace Anwill {
                   const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
@@ -150,7 +153,7 @@ namespace Anwill {
                       const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
         void SetText(const std::string& text);
 
     protected:
@@ -165,7 +168,7 @@ namespace Anwill {
                     const std::function<void(bool)>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
         float GetWidth() const override;
 
     protected:
@@ -181,7 +184,7 @@ namespace Anwill {
                        const int onSelectValue, const std::function<void()>& callback);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
         float GetWidth() const override;
 
     protected:
@@ -197,7 +200,7 @@ namespace Anwill {
         GuiSlider();
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
 
         virtual void OnPress(const Math::Vec2f& mousePos) override;
 
@@ -233,7 +236,7 @@ namespace Anwill {
         GuiInputText(const std::string& startText, unsigned int textSize, float pixelWidth);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
         void OnHover(const Math::Vec2f& mousePos) override;
         void OnPress(const Math::Vec2f& mousePos) override;
         void OnKeyPress(const KeyCode& keyCode) override;
@@ -244,12 +247,14 @@ namespace Anwill {
     private:
         void KeycodeToAction(const KeyCode& keyCode);
         bool IsTextWiderThanBox() const;
-        bool IsTextWiderThanBox(unsigned char c ) const;
+        bool IsTextWiderThanBox(int leftIndex, int rightIndex) const;
         void CalcCursorTimeInterval(const Timestamp& delta);
 
-        std::stack<unsigned char> m_LeftCache, m_RightCache;
+        GuiStyling::InputText m_InputTextStyle;
+        int m_RenderLeftIndex, m_RenderRightIndex;
+        int m_SelectLeftIndex, m_SelectRightIndex;
         long double m_TimeCountMS;
-        int m_CursorIndex; // [0, text length)
+        int m_CursorIndex;
         bool m_ShowCursor;
     };
 
@@ -260,7 +265,7 @@ namespace Anwill {
         virtual std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                             const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Math::Vec2f& firstPos, const Timestamp& timestamp);
+                    const Math::Vec2f& firstPos, const Timestamp& delta);
         bool IsHidingElements() const;
 
         template <class E, typename... Args>
@@ -292,7 +297,7 @@ namespace Anwill {
         GuiDropdown(const std::string& text, unsigned int textSize);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& timestamp) override;
+                    const Timestamp& delta) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
@@ -307,7 +312,7 @@ namespace Anwill {
 
         std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                     const Math::Vec2f& mousePos) const override;
-        void Render(bool isSelected, const Timestamp& timestamp);
+        void Render(bool isSelected, const Timestamp& delta);
         bool IsHoveringHeader(const Math::Vec2f& mousePos);
         bool IsHoveringResize(const Math::Vec2f& mousePos);
         bool IsHoveringWindow(const Math::Vec2f& mousePos);

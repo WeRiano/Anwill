@@ -96,6 +96,12 @@ namespace Anwill {
             Math::Vec3f markerColor = {0.30f, 0.38f, 1.0f};
         };
 
+        struct InputText {
+        public:
+
+            Math::Vec3f selectedTextHighlightColor = {0.30f, 0.38f, 1.0f};
+        };
+
         struct Dropdown {
         public:
             static float elementIndent;
