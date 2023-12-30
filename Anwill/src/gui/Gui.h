@@ -54,19 +54,19 @@ namespace Anwill {
 
         static std::shared_ptr<GuiSlider<float>> Slider(float min,
                                                  float max,
-                                                 float* sliderValue,
+                                                 float& sliderValue,
                                                  GuiWindowID windowID = 0);
         static std::shared_ptr<GuiSlider<float>> Slider(float min,
                                                  float max,
-                                                 float* sliderValue,
+                                                 float& sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);
         static std::shared_ptr<GuiSlider<int>> Slider(int min,
                                                  int max,
-                                                 int* sliderValue,
+                                                 int& sliderValue,
                                                  GuiWindowID windowID = 0);
         static std::shared_ptr<GuiSlider<int>> Slider(int min,
                                                  int max,
-                                                 int* sliderValue,
+                                                 int& sliderValue,
                                                  const std::shared_ptr<GuiContainer>& container);
 
         static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,

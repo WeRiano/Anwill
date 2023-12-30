@@ -24,14 +24,15 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::Button("This is another button that does nothing!", dd1);
     Anwill::Gui::Checkbox(true, "Checkbox", dd1, [](bool b){});
     float floatSliderValue;
-    //Anwill::Gui::Slider(0.0f, 1337.42f, &floatSliderValue, dd1);
+    Anwill::Gui::Slider(0.0f, 1337.42f, floatSliderValue, dd1);
 
     auto uselessButton = Anwill::Gui::Button("This is another button that does nothing!");
     Anwill::Gui::Checkbox(true, "Checkbox", [](bool b){});
     Anwill::Gui::Button("Test", [](){}, false);
-    Anwill::Gui::Slider(0.0f, 420.69f, &m_FloatSliderValue);
-    int intSliderValue;
-    Anwill::Gui::Slider(1, 5, &intSliderValue);
+    Anwill::Gui::Slider(0.0f, 420.69f, m_FloatSliderValue);
+    int* intSliderValue = new int;
+    *intSliderValue = 5;
+    Anwill::Gui::Slider(1, 5, *intSliderValue);
     m_SliderTestText = Anwill::Gui::Text("Oh wow, the FloatSlider has a value of " + std::to_string(m_FloatSliderValue));
 
     button->SetCallback([this, text, dd1Text](){
