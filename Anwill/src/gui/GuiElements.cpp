@@ -666,6 +666,8 @@ namespace Anwill {
         m_TimeCountMS = 0;
         m_ShowCursor = true;
         KeycodeToAction(keyCode);
+        AW_INFO("Render: {0}, {1}", m_RenderLeftIndex, m_RenderRightIndex);
+        AW_INFO("Select: {0}, {1}", m_SelectLeftIndex, m_SelectRightIndex);
     }
 
     void GuiInputText::OnKeyRepeat(const KeyCode& keyCode)
@@ -689,7 +691,7 @@ namespace Anwill {
             // Shift the text to the left until it fits
             m_RenderLeftIndex++;
         }
-        AW_INFO("Text width: {0}", m_Text.GetWidth());
+        //AW_INFO("Text width: {0}", m_Text.GetWidth());
     }
 
     void GuiInputText::KeycodeToAction(const KeyCode& keyCode)
@@ -698,8 +700,10 @@ namespace Anwill {
             case KeyCode::Backspace:
                 if(m_SelectLeftIndex < m_SelectRightIndex)
                 {
+                    // If we are selecting something, remove that text
                     std::string removedStr = m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
                     m_RenderRightIndex -= removedStr.length();
+
                 }
                 else
                 {
@@ -756,7 +760,9 @@ namespace Anwill {
                 // Clamp everything
                 m_CursorIndex = Utils::Min(m_CursorIndex, (int) m_Text.ToString().length());
                 m_SelectRightIndex = Utils::Min(m_SelectRightIndex, (int) m_Text.ToString().length());
+                m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
                 m_SelectLeftIndex = Utils::Min(m_SelectLeftIndex, (int) m_Text.ToString().length());
+                m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
                 return;
             }
             case KeyCode::Left:
@@ -792,7 +798,9 @@ namespace Anwill {
                 // Clamp everything
                 m_CursorIndex = Utils::Max(m_CursorIndex, 0);
                 m_SelectRightIndex = Utils::Max(m_SelectRightIndex, 0);
+                m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
                 m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, 0);
+                m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
                 return;
             }
             default:
