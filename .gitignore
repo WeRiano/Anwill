@@ -1,5 +1,6 @@
 # CMake (Output)
 bin/
+cmake-build-debug/
 
 # File-based project format
 *.iws
