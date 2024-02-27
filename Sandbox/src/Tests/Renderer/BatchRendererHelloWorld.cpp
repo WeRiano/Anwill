@@ -44,12 +44,12 @@ void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
     Anwill::Renderer2D::BeginScene(m_Camera);
     m_SpriteAnimation.Tick(GetUpdateDelta(timestamp));
 
-    if(m_IsBatchRendering) {
+    /*if(m_IsBatchRendering) {
         BatchRendering();
     } else {
         SlowRendering();
-    }
-    //TestBatchTextureRendering();
+    }*/
+    TestBatchTextureRendering();
 
     MoveCamera();
 

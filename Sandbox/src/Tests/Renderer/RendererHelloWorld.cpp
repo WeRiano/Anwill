@@ -55,7 +55,7 @@ void RendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_Camera);
 
-    //Anwill::Renderer2D::Submit(m_Shader, m_VA, m_IB, Anwill::Math::Mat4f::Identity());
+    //Anwill::Renderer2D::SubmitVertices(m_Shader, m_VA, m_IB, Anwill::Math::Mat4f::Identity());
     Anwill::Renderer2D::SubmitLines(m_Shader, m_VA, Anwill::Math::Mat4f::Identity(), 1);
 
     Layer::Update(timestamp);

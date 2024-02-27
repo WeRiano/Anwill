@@ -26,16 +26,19 @@ namespace Anwill {
 
         static void SubmitText(const std::shared_ptr<Shader>& shader, Font& font,
                                const std::string& text, const Math::Mat4f& transform, float maxWidth = 0);
-        static void Submit(const std::shared_ptr<Shader>& shader,
-                           const std::shared_ptr<VertexArray>& vertexArray,
-                           const std::shared_ptr<IndexBuffer>& indexBuffer,
-                           const Math::Mat4f& transform);
+        static void SubmitVertices(const std::shared_ptr<Shader>& shader,
+                                   const std::shared_ptr<VertexArray>& vertexArray,
+                                   const std::shared_ptr<IndexBuffer>& indexBuffer,
+                                   const Math::Mat4f& transform);
         static void SubmitMesh(const std::shared_ptr<Shader>& shader, const Mesh& mesh,
                                const Math::Mat4f& transform,
                                const std::shared_ptr<Texture>& texture = nullptr);
         static void SubmitMesh(const std::shared_ptr<Shader>& shader, const Mesh& mesh,
                                const Math::Mat4f& transform,
                                const std::vector<std::shared_ptr<Texture>>& textures);
+        static void SubmitSprite(const std::shared_ptr<Shader>& shader,
+                                 const Sprite& sprite,
+                                 const Math::Mat4f& transform);
         static void SubmitLines(const std::shared_ptr<Shader>& shader,
                                 const std::shared_ptr<VertexArray> vertexArray,
                                 const Math::Mat4f transform, unsigned int linesCount);

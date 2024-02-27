@@ -132,10 +132,10 @@ namespace Anwill {
         shader->Unbind();
     }
 
-    void Renderer2D::Submit(const std::shared_ptr<Shader>& shader,
-                            const std::shared_ptr<VertexArray>& vertexArray,
-                            const std::shared_ptr<IndexBuffer>& indexBuffer,
-                            const Math::Mat4f& transform)
+    void Renderer2D::SubmitVertices(const std::shared_ptr<Shader>& shader,
+                                    const std::shared_ptr<VertexArray>& vertexArray,
+                                    const std::shared_ptr<IndexBuffer>& indexBuffer,
+                                    const Math::Mat4f& transform)
     {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
@@ -154,6 +154,7 @@ namespace Anwill {
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
         if(texture != nullptr) {
             shader->SetUniform1i(0, "u_TextureSampler");
             texture->Bind();
@@ -164,6 +165,7 @@ namespace Anwill {
         if(texture != nullptr) {
             texture->Unbind();
         }
+
         shader->Unbind();
     }
 
@@ -184,6 +186,25 @@ namespace Anwill {
                 shader->SetUniform1i(i, "u_TextureSampler");
             }
         }
+
+        s_API->DrawMesh(mesh);
+
+        textures[textures.size()-1]->Unbind();
+        shader->Unbind();
+    }
+
+    void Renderer2D::SubmitSprite(const std::shared_ptr<Shader>& shader, const Sprite& sprite,
+                                  const Math::Mat4f& transform)
+    {
+        // TODO
+        // Makes no sense right now to submit a sprite, because vertex array has to be created render-time
+        // (with texCoords). Sprite should have one that we can just grab, but that is not neccesary when its used
+        // for batch renderer.
+        shader->Bind();
+        shader->SetUniformMat4f(transform, "u_Transform");
+        shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
+
+        sprite.texture;
 
         s_API->DrawMesh(mesh);
 

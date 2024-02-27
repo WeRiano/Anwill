@@ -107,7 +107,7 @@ namespace Anwill {
         void AddCharacter(unsigned char c, unsigned int index);
         void PrependCharacter(unsigned char c);
         void AppendCharacter(unsigned char c);
-        unsigned char RemoveCharacter(unsigned int characterIndex);
+        char RemoveCharacter(unsigned int characterIndex);
         std::string RemoveCharacters(unsigned int startCharacterIndex, unsigned int endCharacterIndex);
         /**
          * @brief Remove the rightmost char from the string.
@@ -278,6 +278,9 @@ namespace Anwill {
 
     private:
         void KeycodeToAction(const KeyCode& keyCode);
+        void RemoveCharacters();
+        void MoveRight();
+        void MoveLeft();
         bool IsTextWiderThanBox() const;
         bool IsTextWiderThanBox(int leftIndex, int rightIndex) const;
         void CalcCursorTimeInterval(const Timestamp& delta);
@@ -288,6 +291,23 @@ namespace Anwill {
         long double m_TimeCountMS;
         int m_CursorIndex;
         bool m_ShowCursor;
+    };
+
+    class GuiImage : public GuiElement {
+    public:
+        GuiImage(const std::string& fileName, unsigned int maxRows = 0);
+
+        void Render(const Math::Vec2f& assignedPos,
+                    const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& delta) override;
+
+        bool IsHovering(const Math::Vec2f& mousePos) const override;
+        float GetWidth() const override;
+        unsigned int GetGridDepth() const override;
+
+    private:
+        std::shared_ptr<Texture> m_Texture;
+
     };
 
     class GuiContainer {

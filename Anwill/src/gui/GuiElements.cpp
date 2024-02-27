@@ -349,7 +349,7 @@ namespace Anwill {
         m_TextWidth += GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
     }
 
-    unsigned char GuiText::RemoveCharacter(unsigned int characterIndex)
+    char GuiText::RemoveCharacter(unsigned int characterIndex)
     {
         if(!m_Text.empty() && characterIndex >= 0 && characterIndex < m_Text.length()) {
             unsigned char removedChar = m_Text[characterIndex];
@@ -358,7 +358,7 @@ namespace Anwill {
             //AW_INFO("Glyph width: {0}", GuiStyling::Text::font->GetGlyphWidth(removedChar) * m_TextScale);
             return removedChar;
         }
-        return 0;
+        return -1;
     }
 
     std::string GuiText::RemoveCharacters(unsigned int startCharacterIndex, unsigned int endCharacterIndex)
@@ -666,8 +666,9 @@ namespace Anwill {
         m_TimeCountMS = 0;
         m_ShowCursor = true;
         KeycodeToAction(keyCode);
-        AW_INFO("Render: {0}, {1}", m_RenderLeftIndex, m_RenderRightIndex);
-        AW_INFO("Select: {0}, {1}", m_SelectLeftIndex, m_SelectRightIndex);
+        //AW_INFO("Render: {0}, {1}", m_RenderLeftIndex, m_RenderRightIndex);
+        //AW_INFO("Select: {0}, {1}", m_SelectLeftIndex, m_SelectRightIndex);
+        AW_INFO("Cursor: {0}", m_CursorIndex);
     }
 
     void GuiInputText::OnKeyRepeat(const KeyCode& keyCode)
@@ -698,27 +699,7 @@ namespace Anwill {
     {
         switch(keyCode) {
             case KeyCode::Backspace:
-                if(m_SelectLeftIndex < m_SelectRightIndex)
-                {
-                    // If we are selecting something, remove that text
-                    std::string removedStr = m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
-                    m_RenderRightIndex -= removedStr.length();
-
-                }
-                else
-                {
-                    m_Text.RemoveCharacter(m_CursorIndex - 1);
-                    if (--m_CursorIndex < 0)
-                        m_CursorIndex = 0;
-                    if (--m_RenderRightIndex < 0)
-                        m_RenderRightIndex = 0;
-                }
-                m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
-                while(m_RenderLeftIndex > 0 &&
-                      !IsTextWiderThanBox(m_RenderLeftIndex - 1, m_RenderRightIndex)) {
-                    m_RenderLeftIndex--;
-                }
-                return;
+                return RemoveCharacters();
             case KeyCode::Enter:
                 GuiEvents::Add(GuiLoseFocusEvent());
                 return;
@@ -728,84 +709,115 @@ namespace Anwill {
                     break;
                 break;
             case KeyCode::Right:
-            {
-                // Move the cursor to the right
-                m_CursorIndex++;
-                if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
-                    // Selecting text
-                    if(m_CursorIndex > m_SelectRightIndex) {
-                        // Expanding to the right
-                        m_SelectRightIndex++;
-                    } else {
-                        // Collapsing to the right
-                        m_SelectLeftIndex++;
-                    }
-                } else
-                {
-                    // Not selecting text, so we reset any previous selection
-                    m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
-                }
-                // Horizontal scrolling of text
-                if(m_CursorIndex > m_RenderRightIndex && m_RenderRightIndex < m_Text.ToString().length())
-                {
-                    m_RenderRightIndex++;
-                    while(IsTextWiderThanBox())
-                    {
-                        m_RenderLeftIndex++;
-                    }
-                    while(!IsTextWiderThanBox(m_RenderLeftIndex - 1, m_RenderRightIndex)) {
-                        m_RenderRightIndex--;
-                    }
-                }
-                // Clamp everything
-                m_CursorIndex = Utils::Min(m_CursorIndex, (int) m_Text.ToString().length());
-                m_SelectRightIndex = Utils::Min(m_SelectRightIndex, (int) m_Text.ToString().length());
-                m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
-                m_SelectLeftIndex = Utils::Min(m_SelectLeftIndex, (int) m_Text.ToString().length());
-                m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
-                return;
-            }
+                return MoveRight();
             case KeyCode::Left:
-            {
-                // Move the cursor to the left
-                m_CursorIndex--;
-                if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
-                    // Selecting text
-                    if(m_CursorIndex < m_SelectLeftIndex) {
-                        // Expanding to the left
-                        m_SelectLeftIndex--;
-                    } else {
-                        // Collapsing to the left
-                        m_SelectRightIndex--;
-                    }
-                } else
-                {
-                    // Not selecting text, so we reset any previous selection
-                    m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
-                }
-                // Horizontal scrolling of text
-                if(m_CursorIndex < m_RenderLeftIndex && m_RenderLeftIndex > 0)
-                {
-                    m_RenderLeftIndex--;
-                    while(IsTextWiderThanBox())
-                    {
-                        m_RenderRightIndex--;
-                    }
-                    while(!IsTextWiderThanBox(m_RenderLeftIndex, m_RenderRightIndex + 1)) {
-                        m_RenderRightIndex++;
-                    }
-                }
-                // Clamp everything
-                m_CursorIndex = Utils::Max(m_CursorIndex, 0);
-                m_SelectRightIndex = Utils::Max(m_SelectRightIndex, 0);
-                m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
-                m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, 0);
-                m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
-                return;
-            }
+                return MoveLeft();
             default:
                 return;
         }
+    }
+
+    void GuiInputText::RemoveCharacters()
+    {
+        if(m_SelectLeftIndex < m_SelectRightIndex)
+        {
+            // If we are selecting something, remove that text
+            std::string removedStr = m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
+            m_RenderRightIndex -= removedStr.length();
+            if(m_CursorIndex == m_SelectLeftIndex) {
+                m_CursorIndex = Utils::Min(m_CursorIndex, static_cast<int>(m_Text.ToString().length()));
+            } else {  // if m_CursorIndex == m_SelectRightIndex
+                m_CursorIndex = m_SelectLeftIndex;
+            }
+        }
+        else
+        {
+            if(m_Text.RemoveCharacter(m_CursorIndex - 1) == -1)
+                return;
+            if (--m_CursorIndex < 0)
+                m_CursorIndex = 0;
+            if (--m_RenderRightIndex < 0)
+                m_RenderRightIndex = 0;
+        }
+        // Stop selecting
+        m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+        // Deal with any potential text overflow that should now be visible
+        while(m_RenderLeftIndex > 0 &&
+              !IsTextWiderThanBox(m_RenderLeftIndex - 1, m_RenderRightIndex)) {
+            m_RenderLeftIndex--;
+        }
+    }
+
+    void GuiInputText::MoveRight()
+    {
+        // Move the cursor to the right
+        m_CursorIndex++;
+        if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
+            // If we are selecting ...
+            if(m_CursorIndex > m_SelectRightIndex) {
+                // ... expand to the right
+                m_SelectRightIndex++;
+            } else {
+                // ... or collapse to the right
+                m_SelectLeftIndex++;
+            }
+        } else
+        {
+            // Not selecting text, so we reset any previous selection
+            m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+        }
+        if(m_CursorIndex > m_RenderRightIndex && m_RenderRightIndex < m_Text.ToString().length())
+        {
+            // Horizontal scrolling of text in case of overflow
+            m_RenderRightIndex++;
+            while(IsTextWiderThanBox())
+            {
+                // Hide text until it fits
+                m_RenderLeftIndex++;
+            }
+        }
+        // Clamp everything to avoid "illegal" values
+        m_CursorIndex = Utils::Min(m_CursorIndex, (int) m_Text.ToString().length());
+        m_SelectRightIndex = Utils::Min(m_SelectRightIndex, (int) m_Text.ToString().length());
+        m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
+        m_SelectLeftIndex = Utils::Min(m_SelectLeftIndex, (int) m_Text.ToString().length());
+        m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
+    }
+
+    void GuiInputText::MoveLeft()
+    {
+        // Move the cursor to the left
+        m_CursorIndex--;
+        if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
+            // If we are selecting ...
+            if(m_CursorIndex < m_SelectLeftIndex) {
+                // ... expand to the left
+                m_SelectLeftIndex--;
+            } else {
+                // ... or collapse to the left
+                m_SelectRightIndex--;
+            }
+        } else
+        {
+            // Not selecting text, so we reset any previous selection
+            m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+        }
+        if(m_CursorIndex < m_RenderLeftIndex && m_RenderLeftIndex > 0)
+        {
+            // Horizontal scrolling of text in case of overflow
+            m_RenderLeftIndex--;
+            while(IsTextWiderThanBox())
+            {
+                // Hide text until it fits
+                m_RenderRightIndex--;
+            }
+        }
+        // Clamp everything to avoid "illegal" values
+        m_CursorIndex = Utils::Max(m_CursorIndex, 0);
+        m_SelectRightIndex = Utils::Max(m_SelectRightIndex, 0);
+        m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
+        m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, 0);
+        m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
     }
 
     bool GuiInputText::IsTextWiderThanBox() const
@@ -832,6 +844,30 @@ namespace Anwill {
             m_ShowCursor = !m_ShowCursor;
             m_TimeCountMS -= GuiStyling::Text::cursorShowTimeIntervalMS;
         }
+    }
+
+    #pragma endregion
+
+    #pragma region Image
+
+    GuiImage::GuiImage(const std::string& fileName, unsigned int maxRows) {
+        m_Texture = Texture::Create(fileName);
+    }
+
+    void GuiImage::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize, const Timestamp &delta) {
+
+    }
+
+    bool GuiImage::IsHovering(const Math::Vec2f &mousePos) const {
+        return false;
+    }
+
+    float GuiImage::GetWidth() const {
+        return 0;
+    }
+
+    unsigned int GuiImage::GetGridDepth() const {
+        return 0;
     }
 
     #pragma endregion
