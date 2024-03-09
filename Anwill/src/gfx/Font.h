@@ -58,8 +58,7 @@ namespace Anwill {
         std::shared_ptr<VertexBuffer> m_VB;
         std::shared_ptr<VertexArray> m_VA;
         std::map<unsigned char, Glyph> m_Characters;
-        unsigned int m_ID;
-        float m_Height, m_NewlineSpaceCoefficient = 1.2f;
+        float m_Height, m_NewlineSpaceCoefficient;
 
         unsigned int GetTextureSlot(std::map<unsigned char, unsigned int>& map,
                                     unsigned int& textureSlotCounter,

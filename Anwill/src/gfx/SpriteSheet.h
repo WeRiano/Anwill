@@ -10,6 +10,18 @@ namespace Anwill {
 
     /**
      * Wrapper class around Texture for additional spritesheet "operations"
+     *
+     * The intended workflow is:
+     *      1. Create SpriteSheet
+     *      2. Create Sprites from SpriteSheet
+     *      (2.5) The SpriteSheet can now be discarded
+     *      3. Push Sprites to renderer
+     *
+     * PRO: Exists so that we don't have to calculate(?) texCoords every cycle for the batch renderer,
+     *       even though this is a really quick O(1) calculation.
+     * CON: 16 bytes of memory for each Sprite.
+     *      FIX: Static map with all the textures, and Sprites carry an id instead?
+     *           (4 bytes vs 16)
      */
     class SpriteSheet
     {
@@ -49,19 +61,9 @@ namespace Anwill {
     };
 
     /**
-     * Now the workflow is this:
-     *      1. Create SpriteSheet
-     *      2. Create Sprites from SpriteSheet
-     *      (2.5) The SpriteSheet can now be discarded
-     *      3. Push Sprites to renderer
-     *
-     * PRO: Exists so that we don't have to calculate texCoords every cycle, even though
-     *      this is a really quick O(1) calculation.
-     * CON: 16 bytes of memory for each Sprite.
-     *      FIX: Static map with all the textures, and Sprites carry an id instead?
-     *           (4 bytes vs 16)
+     * A sprite is just a texture combined with a square mesh and standard texture coordinates.
+     * This exists to simplify the process of rendering a square texture, both internally and by the client
      */
-
     struct Sprite
     {
         const std::shared_ptr<Texture> texture;

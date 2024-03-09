@@ -11,6 +11,10 @@
 
 namespace Anwill {
 
+    /**
+     * Animation of frames.
+     * Defined by the time between frames (frameDelta) and a bunch of frames (sprites).
+     */
     class SpriteAnimation {
     public:
         SpriteAnimation(const Timestamp& frameDelta);
@@ -65,17 +69,19 @@ namespace Anwill {
         void SetFrameDelta(const Timestamp& frameDelta);
 
     private:
+        // TODO: Why is this used instead of Sprite??
         struct SpriteFrame {
-            unsigned int id;
+            unsigned int id; // TODO: ... why store an iD that is linked to a texture?? Just add the texture directly
             QuadTexCoords texCoords;
         };
 
         Timestamp m_FrameDelta;
         Timestamp m_Current;
+        // TODO: Just have a stack of texture pointers ... and just use regular texCoords everywhere for now?
         std::queue<SpriteFrame> m_FrameQ;
-        // Idk if a combination of these two are the best solution to the problem.
+        // I'm not sure if a combination of these two are the best solution to the problem.
         // A lot better than storing the same texture for every frame if all frames
-        // come from 1 spritesheet (which is the intended way AND worst case) tho
+        // come from 1 spritesheet (which is the intended way AND worst case)
         std::unordered_map<unsigned int, std::shared_ptr<Texture>> m_IDToTex;
         std::unordered_map<std::shared_ptr<Texture>, unsigned int> m_TexToID;
 
