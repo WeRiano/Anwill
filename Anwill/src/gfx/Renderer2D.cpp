@@ -15,14 +15,14 @@ namespace Anwill {
         s_API = api;
         BatchDataInit();
         //Font::s_Shader = Shader::Create("Anwill/res/shaders/OpenGL/Font.glsl");
+        Mesh::Init();
     }
 
-    void Renderer2D::DrawBatch()
+    void Renderer2D::BeginScene(const Camera& camera)
     {
-        AW_PROFILE_FUNC();
-        DrawQuadBatch();
-        DrawCircleBatch();
-        //DrawLineBatch(); TODO
+        s_SceneData = SceneData2D();
+        s_SceneData.ViewProjMat = camera.GetViewProj();
+        s_SceneData.CameraPos = camera.GetPos();
     }
 
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
@@ -100,11 +100,12 @@ namespace Anwill {
         s_CData.elementsPushed++;
     }
 
-    void Renderer2D::BeginScene(const Camera& camera)
+    void Renderer2D::DrawBatch()
     {
-        s_SceneData = SceneData2D();
-        s_SceneData.ViewProjMat = camera.GetViewProj();
-        s_SceneData.CameraPos = camera.GetPos();
+        AW_PROFILE_FUNC();
+        DrawQuadBatch();
+        DrawCircleBatch();
+        //DrawLineBatch(); TODO
     }
 
     void Renderer2D::SubmitText(const std::shared_ptr<Shader>& shader, Font& font,
@@ -198,8 +199,9 @@ namespace Anwill {
     {
         // TODO
         // Makes no sense right now to submit a sprite, because vertex array has to be created render-time
-        // (with texCoords). Sprite should have one that we can just grab, but that is not neccesary when its used
+        // (with texCoords). Sprite should have one that we can just grab, but that is not necessary when its used
         // for batch renderer.
+        /*
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
@@ -209,7 +211,7 @@ namespace Anwill {
         s_API->DrawMesh(mesh);
 
         textures[textures.size()-1]->Unbind();
-        shader->Unbind();
+        shader->Unbind(); */
     }
 
     void Renderer2D::SubmitLines(const std::shared_ptr<Shader>& shader,

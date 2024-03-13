@@ -2,6 +2,8 @@
 
 namespace Anwill {
 
+    Mesh Mesh::s_UnitRectangle;
+
     Mesh Mesh::CreateRectMesh(float width, float height, bool texture)
     {
         unsigned int arrLength = texture ? 5 * 4 : 3 * 4;
@@ -126,6 +128,13 @@ namespace Anwill {
 
         return {vertices, sizeof(vertices), indices, 12, bufferLayout};
     }
+
+    void Mesh::Init()
+    {
+
+    }
+
+    Mesh Mesh::GetUnitRectangle() { return s_UnitRectangle; }
 
     Mesh::Mesh()
     {}

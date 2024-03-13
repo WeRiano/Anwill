@@ -22,7 +22,7 @@ public:
         //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
-        AddLayer<BatchRendererHelloWorld>(0, ws);
+        //AddLayer<BatchRendererHelloWorld>(0, ws);
 
         //AddLayer<EcsTestLayer>(144);
 
@@ -35,7 +35,7 @@ public:
         //AddLayer<CollisionRender>(0, ws);
         //AddLayer<CollisionTest>(30, ws);
 
-        //AddLayer<GuiTest>(0);
+        AddLayer<GuiTest>(0);
     }
 };
 

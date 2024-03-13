@@ -2,7 +2,7 @@ add_library(Graphics STATIC
         Renderer.cpp GraphicsContext.cpp GraphicsAPI.cpp VertexBuffer.cpp IndexBuffer.cpp
         VertexArray.cpp Shader.cpp Camera.cpp Mesh.cpp Texture.cpp Font.cpp SpriteSheet.cpp
         Renderer2D.cpp SpriteAnimation.cpp
-        )
+)
 
 target_include_directories(Graphics PUBLIC
         ${PROJECT_SOURCE_DIR}/Anwill/vendor/freetype/include

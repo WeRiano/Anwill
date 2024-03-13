@@ -1,8 +1,9 @@
 #pragma once
 
 #include "gfx/BatchData2D.h"
-#include "gfx/Renderer.h" // So that we can use all the "global setting functions" that
-                          // are universal, so to speak (same for 2D and 3D)
+// So that we can use all the "global setting functions" that
+// are universal, so to speak (same for 2D and 3D)
+#include "gfx/Renderer.h"
 #include "gfx/SpriteAnimation.h"
 
 namespace Anwill {
@@ -12,17 +13,42 @@ namespace Anwill {
     public:
         static void Init(const std::shared_ptr<GraphicsAPI>& api);
 
-        static void DrawBatch();
+        static void BeginScene(const Camera& camera);
+
+        /**
+         * Add a (texture-less) color-quad to the batch.
+         * @param transform Quad transform.
+         * @param color Quad color.
+         */
         static void PushQuadToBatch(const Math::Mat4f& transform,
                                     const Math::Vec3f& color);
+        /**
+         * Add a sprite (in the form of a quad) to the batch.
+         * @param transform Quad transform.
+         * @param sprite Quad sprite.
+         */
         static void PushQuadToBatch(const Math::Mat4f& transform,
                                     const Sprite& sprite);
+        /**
+         * Add a 2D sprite animation (in the form of a quad) to the batch.
+         * @param transform Quad transform.
+         * @param animation Quad animation.
+         */
         static void PushQuadToBatch(const Math::Mat4f& transform,
                                     const SpriteAnimation& animation);
+        /**
+         * Add a (texture-less) color-circle to the batch.
+         * @param transform Circle transform.
+         * @param color Circle color.
+         */
         static void PushCircleToBatch(const Math::Mat4f& transform,
                                       const Math::Vec3f& color);
-
-        static void BeginScene(const Camera& camera);
+        /**
+         * Draw the batch. This is split into 2 different draw calls: circles and quads.
+         * Additional draw calls may also occur depending on the number of textures used
+         * and the number of texture slots supported.
+         */
+        static void DrawBatch();
 
         static void SubmitText(const std::shared_ptr<Shader>& shader, Font& font,
                                const std::string& text, const Math::Mat4f& transform, float maxWidth = 0);

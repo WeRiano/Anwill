@@ -185,9 +185,9 @@ void BatchRendererHelloWorld::MoveCamera()
         m_IsBatchRendering = false;
     }
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Down)) {
-        m_SpriteAnimation.IncrementFrameDelta(0.02);
+        m_SpriteAnimation.ChangeFrameDelta(0.02);
     }
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Up)) {
-        m_SpriteAnimation.IncrementFrameDelta(-0.02);
+        m_SpriteAnimation.ChangeFrameDelta(-0.02);
     }
 }

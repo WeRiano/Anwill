@@ -22,75 +22,42 @@ namespace Anwill {
     void SpriteAnimation::AddFrame(const std::shared_ptr<Texture>& texture,
                                    const QuadTexCoords& texCoords)
     {
-        if (m_TexToID.contains(texture))
-        {
-            unsigned int id = m_TexToID[texture];
-            m_FrameQ.emplace(id, texCoords);
-        } else
-        {
-            unsigned int newID = m_FrameQ.size();
-            m_FrameQ.emplace(newID, texCoords);
-            m_IDToTex[newID] = texture;
-            m_TexToID[texture] = newID;
-        }
+        m_FrameQ.emplace(texture, texCoords);
     }
 
     void SpriteAnimation::AddFrame(const std::shared_ptr<SpriteSheet>& spriteSheet,
                                    unsigned int spriteSheetXPos,
                                    unsigned int spriteSheetYPos,
-                                   int pixelLeftPad, int pixelRightPad,
-                                   int pixelBottomPad, int pixelTopPad)
+                                   int leftPadPixels, int rightPadPixels,
+                                   int bottomPadPixels, int topPadPixels)
     {
-        auto texCoords = spriteSheet->GetEvenSpriteTexCoords(spriteSheetXPos,
-                                                             spriteSheetYPos,
-                                                             pixelLeftPad, pixelRightPad,
-                                                             pixelBottomPad, pixelTopPad);
-        AddFrame(spriteSheet->GetTexture(), texCoords);
+        AddFrame(spriteSheet->GetSprite(spriteSheetXPos,
+                                            spriteSheetYPos,
+                                            leftPadPixels, rightPadPixels,
+                                            bottomPadPixels, topPadPixels));
     }
 
-    void SpriteAnimation::AddFramesHorizontally(
-            const std::shared_ptr<SpriteSheet>& spriteSheet, unsigned int startXPos,
-            unsigned int startYPos, unsigned int increment, unsigned int count)
+    void SpriteAnimation::AddFrame(const Sprite& sprite)
     {
-        unsigned int y = startYPos;
-        for(unsigned int x = startXPos; x < startXPos + count; x += increment)
-        {
-            auto texCoords = spriteSheet->GetEvenSpriteTexCoords(x, y, 0, 0, 0, 0);
-            AddFrame(spriteSheet->GetTexture(), texCoords);
+        m_FrameQ.push(sprite);
+    }
+
+    void SpriteAnimation::AddFrames(const std::shared_ptr<SpriteSheet>& spriteSheet, unsigned int startXPos,
+                                    unsigned int startYPos, unsigned int xIncrement, unsigned int yIncrement,
+                                    unsigned int count)
+    {
+        unsigned int i = 0;
+        while(i < count) {
+            AddFrame(spriteSheet->GetSprite(startXPos, startYPos, 0, 0, 0, 0));
+            startXPos += xIncrement;
+            startYPos += yIncrement;
+            i++;
         }
     }
 
-    void
-    SpriteAnimation::AddFramesVertically(const std::shared_ptr<SpriteSheet>& spriteSheet,
-                                         unsigned int startXPos, unsigned int startYPos,
-                                         unsigned int increment, unsigned int count)
-    {
-        unsigned int x = startXPos;
-        for(unsigned int y = startYPos; y < startXPos + count; y += increment)
-        {
-            auto texCoords = spriteSheet->GetEvenSpriteTexCoords(x, y, 0, 0, 0, 0);
-            AddFrame(spriteSheet->GetTexture(), texCoords);
-        }
-    }
-
-    void
-    SpriteAnimation::AddFramesDiagonally(const std::shared_ptr<SpriteSheet>& spriteSheet,
-                                         unsigned int startXPos, unsigned int startYPos,
-                                         unsigned int increment, unsigned int count)
-    {
-        unsigned int x = startXPos;
-        unsigned int y = startYPos;
-        for(unsigned int i = 0; i < startXPos + count; i += increment)
-        {
-            auto texCoords = spriteSheet->GetEvenSpriteTexCoords(x + i, y + i,
-                                                                 0, 0, 0, 0);
-            AddFrame(spriteSheet->GetTexture(), texCoords);
-        }
-    }
-
-    void SpriteAnimation::IncrementFrameDelta(const Timestamp& delta,
-                                              const Timestamp& min,
-                                              const Timestamp& max)
+    void SpriteAnimation::ChangeFrameDelta(const Timestamp& delta,
+                                           const Timestamp& min,
+                                           const Timestamp& max)
     {
         m_FrameDelta += delta;
         if(m_FrameDelta < min) {
@@ -100,9 +67,9 @@ namespace Anwill {
         }
     }
 
-    void SpriteAnimation::IncrementFrameDelta(double f, const Timestamp& max)
+    void SpriteAnimation::ChangeFrameDelta(double delta, const Timestamp& max)
     {
-        m_FrameDelta += (m_FrameDelta * f);
+        m_FrameDelta += (m_FrameDelta * delta);
         if(m_FrameDelta > max) {
             m_FrameDelta = max;
         }
@@ -110,8 +77,7 @@ namespace Anwill {
 
     Sprite SpriteAnimation::GetActiveFrame() const
     {
-        const SpriteFrame& frame = m_FrameQ.front();
-        return { m_IDToTex.at(frame.id), frame.texCoords};
+        return m_FrameQ.front();
     }
 
     void SpriteAnimation::SetFrameDelta(const Timestamp& frameDelta)

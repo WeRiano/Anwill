@@ -11,79 +11,100 @@
 
 namespace Anwill {
 
+    // TODO: This should be dependent on SPRITE!
+
     /**
-     * Animation of frames.
-     * Defined by the time between frames (frameDelta) and a bunch of frames (sprites).
+     * Sprite animation.
+     * Defined by a time between frames (frameDelta) and a bunch of frames (sprites).
      */
     class SpriteAnimation {
     public:
         SpriteAnimation(const Timestamp& frameDelta);
 
+        /**
+         * Progress the animation.
+         * @param delta Amount of time in which the animation will progress.
+         */
         void Tick(const Timestamp& delta);
+
+        /**
+         * Add a frame to the animation.
+         * @param sprite New sprite frame.
+         */
+        void AddFrame(const Sprite& sprite);
+
+        /**
+         * Add a frame to the animation.
+         * @param texture Frame texture.
+         * @param texCoords Frame texture coordinates.
+         */
         void AddFrame(const std::shared_ptr<Texture>& texture,
                       const QuadTexCoords& texCoords);
+
+        /**
+         * Add a frame to the animation from a spritesheet.
+         * @param spriteSheet Spritesheet which the frame is from.
+         * @param spriteSheetXPos Sprite X position on the sheet, starting from left.
+         * @param spriteSheetYPos Sprite Y position on the sheet, starting from bottom.
+         * @param leftPadPixels Number of pixels to add to the left of the sprite.
+         * @param rightPadPixels Number of pixels to add to the right of the sprite.
+         * @param bottomPadPixels Number of pixels to add to the top of the sprite.
+         * @param topPadPixels Number of pixels to add to the bottom of the sprite.
+         */
         void AddFrame(const std::shared_ptr<SpriteSheet>& spriteSheet,
                       unsigned int spriteSheetXPos, unsigned int spriteSheetYPos,
-                      int pixelLeftPad = 0, int pixelRightPad = 0,
-                      int pixelBottomPad = 0, int pixelTopPad = 0);
+                      int leftPadPixels = 0, int rightPadPixels = 0,
+                      int bottomPadPixels = 0, int topPadPixels = 0);
+
         /**
-         * @brief
-         * @param spriteSheet
-         * @param startXPos
-         * @param startYPos
-         * @param increment positive = right
-         * @param count
+         * Add several frames to the animation from a spritesheet.
+         * @param spriteSheet The Even @SpriteSheet to add frames from.
+         * @param startXPos Sprite X position of the first sprite on the sheet.
+         * @param startYPos Sprite Y position of the first sprite on the sheet.
+         * @param xIncrement Horizontal increment. Positive values move to the right.
+         * @param yIncrement Vertical increment. Positive values move upwards.
+         * @param count Number of sprites to add.
          */
-        void AddFramesHorizontally(const std::shared_ptr<SpriteSheet>& spriteSheet,
-                                   unsigned int startXPos, unsigned int startYPos,
-                                   unsigned int increment, unsigned int count);
+        void AddFrames(const std::shared_ptr<SpriteSheet>& spriteSheet,
+                       unsigned int startXPos, unsigned int startYPos,
+                       unsigned int xIncrement, unsigned int yIncrement,
+                       unsigned int count);
+
         /**
-         * @brief
-         * @param spriteSheet
-         * @param startXPos
-         * @param startYPos
-         * @param increment positive = up
-         * @param count
+         * Change the frame delta by incrementing it with a timestamp value.
+         * @param delta Timestamp which the frame delta will be incremented with.
+         * @param min Minimum resulting frame delta value.
+         * @param max Maximum resulting frame delta value.
          */
-        void AddFramesVertically(const std::shared_ptr<SpriteSheet>& spriteSheet,
-                                   unsigned int startXPos, unsigned int startYPos,
-                                   unsigned int increment, unsigned int count);
-        /**
-         * @brief
-         * @param spriteSheet
-         * @param startXPos
-         * @param startYPos
-         * @param increment positive = up and right
-         * @param count
-         */
-        void AddFramesDiagonally(const std::shared_ptr<SpriteSheet>& spriteSheet,
-                                 unsigned int startXPos, unsigned int startYPos,
-                                 unsigned int increment, unsigned int count);
-        void IncrementFrameDelta(const Timestamp& delta,
-                                 const Timestamp& min = Timestamp(0),
-                                 const Timestamp& max
+        void ChangeFrameDelta(const Timestamp& delta,
+                              const Timestamp& min = Timestamp(0),
+                              const Timestamp& max
                                  = Timestamp(std::numeric_limits<long long>::max()));
-        void IncrementFrameDelta(double f, const Timestamp& max
+
+        /**
+         * Change the frame delta by incrementing or decrementing it.
+         * @param delta Value to increment/decrement the frame delta with.
+         * @param max Maximum resulting frame delta value.
+         */
+        void ChangeFrameDelta(double delta, const Timestamp& max
                                  = Timestamp(std::numeric_limits<long long>::max()));
+
+        /**
+         * Get the current frame of the animation.
+         * @return The current frame.
+         */
         Sprite GetActiveFrame() const;
+
+        /**
+         * Set the frame delta value.
+         * @param frameDelta New frame delta.
+         */
         void SetFrameDelta(const Timestamp& frameDelta);
 
     private:
-        // TODO: Why is this used instead of Sprite??
-        struct SpriteFrame {
-            unsigned int id; // TODO: ... why store an iD that is linked to a texture?? Just add the texture directly
-            QuadTexCoords texCoords;
-        };
-
         Timestamp m_FrameDelta;
         Timestamp m_Current;
-        // TODO: Just have a stack of texture pointers ... and just use regular texCoords everywhere for now?
-        std::queue<SpriteFrame> m_FrameQ;
-        // I'm not sure if a combination of these two are the best solution to the problem.
-        // A lot better than storing the same texture for every frame if all frames
-        // come from 1 spritesheet (which is the intended way AND worst case)
-        std::unordered_map<unsigned int, std::shared_ptr<Texture>> m_IDToTex;
-        std::unordered_map<std::shared_ptr<Texture>, unsigned int> m_TexToID;
 
+        std::queue<Sprite> m_FrameQ;
     };
 }
