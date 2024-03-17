@@ -13,6 +13,9 @@ namespace Anwill {
         if (m_Current >= m_FrameDelta) {
             m_Current -= m_FrameDelta;
 
+            if(m_FrameQ.empty()) {
+                return;
+            }
             auto sprite = m_FrameQ.front();
             m_FrameQ.pop();
             m_FrameQ.push(sprite);

@@ -4,6 +4,7 @@
 #include "Tests/Renderer/TextureHelloWorld.h"
 #include "Tests/Renderer/FontHelloWorld.h"
 #include "Tests/Renderer/BatchRendererHelloWorld.h"
+#include "Tests/Renderer/SpriteAnimationTest.h"
 #include "Tests/Gui/GuiTest.h"
 #include "Tests/Physics/dynamics/DynamicsRender.h"
 #include "Tests/Physics/dynamics/DynamicsTest.h"
@@ -19,23 +20,28 @@ public:
     Sandbox(const Anwill::WindowSettings& ws)
         : App(ws, true)
     {
+        /// Renderer tests
         //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
         //AddLayer<BatchRendererHelloWorld>(0, ws);
+        AddLayer<SpriteAnimationTest>(0, ws);
 
-        //AddLayer<EcsTestLayer>(144);
-
-        //AddLayer<TPSCalcs>(30);
-        //AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
-
+        /// Physics tests
         //AddLayer<DynamicsTest>(10);
         //AddLayer<DynamicsRender>(0, ws);
-
         //AddLayer<CollisionRender>(0, ws);
         //AddLayer<CollisionTest>(30, ws);
 
-        AddLayer<GuiTest>(0);
+        /// GUI tests
+        //AddLayer<GuiTest>(0);
+
+        /// ECS tests
+        //AddLayer<EcsTestLayer>(144);
+
+        /// Smaller projects
+        //AddLayer<TPSCalcs>(30);
+        //AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
     }
 };
 

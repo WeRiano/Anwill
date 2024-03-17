@@ -10,4 +10,4 @@ add_subdirectory(Anwill/src)
 add_subdirectory(Sandbox/src)
 
 # Dependencies
-add_subdirectory(Anwill/vendor/glfw)
+#add_subdirectory(Anwill/vendor/glfw)

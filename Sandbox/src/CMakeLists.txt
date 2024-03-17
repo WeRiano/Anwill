@@ -1,5 +1,7 @@
 add_executable(Sandbox Sandbox.cpp
 
+        Tests/MovingCameraBaseLayer.cpp
+
         Tests/Ecs/EcsTestLayer.cpp
 
         Tests/Gui/GuiTest.cpp
@@ -13,6 +15,7 @@ add_executable(Sandbox Sandbox.cpp
         Tests/Renderer/TextureHelloWorld.cpp
         Tests/Renderer/FontHelloWorld.cpp
         Tests/Renderer/BatchRendererHelloWorld.cpp
+        Tests/Renderer/SpriteAnimationTest.cpp
 
         SmallerProjects/TopDownShadow/TPS.cpp
         SmallerProjects/TopDownShadow/TPSCalcs.cpp
@@ -20,6 +23,7 @@ add_executable(Sandbox Sandbox.cpp
 
 target_include_directories(Sandbox PUBLIC
         ${PROJECT_SOURCE_DIR}/Anwill/src
+        ${PROJECT_SOURCE_DIR}/Sandbox/src
         )
 
 target_link_libraries(Sandbox PRIVATE Anwill)

@@ -38,8 +38,8 @@ namespace Anwill {
          */
         Sprite GetSprite(unsigned int spriteXPos,
                          unsigned int spriteYPos,
-                         int leftPadPixels, int rightPadPixels,
-                         int bottomPadPixels, int topPadPixels);
+                         int leftPadPixels = 0, int rightPadPixels = 0,
+                         int bottomPadPixels = 0, int topPadPixels = 0);
 
         /**
          * Get a @Sprite from an uneven spritesheet.
