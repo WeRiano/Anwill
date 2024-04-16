@@ -81,19 +81,33 @@ namespace Anwill {
                               const Timestamp& max
                                  = Timestamp(std::numeric_limits<long long>::max()));
 
+        /*
         /**
          * Change the frame delta by incrementing or decrementing it.
          * @param delta Value to increment/decrement the frame delta with.
          * @param max Maximum resulting frame delta value.
+
+        void ChangeFrameDelta(double delta);
+        */
+
+        /**
+         * Check if the animation is empty (contains no frames).
+         * @return True if the animation is empty and false otherwise.
          */
-        void ChangeFrameDelta(double delta, const Timestamp& max
-                                 = Timestamp(std::numeric_limits<long long>::max()));
+        bool IsEmpty() const;
 
         /**
          * Get the current frame of the animation.
+         * Will crash if animation contains no frames.
          * @return The current frame.
          */
         Sprite GetActiveFrame() const;
+
+        /**
+         * Get the current time between frames.
+         * @return Frame delta.
+         */
+        Timestamp GetFrameDelta() const;
 
         /**
          * Set the frame delta value.

@@ -27,10 +27,12 @@ void SpriteAnimationTest::Update(const Anwill::Timestamp& timestamp)
 
 void SpriteAnimationTest::ChangeAnimationSpeed()
 {
+    AW_DEBUG("Animation delta (ms): {0}", m_SpriteAnimation.GetFrameDelta().GetMilliseconds());
+
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Down)) {
-        m_SpriteAnimation.ChangeFrameDelta(0.02);
+        m_SpriteAnimation.ChangeFrameDelta(100);
     }
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Up)) {
-        m_SpriteAnimation.ChangeFrameDelta(-0.02);
+        m_SpriteAnimation.ChangeFrameDelta(-100);
     }
 }

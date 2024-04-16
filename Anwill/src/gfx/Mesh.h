@@ -18,7 +18,7 @@ namespace Anwill {
          */
         static void Init();
 
-        static Mesh GetUnitRectangle();
+        static Mesh GetUnitRectangle(bool withTextureCoords);
 
         Mesh();
         Mesh(float* vertices, unsigned int verticesSizeBytes, unsigned int* indices,
@@ -30,7 +30,7 @@ namespace Anwill {
         void Unbind() const;
 
     private:
-        static Mesh s_UnitRectangle;
+        static Mesh s_UnitRectangle, s_UnitTextureRectangle;
 
         std::shared_ptr<VertexArray> m_VA;
         std::shared_ptr<IndexBuffer> m_IB;

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "Tests/MovingCameraBaseLayer.h"
+
 #include "Anwill.h"
 
-class BatchRendererHelloWorld : public Anwill::Layer
+class BatchRendererHelloWorld : public MovingCameraBaseLayer
 {
 public:
     BatchRendererHelloWorld(unsigned int ups, const Anwill::WindowSettings& ws);
@@ -10,23 +12,25 @@ public:
     void Update(const Anwill::Timestamp& timestamp) override;
 
 private:
-    Anwill::OrthographicCamera m_Camera;
-
-    bool m_IsBatchRendering;
     unsigned int m_CanvasWidth, m_CanvasHeight;
     float m_QuadWidth, m_QuadHeight;
     unsigned int m_NrQuadsX, m_NrQuadsY;
 
+    // Single quad shaders for single quad rendering (which is repeated)
     std::shared_ptr<Anwill::Shader> m_SlowTextShader, m_SlowColorShader;
-    std::unique_ptr<Anwill::Sprite> m_Sprite;
-    Anwill::SpriteAnimation m_SpriteAnimation;
-    std::shared_ptr<Anwill::SpriteSheet> m_SpriteSheet;
-    std::array<std::shared_ptr<Anwill::SpriteSheet>, 64> m_SheetArr;
-    std::shared_ptr<Anwill::Texture> m_TestTexture;
-    Anwill::Mesh m_QuadTextMesh, m_QuadColorMesh;
 
-    void BatchRendering();
+    std::shared_ptr<Anwill::SpriteSheet> m_SpriteSheet;
+
+    std::shared_ptr<Anwill::Texture> m_TestTexture;
+
+    std::function<void()> m_TestFunc;
+
+    void BatchRendering() const;
     void SlowRendering();
-    void TestBatchTextureRendering();
-    void MoveCamera();
+
+    void BatchRenderingTextureQuads();
+    void SlowRenderingTextureQuads();
+
+    void BatchRenderingEllipses();
+    void SwapTest();
 };

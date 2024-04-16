@@ -13,10 +13,10 @@ namespace Anwill {
         spriteSheet->m_Texture = Texture::Create(filePath);
         spriteSheet->m_SpriteCountX = spriteCountX;
         spriteSheet->m_SpriteCountY = spriteCountY;
-        spriteSheet->m_SpriteWidth = spriteSheet->m_Texture->GetWidth() /
-                spriteSheet->m_SpriteCountX;
-        spriteSheet->m_SpriteHeight = spriteSheet->m_Texture->GetHeight() /
-                spriteSheet->m_SpriteCountY;
+        spriteSheet->m_SpriteXCount = spriteSheet->m_Texture->GetWidth() /
+                                      spriteSheet->m_SpriteCountX;
+        spriteSheet->m_SpriteYCount = spriteSheet->m_Texture->GetHeight() /
+                                      spriteSheet->m_SpriteCountY;
         return spriteSheet;
     }
 
@@ -31,21 +31,21 @@ namespace Anwill {
         }
         QuadTexCoords texCoords = {
                 Utils::NormalizeBetween0And1<int>(
-                m_SpriteWidth * (spriteXPos - 1) - leftPadPixels,
-                0,
-                m_Texture->GetWidth()),
+                        m_SpriteXCount * (spriteXPos - 1) - leftPadPixels,
+                        0,
+                        m_Texture->GetWidth()),
                 Utils::NormalizeBetween0And1<int>(
-                m_SpriteHeight * (spriteYPos - 1) - bottomPadPixels,
-                0,
-                m_Texture->GetHeight()),
+                        m_SpriteYCount * (spriteYPos - 1) - bottomPadPixels,
+                        0,
+                        m_Texture->GetHeight()),
                 Utils::NormalizeBetween0And1<int>(
-                m_SpriteWidth * spriteXPos + rightPadPixels,
-                0,
-                m_Texture->GetWidth()),
+                        m_SpriteXCount * spriteXPos + rightPadPixels,
+                        0,
+                        m_Texture->GetWidth()),
                 Utils::NormalizeBetween0And1<int>(
-                m_SpriteHeight * spriteYPos + topPadPixels,
-                0,
-                m_Texture->GetHeight())
+                        m_SpriteYCount * spriteYPos + topPadPixels,
+                        0,
+                        m_Texture->GetHeight())
         };
 
         return {m_Texture, texCoords};
@@ -81,5 +81,15 @@ namespace Anwill {
     std::shared_ptr<Texture> SpriteSheet::GetTexture() const
     {
         return m_Texture;
+    }
+
+    unsigned int SpriteSheet::GetSpriteXCount() const
+    {
+        return m_SpriteXCount;
+    }
+
+    unsigned int SpriteSheet::GetSpriteYCount() const
+    {
+        return m_SpriteYCount;
     }
 }

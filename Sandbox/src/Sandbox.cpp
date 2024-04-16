@@ -24,8 +24,8 @@ public:
         //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
-        //AddLayer<BatchRendererHelloWorld>(0, ws);
-        AddLayer<SpriteAnimationTest>(0, ws);
+        AddLayer<BatchRendererHelloWorld>(0, ws);
+        //AddLayer<SpriteAnimationTest>(0, ws);
 
         /// Physics tests
         //AddLayer<DynamicsTest>(10);

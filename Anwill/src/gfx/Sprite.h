@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gfx/Texture.h"
+#include "gfx/Mesh.h"
 
 namespace Anwill {
 
@@ -11,25 +12,23 @@ namespace Anwill {
 
     /**
      * A sprite consists of
-     *     - a rectangular mesh
-     *     - a texture with some texture coordinates
-     * This exists to simplify the process of rendering a quad with a shared texture
+     *     - a texture
+     *     - a quad mesh with some texture coordinates (which are non-standard if texture is sheet)
+     *
      * (but unique texture coordinates)
      */
-    struct Sprite
+    class Sprite
     {
+    public:
         const std::shared_ptr<Texture> texture;
-
         QuadTexCoords texCoords;
 
-        Sprite(std::shared_ptr<Texture> texture,
-               const QuadTexCoords texCoords = {0.0f, 0.0f, 1.0f, 1.0f})
-                : texture(std::move(texture)), texCoords(texCoords) {}
+        Sprite(std::shared_ptr<Texture> texture, const QuadTexCoords texCoords = {0.0f, 0.0f, 1.0f, 1.0f});
 
-        // DEPRECATED - we swap the dependencies (sheet looks at sprite instead)
-        /* Sprite(const std::shared_ptr<SpriteSheet>& spriteSheet,
-               unsigned int spriteSheetXPos, unsigned int spriteSheetYPos,
-               int pixelLeftPad = 0, int pixelRightPad = 0,
-               int pixelBottomPad = 0, int pixelTopPad = 0); */
+        /**
+         * Used when a sprite wants to be rendered on its own
+         * outside of batch renderer. Not preferred.
+         */
+        Mesh GetQuadMesh() const;
     };
 }

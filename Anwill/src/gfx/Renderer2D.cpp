@@ -73,7 +73,11 @@ namespace Anwill {
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
                                      const SpriteAnimation& animation)
     {
-        std::shared_ptr<Texture> texture;
+        if(animation.IsEmpty())
+        {
+            AW_WARN("Pushed empty animation to batch renderer");
+            return;
+        }
         auto sprite = animation.GetActiveFrame();
         PushQuadToBatch(transform, sprite);
     }
@@ -201,17 +205,18 @@ namespace Anwill {
         // Makes no sense right now to submit a sprite, because vertex array has to be created render-time
         // (with texCoords). Sprite should have one that we can just grab, but that is not necessary when its used
         // for batch renderer.
-        /*
+
         shader->Bind();
         shader->SetUniformMat4f(transform, "u_Transform");
         shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
 
-        sprite.texture;
+        sprite.texture->Bind();
 
-        s_API->DrawMesh(mesh);
+        s_API->DrawMesh(sprite.GetQuadMesh());
 
-        textures[textures.size()-1]->Unbind();
-        shader->Unbind(); */
+        sprite.texture->Unbind();
+
+        shader->Unbind();
     }
 
     void Renderer2D::SubmitLines(const std::shared_ptr<Shader>& shader,

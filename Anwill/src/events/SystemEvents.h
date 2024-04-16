@@ -14,9 +14,10 @@ namespace Anwill {
         {
             s_SysEvents.Add<E>(child);
         }
+
         static void Pop();
 
-        template <class E>
+        template<class E>
         static void Subscribe(std::function<void(std::unique_ptr<Event>&)> func)
         {
             s_SysEvents.Subscribe<E>(func);

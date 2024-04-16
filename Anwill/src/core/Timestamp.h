@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "PlatDef.h"
 
 #ifdef AW_PLATFORM_WINDOWS
@@ -8,14 +10,53 @@
 
 namespace Anwill {
 
+    /**
+     * Represents a point in time or a duration.
+     */
     class Timestamp
     {
     public:
+        enum class Unit : long long {
+            Seconds = 6,
+            Milliseconds = 3,
+            Microseconds = 0,
+            Nanoseconds = -3
+        };
+
+        /*
+        static Timestamp CreateTimestampInSeconds();
+        static Timestamp CreateTimestampInMilliseconds();
+        static Timestamp CreateTimestampInMicroseconds();
+         */
+
         Timestamp()
                 : m_Time(GetTime()) {}
 
         Timestamp(long long microseconds)
                 : m_Time(microseconds) {}
+
+        Timestamp(long long value, const Unit&& unit)
+        {
+            switch(unit) {
+                case Unit::Seconds:
+                    m_Time = value * 1000000;
+                    break;
+                case Unit::Milliseconds:
+                    m_Time = value * 1000;
+                    break;
+                case Unit::Microseconds:
+                    m_Time = value;
+                    break;
+                case Unit::Nanoseconds:
+                    m_Time = value / 1000;
+                    break;
+
+            }
+
+            m_Time = static_cast<long long>(
+                    static_cast<long double>(value) * std::powl(10.0l, static_cast<long double>(unit))
+            );
+        }
 
         /**
          * Fetch absolute delta in microseconds between two timestamps.

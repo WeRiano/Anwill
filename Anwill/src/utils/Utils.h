@@ -8,8 +8,8 @@
 // Member functions need to be called on an object which is passed as an implicit
 // argument to the function. If you want to bind a non-static member
 // function, global function or lambda, don't use this. Just pass it like normal.
-#define AW_BIND_THIS_MEMBER_FUNC(fn) [this](auto&&... args) -> decltype(auto) \
-{ return this->fn(std::forward<decltype(args)>(args)...); }
+#define AW_BIND_THIS_MEMBER_FUNC(func) [this](auto&&... args) -> decltype(auto) \
+{ return this->func(std::forward<decltype(args)>(args)...); }
 
 namespace Anwill {
 

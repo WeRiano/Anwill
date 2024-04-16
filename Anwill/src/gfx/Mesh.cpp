@@ -2,7 +2,7 @@
 
 namespace Anwill {
 
-    Mesh Mesh::s_UnitRectangle;
+    Mesh Mesh::s_UnitRectangle, Mesh::s_UnitTextureRectangle;
 
     Mesh Mesh::CreateRectMesh(float width, float height, bool texture)
     {
@@ -131,10 +131,14 @@ namespace Anwill {
 
     void Mesh::Init()
     {
-
+        s_UnitRectangle = CreateRectMesh(1.0f, 1.0f, false);
+        s_UnitTextureRectangle = CreateRectMesh(1.0f, 1.0f, true);
     }
 
-    Mesh Mesh::GetUnitRectangle() { return s_UnitRectangle; }
+    Mesh Mesh::GetUnitRectangle(bool withTextureCoords)
+    {
+        return withTextureCoords ? s_UnitTextureRectangle : s_UnitRectangle;
+    }
 
     Mesh::Mesh()
     {}

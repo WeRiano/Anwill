@@ -65,22 +65,26 @@ namespace Anwill {
         m_FrameDelta += delta;
         if(m_FrameDelta < min) {
             m_FrameDelta = min;
+        } else if(m_FrameDelta < 0) {
+            m_FrameDelta = 0;
         } else if(m_FrameDelta > max) {
             m_FrameDelta = max;
         }
     }
 
-    void SpriteAnimation::ChangeFrameDelta(double delta, const Timestamp& max)
+    bool SpriteAnimation::IsEmpty() const
     {
-        m_FrameDelta += (m_FrameDelta * delta);
-        if(m_FrameDelta > max) {
-            m_FrameDelta = max;
-        }
+        return m_FrameQ.empty();
     }
 
     Sprite SpriteAnimation::GetActiveFrame() const
     {
         return m_FrameQ.front();
+    }
+
+    Timestamp SpriteAnimation::GetFrameDelta() const
+    {
+        return m_FrameDelta;
     }
 
     void SpriteAnimation::SetFrameDelta(const Timestamp& frameDelta)

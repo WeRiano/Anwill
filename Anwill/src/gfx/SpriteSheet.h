@@ -54,11 +54,13 @@ namespace Anwill {
                          unsigned int width, unsigned int height);
 
         std::shared_ptr<Texture> GetTexture() const;
+        unsigned int GetSpriteXCount() const;
+        unsigned int GetSpriteYCount() const;
 
     private:
         std::shared_ptr<Texture> m_Texture;
         // Assuming an evenly distributed sprite sheet. See GetUnevenSpriteTexCoords if
         // this assumption is unrealistic
-        unsigned int m_SpriteCountX, m_SpriteCountY, m_SpriteWidth, m_SpriteHeight;
+        unsigned int m_SpriteCountX, m_SpriteCountY, m_SpriteXCount, m_SpriteYCount;
     };
 }
