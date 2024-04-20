@@ -1,0 +1,3 @@
+add_library(CollisionSandbox STATIC CollisionRender.cpp CollisionTest.cpp)
+
+target_link_libraries(CollisionSandbox PUBLIC Anwill)

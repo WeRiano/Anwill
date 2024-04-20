@@ -35,8 +35,7 @@ namespace Anwill {
             s_Instance->m_ComponentManager.RegisterComponent<C>();
         }
 
-        // Add a component to an entity. This will REPLACE a component if it already
-        // exists for a given entity.
+        // Add a component to an entity. This will replace any pre-existing component of the same type.
         template <class C, typename... Args>
         static void AddComponent(EntityID entityID, Args&&... args)
         {

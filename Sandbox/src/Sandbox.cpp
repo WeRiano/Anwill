@@ -1,18 +1,20 @@
 #include <iostream>
 
-#include "Tests/Renderer/RendererHelloWorld"
-#include "Tests/Renderer/TextureHelloWorld.h"
-#include "Tests/Renderer/FontHelloWorld.h"
-#include "Tests/Renderer/BatchRendererHelloWorld.h"
-#include "Tests/Renderer/SpriteAnimationTest.h"
-#include "Tests/Gui/GuiTest.h"
-#include "Tests/Physics/dynamics/DynamicsRender.h"
-#include "Tests/Physics/dynamics/DynamicsTest.h"
-#include "Tests/Physics/collision/CollisionRender.h"
-#include "Tests/Physics/collision/CollisionTest.h"
-#include "Tests/Ecs/EcsTestLayer.h"
-#include "SmallerProjects/TopDownShadow/TPS.h"
-#include "SmallerProjects/TopDownShadow/TPSCalcs.h"
+#include "Anwill.h"
+
+#include "ecs/EcsTestLayer.h"
+#include "gui/GuiTest.h"
+#include "physics/dynamics/DynamicsRender.h"
+#include "physics/dynamics/DynamicsTest.h"
+#include "physics/collision/CollisionRender.h"
+#include "physics/collision/CollisionTest.h"
+#include "renderer/RendererHelloWorld"
+#include "renderer/TextureHelloWorld.h"
+#include "renderer/FontHelloWorld.h"
+#include "renderer/BatchRendererHelloWorld.h"
+#include "renderer/SpriteAnimationTest.h"
+#include "tps/TPS.h"
+#include "tps/TPSCalcs.h"
 
 class Sandbox : public Anwill::App
 {
@@ -24,14 +26,14 @@ public:
         //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
-        AddLayer<BatchRendererHelloWorld>(0, ws);
+        //AddLayer<BatchRendererHelloWorld>(0, ws);
         //AddLayer<SpriteAnimationTest>(0, ws);
 
         /// Physics tests
         //AddLayer<DynamicsTest>(10);
         //AddLayer<DynamicsRender>(0, ws);
-        //AddLayer<CollisionRender>(0, ws);
-        //AddLayer<CollisionTest>(30, ws);
+        AddLayer<CollisionRender>(0, ws);
+        AddLayer<CollisionTest>(30, ws);
 
         /// GUI tests
         //AddLayer<GuiTest>(0);

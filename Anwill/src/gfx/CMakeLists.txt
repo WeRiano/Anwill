@@ -5,12 +5,12 @@ add_library(Graphics STATIC
 )
 
 target_include_directories(Graphics PUBLIC
-        ${PROJECT_SOURCE_DIR}/Anwill/vendor/freetype/include
-        ${PROJECT_SOURCE_DIR}/Anwill/vendor/stb_truetype
+        ${PROJECT_SOURCE_DIR}/vendor/freetype/include
+        ${PROJECT_SOURCE_DIR}/vendor/stb_truetype
         )
 
 target_link_directories(Graphics PUBLIC
-        ${PROJECT_SOURCE_DIR}/Anwill/vendor/freetype/lib
+        ${PROJECT_SOURCE_DIR}/vendor/freetype/lib
         )
 
 target_link_libraries(Graphics PUBLIC OpenGL Math freetyped.lib)

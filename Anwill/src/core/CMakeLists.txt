@@ -3,7 +3,7 @@ add_library(Core STATIC
         )
 
 target_include_directories(Core PUBLIC
-        ${PROJECT_SOURCE_DIR}/Anwill/vendor/Willog/include
+        ${PROJECT_SOURCE_DIR}/vendor/Willog/include
         )
 
 target_link_libraries(Core PUBLIC Anwill)

@@ -4,10 +4,10 @@ project(AnwillEngine)
 set(CMAKE_CXX_STANDARD 20)
 
 # Anwill source
-add_subdirectory(Anwill/src)
+add_subdirectory(Anwill)
 
-# Test environment
-add_subdirectory(Sandbox/src)
+# Playground
+add_subdirectory(Sandbox)
 
-# Dependencies
-add_subdirectory(Anwill/vendor/glfw)
+# TODO: Editor!
+#add_subdirectory(Editor_project)

@@ -2,7 +2,7 @@
 
 #include "Anwill.h"
 
-#include "Tests/MovingCameraBaseLayer.h"
+#include "Base/MovingCameraBaseLayer.h"
 
 class SpriteAnimationTest : public MovingCameraBaseLayer
 {

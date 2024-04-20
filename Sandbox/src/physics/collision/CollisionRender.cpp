@@ -6,7 +6,6 @@ bool CollisionRender::s_PlayerIsRound = false;
 Anwill::EntityID CollisionRender::s_Player;
 Anwill::Mesh CollisionRender::s_Mesh;
 
-
 CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_Camera(ws.width, ws.height)
 {
@@ -30,10 +29,10 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
     float mass = 5.0f;
 
     // Even are circles
-    auto npc1 = Anwill::Ecs::CreateEntity(); // Rect
-    auto npc2 = Anwill::Ecs::CreateEntity(); // Ellipse
-    auto npc3 = Anwill::Ecs::CreateEntity(); // Rect
-    auto npc4 = Anwill::Ecs::CreateEntity(); // Ellipse
+    Anwill::EntityID npc1 = Anwill::Ecs::CreateEntity(); // Rect
+    Anwill::EntityID npc2 = Anwill::Ecs::CreateEntity(); // Ellipse
+    Anwill::EntityID npc3 = Anwill::Ecs::CreateEntity(); // Rect
+    Anwill::EntityID npc4 = Anwill::Ecs::CreateEntity(); // Ellipse
 
     s_Player = Anwill::Ecs::CreateEntity();
 
@@ -73,14 +72,8 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
     Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([this, delta](Anwill::EntityID id,
                                                                        Anwill::Math::Mat4f& transform,
                                                                        Anwill::RBody& body) {
-        bool isCircle = false;
-        if ((id == s_Player and s_PlayerIsRound) or id % 2 == 0 ) {
-            isCircle = true;
-        }
 
-        auto pos = body.GetPosition();
-        //transform.SetTranslateCol({0.0f, 0.0f, 0.0f});
-        //transform = Anwill::Math::Mat4f::RotateZ(transform, spinAngle);
+        Anwill::Math::Vec3f pos = body.GetPosition();
         transform.SetTranslateCol(pos);
 
         if(id == s_Player)
