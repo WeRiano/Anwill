@@ -666,9 +666,6 @@ namespace Anwill {
         m_TimeCountMS = 0;
         m_ShowCursor = true;
         KeycodeToAction(keyCode);
-        //AW_INFO("Render: {0}, {1}", m_RenderLeftIndex, m_RenderRightIndex);
-        //AW_INFO("Select: {0}, {1}", m_SelectLeftIndex, m_SelectRightIndex);
-        AW_INFO("Cursor: {0}", m_CursorIndex);
     }
 
     void GuiInputText::OnKeyRepeat(const KeyCode& keyCode)
@@ -855,11 +852,18 @@ namespace Anwill {
     }
 
     void GuiImage::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize, const Timestamp &delta) {
-
+        Math::Vec2f imageSize = {static_cast<float>(m_Texture->GetWidth()), static_cast<float>(m_Texture->GetHeight())};
+        Math::Mat4f transform = Math::Mat4f::Scale({}, imageSize);
+        Renderer2D::SubmitMesh(GuiStyling::textureShader, Mesh::GetUnitRectangle(true),
+                               transform, m_Texture);
     }
 
     bool GuiImage::IsHovering(const Math::Vec2f &mousePos) const {
-        return false;
+        return Math::Algo::IsPointInsideRectangle({0.0f, 0.0f},
+                                                  {static_cast<float>(m_Texture->GetWidth()), 0.0f},
+                                                  {static_cast<float>(m_Texture->GetWidth()), static_cast<float>(m_Texture->GetHeight())},
+                                                  {0.0f, static_cast<float>(m_Texture->GetHeight())},
+                                                  mousePos);
     }
 
     float GuiImage::GetWidth() const {

@@ -74,7 +74,6 @@ namespace Anwill {
                                                            const std::function<void()>& callback = [](){},
                                                            bool onNewRow = true,
                                                            GuiWindowID windowID = 0);
-
         static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,
                                                            int onSelectValue,
                                                            const std::shared_ptr<GuiContainer>& container,
@@ -85,14 +84,18 @@ namespace Anwill {
                                                          float pixelWidth,
                                                          bool onNewRow = true,
                                                          GuiWindowID windowID = 0);
-
         static std::shared_ptr<GuiInputText> TextInput(const std::string& defaultText,
                                                          float pixelWidth,
                                                          const std::shared_ptr<GuiContainer>& container,
                                                          bool onNewRow = true);
 
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, const std::shared_ptr<GuiContainer>& container);
+        static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text,
+                                                     const std::shared_ptr<GuiContainer>& container);
+
+        static std::shared_ptr<GuiImage> Image(const std::string& filePath, GuiWindowID windowID = 0);
+        static std::shared_ptr<GuiImage> Image(const std::string& filePath,
+                                               const std::shared_ptr<GuiContainer>& container);
 
     private:
         static std::unique_ptr<OrthographicCamera> s_Camera;
