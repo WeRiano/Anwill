@@ -26,14 +26,14 @@ public:
         //AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
-        //AddLayer<BatchRendererHelloWorld>(0, ws);
+        AddLayer<BatchRendererHelloWorld>(0, ws);
         //AddLayer<SpriteAnimationTest>(0, ws);
 
         /// Physics tests
         //AddLayer<DynamicsTest>(10);
         //AddLayer<DynamicsRender>(0, ws);
-        AddLayer<CollisionRender>(0, ws);
-        AddLayer<CollisionTest>(30, ws);
+        //AddLayer<CollisionRender>(0, ws);
+        //AddLayer<CollisionTest>(30, ws);
 
         /// GUI tests
         //AddLayer<GuiTest>(0);
