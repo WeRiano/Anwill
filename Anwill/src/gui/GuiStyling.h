@@ -118,6 +118,11 @@ namespace Anwill {
             static std::shared_ptr<Shader> shader;
         };
 
+        struct Image {
+        public:
+            static std::shared_ptr<Shader> shader;
+        };
+
         static void InitGlobalStyling();
     };
 }

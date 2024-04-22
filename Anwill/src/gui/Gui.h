@@ -93,8 +93,9 @@ namespace Anwill {
         static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text,
                                                      const std::shared_ptr<GuiContainer>& container);
 
-        static std::shared_ptr<GuiImage> Image(const std::string& filePath, GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiImage> Image(const std::string& filePath,
+        static std::shared_ptr<GuiImage> Image(const std::string& filePath, unsigned int maxRows = 0,
+                                               GuiWindowID windowID = 0);
+        static std::shared_ptr<GuiImage> Image(const std::string& filePath, unsigned int maxRows,
                                                const std::shared_ptr<GuiContainer>& container);
 
     private:

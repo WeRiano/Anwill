@@ -20,7 +20,7 @@ namespace Anwill {
     std::unique_ptr<Font> GuiStyling::Text::font;
 
     std::shared_ptr<Shader> GuiStyling::Text::shader, GuiStyling::primitiveShader, GuiStyling::circleShader,
-    GuiStyling::Window::shader, GuiStyling::Tooltip::shader;
+    GuiStyling::Window::shader, GuiStyling::Tooltip::shader, GuiStyling::Image::shader;
 
     std::shared_ptr<VertexArray> GuiStyling::Text::cursorVertexArray;
 
@@ -100,6 +100,7 @@ namespace Anwill {
         Button::shaders[(std::size_t) Button::Shape::Ellipse] = Shader::Create("Anwill/res/shaders/OpenGL/GuiCircleButton.glsl");
         Window::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiWindow.glsl");
         Tooltip::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTooltip.glsl");
+        Image::shader = Shader::Create("Anwill/res/shaders/OpenGL/GuiTexture.glsl");
 
             // Fonts
         Text::font = std::make_unique<Font>("Sandbox/assets/fonts/arial.ttf");

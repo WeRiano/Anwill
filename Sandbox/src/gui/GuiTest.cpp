@@ -70,6 +70,8 @@ GuiTest::GuiTest(const unsigned int ups)
 
     auto id2 = Anwill::Gui::CreateWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
     Anwill::Gui::Text("Some text inside window! Cool!", true, id2);
+    Anwill::Gui::Image("Sandbox/assets/textures/anwill.jpg", 2, id2);
+    Anwill::Gui::Text("Some text after image", true, id2);
 }
 
 void GuiTest::Update(const Anwill::Timestamp& timestamp)

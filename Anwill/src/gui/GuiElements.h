@@ -295,7 +295,7 @@ namespace Anwill {
 
     class GuiImage : public GuiElement {
     public:
-        GuiImage(const std::string& fileName, unsigned int maxRows = 0);
+        GuiImage(const std::string& fileName, unsigned int maxRows);
 
         void Render(const Math::Vec2f& assignedPos,
                     const Math::Vec2f& assignedMaxSize,
@@ -307,7 +307,7 @@ namespace Anwill {
 
     private:
         std::shared_ptr<Texture> m_Texture;
-
+        float m_ScaleFactor;
     };
 
     class GuiContainer {

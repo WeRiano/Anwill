@@ -23,8 +23,12 @@ in vec2 v_FragTexCoords;
 layout(location = 0) out vec4 color;
 
 uniform sampler2D u_TextureSampler;
+uniform vec2 u_CutoffPos;
 
 void main()
 {
+    if(gl_FragCoord.x > u_CutoffPos.x || gl_FragCoord.y < u_CutoffPos.y) {
+        discard;
+    }
     color = texture(u_TextureSampler, v_FragTexCoords);
 }

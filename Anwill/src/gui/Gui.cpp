@@ -58,6 +58,7 @@ namespace Anwill {
 
     void Gui::Update()
     {
+        AW_PROFILE_FUNC();
         GuiEvents::Pop();
         if(s_State.hoverElement != nullptr)
         {
@@ -180,14 +181,15 @@ namespace Anwill {
         return container->AddElement<GuiDropdown>(true, true, text, GuiStyling::Text::fontSize);
     }
 
-    std::shared_ptr<GuiImage> Gui::Image(const std::string &filePath, GuiWindowID windowID)
+    std::shared_ptr<GuiImage> Gui::Image(const std::string &filePath, unsigned int maxRows, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiImage>(windowID, true, true, filePath);
+        return AddElementToWindow<GuiImage>(windowID, true, true, filePath, maxRows);
     }
 
-    std::shared_ptr<GuiImage> Gui::Image(const std::string &filePath, const std::shared_ptr<GuiContainer> &container)
+    std::shared_ptr<GuiImage> Gui::Image(const std::string &filePath, unsigned int maxRows,
+                                         const std::shared_ptr<GuiContainer> &container)
     {
-        return container->AddElement<GuiImage>(true, true, filePath);
+        return container->AddElement<GuiImage>(true, true, filePath, maxRows);
     }
 
     GuiWindowID Gui::CreateWindow(const std::string& title)

@@ -847,31 +847,50 @@ namespace Anwill {
 
     #pragma region Image
 
-    GuiImage::GuiImage(const std::string& fileName, unsigned int maxRows) {
-        m_Texture = Texture::Create(fileName);
+    GuiImage::GuiImage(const std::string& fileName, unsigned int maxRows)
+        : m_Texture(Texture::Create(fileName))
+    {
+        float rowHeight = GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin;
+        if(m_Texture->GetHeight() > maxRows * rowHeight) {
+            m_ScaleFactor = maxRows * rowHeight / m_Texture->GetHeight();
+        } else {
+            m_ScaleFactor = 1.0f;
+        }
     }
 
-    void GuiImage::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize, const Timestamp &delta) {
+    void GuiImage::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize, const Timestamp& delta) {
+
         Math::Vec2f imageSize = {static_cast<float>(m_Texture->GetWidth()), static_cast<float>(m_Texture->GetHeight())};
+        imageSize = imageSize * m_ScaleFactor;
         Math::Mat4f transform = Math::Mat4f::Scale({}, imageSize);
-        Renderer2D::SubmitMesh(GuiStyling::textureShader, Mesh::GetUnitRectangle(true),
+        transform = Math::Mat4f::Translate(transform, {assignedPos.GetX() + imageSize.GetX() * 0.5f,
+                                                       assignedPos.GetY() - imageSize.GetY() * 0.5f,
+                                                       0.0f});
+        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
+        GuiStyling::Image::shader->Bind();
+        GuiStyling::Image::shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
+        Renderer2D::SubmitMesh(GuiStyling::Image::shader, Mesh::GetUnitRectangle(true),
                                transform, m_Texture);
     }
 
-    bool GuiImage::IsHovering(const Math::Vec2f &mousePos) const {
-        return Math::Algo::IsPointInsideRectangle({0.0f, 0.0f},
-                                                  {static_cast<float>(m_Texture->GetWidth()), 0.0f},
-                                                  {static_cast<float>(m_Texture->GetWidth()), static_cast<float>(m_Texture->GetHeight())},
-                                                  {0.0f, static_cast<float>(m_Texture->GetHeight())},
+    bool GuiImage::IsHovering(const Math::Vec2f& mousePos) const {
+        bool b = Math::Algo::IsPointInsideRectangle({0.0f, 0.0f},
+                                                  {static_cast<float>(m_Texture->GetWidth() * m_ScaleFactor), 0.0f},
+                                                  {static_cast<float>(m_Texture->GetWidth() * m_ScaleFactor),
+                                                   -static_cast<float>(m_Texture->GetHeight() * m_ScaleFactor)},
+                                                  {0.0f, -static_cast<float>(m_Texture->GetHeight())},
                                                   mousePos);
+        //AW_INFO("{0}", b);
+        return b;
     }
 
     float GuiImage::GetWidth() const {
-        return 0;
+        return m_Texture->GetWidth() * m_ScaleFactor;
     }
 
     unsigned int GuiImage::GetGridDepth() const {
-        return 0;
+        float rowHeight = GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin;
+        return std::ceil(m_Texture->GetHeight() * m_ScaleFactor / rowHeight);
     }
 
     #pragma endregion
