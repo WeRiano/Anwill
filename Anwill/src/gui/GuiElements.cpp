@@ -680,10 +680,11 @@ namespace Anwill {
         m_Text.AddCharacter(c, m_CursorIndex);
         m_CursorIndex++;
         m_RenderRightIndex++;
-        if(m_SelectLeftIndex != m_SelectRightIndex)
-            // TODO: Replace text
-            return;
-        m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+        if(m_SelectLeftIndex < m_SelectRightIndex)
+        {
+            RemoveSelectedCharacters();
+        }
+        ResetSelect();
         while(IsTextWiderThanBox())
         {
             // Shift the text to the left until it fits
@@ -702,7 +703,7 @@ namespace Anwill {
                 return;
             case KeyCode::A:
                 if(Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl))
-                    // TODO: Select all
+                    SelectAll();
                     break;
                 break;
             case KeyCode::Right:
@@ -719,13 +720,7 @@ namespace Anwill {
         if(m_SelectLeftIndex < m_SelectRightIndex)
         {
             // If we are selecting something, remove that text
-            std::string removedStr = m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
-            m_RenderRightIndex -= removedStr.length();
-            if(m_CursorIndex == m_SelectLeftIndex) {
-                m_CursorIndex = Utils::Min(m_CursorIndex, static_cast<int>(m_Text.ToString().length()));
-            } else {  // if m_CursorIndex == m_SelectRightIndex
-                m_CursorIndex = m_SelectLeftIndex;
-            }
+            RemoveSelectedCharacters();
         }
         else
         {
@@ -736,13 +731,34 @@ namespace Anwill {
             if (--m_RenderRightIndex < 0)
                 m_RenderRightIndex = 0;
         }
-        // Stop selecting
-        m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+        ResetSelect();
         // Deal with any potential text overflow that should now be visible
         while(m_RenderLeftIndex > 0 &&
               !IsTextWiderThanBox(m_RenderLeftIndex - 1, m_RenderRightIndex)) {
             m_RenderLeftIndex--;
         }
+    }
+
+    void GuiInputText::RemoveSelectedCharacters()
+    {
+        std::string removedStr = m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
+        m_RenderRightIndex -= removedStr.length();
+        if(m_CursorIndex == m_SelectLeftIndex) {
+            m_CursorIndex = Utils::Min(m_CursorIndex, static_cast<int>(m_Text.ToString().length()));
+        } else {  // if m_CursorIndex == m_SelectRightIndex
+            m_CursorIndex = m_SelectLeftIndex;
+        }
+    }
+
+    void GuiInputText::ResetSelect()
+    {
+        m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+    }
+
+    void GuiInputText::SelectAll()
+    {
+        m_SelectLeftIndex = 0;
+        m_SelectRightIndex = m_Text.ToString().length();
     }
 
     void GuiInputText::MoveRight()
@@ -761,7 +777,7 @@ namespace Anwill {
         } else
         {
             // Not selecting text, so we reset any previous selection
-            m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+            ResetSelect();
         }
         if(m_CursorIndex > m_RenderRightIndex && m_RenderRightIndex < m_Text.ToString().length())
         {
@@ -797,7 +813,7 @@ namespace Anwill {
         } else
         {
             // Not selecting text, so we reset any previous selection
-            m_SelectLeftIndex = m_SelectRightIndex = m_CursorIndex;
+            ResetSelect();
         }
         if(m_CursorIndex < m_RenderLeftIndex && m_RenderLeftIndex > 0)
         {

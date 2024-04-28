@@ -273,12 +273,14 @@ namespace Anwill {
         void OnPress(const Math::Vec2f& mousePos) override;
         void OnKeyPress(const KeyCode& keyCode) override;
         void OnKeyRepeat(const KeyCode& keyCode) override;
-        //void OnKeyRelease(const KeyCode& keyCode) override;
         void OnKeyChar(unsigned char c) override;
 
     private:
         void KeycodeToAction(const KeyCode& keyCode);
         void RemoveCharacters();
+        void RemoveSelectedCharacters();
+        void ResetSelect();
+        void SelectAll();
         void MoveRight();
         void MoveLeft();
         bool IsTextWiderThanBox() const;
