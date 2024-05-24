@@ -277,8 +277,10 @@ namespace Anwill {
 
     private:
         void KeycodeToAction(const KeyCode& keyCode);
-        void RemoveCharacters();
+        void RemoveText();
+        void RefillOverflowFromLeft();
         void RemoveSelectedCharacters();
+        void RemoveCharacterAtCursor();
         void ResetSelect();
         void SelectAll();
         void MoveRight();
@@ -286,12 +288,20 @@ namespace Anwill {
         bool IsTextWiderThanBox() const;
         bool IsTextWiderThanBox(int leftIndex, int rightIndex) const;
         void CalcCursorTimeInterval(const Timestamp& delta);
+        void DebugIndices() const;
 
+        /// Styling
         GuiStyling::InputText m_InputTextStyle;
+        /// Indicates what part of the string to render
         int m_RenderLeftIndex, m_RenderRightIndex;
+        /// Indicates what part of the string that is selected
+        /// Can be larger than
         int m_SelectLeftIndex, m_SelectRightIndex;
+        /// Counter used for 'blinking' cursor
         long double m_TimeCountMS;
+        /// Indicates the string position of the cursor
         int m_CursorIndex;
+        /// Indicates if the cursor should be rendered or not
         bool m_ShowCursor;
     };
 

@@ -569,10 +569,6 @@ namespace Anwill {
 
     #pragma endregion
 
-    #pragma region Slider
-
-    #pragma endregion
-
     #pragma region InputText
 
     GuiInputText::GuiInputText(const std::string& startText, unsigned int textSize, float pixelWidth)
@@ -606,12 +602,15 @@ namespace Anwill {
             // Render "selected text box"
             if(m_SelectLeftIndex != m_SelectRightIndex)
             {
-                int rightIndex = Utils::Min(0, m_SelectLeftIndex);
-                int leftIndex = Utils::Max(m_SelectRightIndex, static_cast<int>(m_Text.ToString().length()));
-                float selectedTextWidth = m_Text.GetWidth(m_SelectLeftIndex,
-                                                          m_SelectRightIndex - m_SelectLeftIndex);
-                float selectedStartXPos = m_Text.GetWidth(0, m_SelectLeftIndex);
+                // If we are selecting more than we are rendering, use the render indices instead
+                int leftIndex = Utils::Max(m_RenderLeftIndex, m_SelectLeftIndex);
+                int rightIndex = Utils::Min(m_RenderRightIndex, m_SelectRightIndex);
+                // Get the text box start position (at left index)
+                float selectedStartXPos = m_Text.GetWidth(0, leftIndex);
+                // Adjust the start position if there is overflow from the left (render index is larger than 0)
                 selectedStartXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
+                // Get the width of the text box
+                float selectedTextWidth = m_Text.GetWidth(leftIndex,rightIndex - leftIndex);
                 Math::Vec2f size = {selectedTextWidth, GuiStyling::Window::elementHeight - 2.0f};
                 Math::Mat4f transform = Math::Mat4f::Scale({}, size);
                 transform = Math::Mat4f::Translate(transform,
@@ -697,10 +696,9 @@ namespace Anwill {
     {
         switch(keyCode) {
             case KeyCode::Backspace:
-                return RemoveCharacters();
+                return RemoveText();
             case KeyCode::Enter:
-                GuiEvents::Add(GuiLoseFocusEvent());
-                return;
+                return GuiEvents::Add(GuiLoseFocusEvent());
             case KeyCode::A:
                 if(Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl))
                     SelectAll();
@@ -715,26 +713,25 @@ namespace Anwill {
         }
     }
 
-    void GuiInputText::RemoveCharacters()
+    void GuiInputText::RemoveText()
     {
         if(m_SelectLeftIndex < m_SelectRightIndex)
         {
-            // If we are selecting something, remove that text
             RemoveSelectedCharacters();
         }
         else
         {
-            if(m_Text.RemoveCharacter(m_CursorIndex - 1) == -1)
-                return;
-            if (--m_CursorIndex < 0)
-                m_CursorIndex = 0;
-            if (--m_RenderRightIndex < 0)
-                m_RenderRightIndex = 0;
+            RemoveCharacterAtCursor();
         }
-        ResetSelect();
         // Deal with any potential text overflow that should now be visible
+        RefillOverflowFromLeft();
+    }
+
+    void GuiInputText::RefillOverflowFromLeft()
+    {
         while(m_RenderLeftIndex > 0 &&
-              !IsTextWiderThanBox(m_RenderLeftIndex - 1, m_RenderRightIndex)) {
+              !IsTextWiderThanBox(m_RenderLeftIndex - 1, m_RenderRightIndex))
+        {
             m_RenderLeftIndex--;
         }
     }
@@ -742,12 +739,18 @@ namespace Anwill {
     void GuiInputText::RemoveSelectedCharacters()
     {
         std::string removedStr = m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
+        // Update indices accordingly
         m_RenderRightIndex -= removedStr.length();
-        if(m_CursorIndex == m_SelectLeftIndex) {
-            m_CursorIndex = Utils::Min(m_CursorIndex, static_cast<int>(m_Text.ToString().length()));
-        } else {  // if m_CursorIndex == m_SelectRightIndex
-            m_CursorIndex = m_SelectLeftIndex;
-        }
+        m_CursorIndex = m_SelectLeftIndex;
+        ResetSelect();
+    }
+
+    void GuiInputText::RemoveCharacterAtCursor()
+    {
+        if(m_Text.RemoveCharacter(m_CursorIndex - 1) == -1)
+            return;
+        m_CursorIndex--;
+        m_RenderRightIndex = Utils::Max(--m_RenderRightIndex, 0);
     }
 
     void GuiInputText::ResetSelect()
@@ -764,13 +767,13 @@ namespace Anwill {
     void GuiInputText::MoveRight()
     {
         // Move the cursor to the right
-        m_CursorIndex++;
+        m_CursorIndex = Utils::Min(++m_CursorIndex, (int) m_Text.ToString().length());
         if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
             // If we are selecting ...
             if(m_CursorIndex > m_SelectRightIndex) {
                 // ... expand to the right
-                m_SelectRightIndex++;
-            } else {
+                m_SelectRightIndex = Utils::Min(++m_SelectRightIndex, (int) m_Text.ToString().length());
+            } else if(m_CursorIndex < m_SelectRightIndex) {
                 // ... or collapse to the right
                 m_SelectLeftIndex++;
             }
@@ -789,24 +792,19 @@ namespace Anwill {
                 m_RenderLeftIndex++;
             }
         }
-        // Clamp everything to avoid "illegal" values
-        m_CursorIndex = Utils::Min(m_CursorIndex, (int) m_Text.ToString().length());
-        m_SelectRightIndex = Utils::Min(m_SelectRightIndex, (int) m_Text.ToString().length());
-        m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
-        m_SelectLeftIndex = Utils::Min(m_SelectLeftIndex, (int) m_Text.ToString().length());
-        m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
+        DebugIndices();
     }
 
     void GuiInputText::MoveLeft()
     {
         // Move the cursor to the left
-        m_CursorIndex--;
+        m_CursorIndex = Utils::Max(--m_CursorIndex, 0);
         if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
             // If we are selecting ...
             if(m_CursorIndex < m_SelectLeftIndex) {
                 // ... expand to the left
-                m_SelectLeftIndex--;
-            } else {
+                m_SelectLeftIndex = Utils::Max(--m_SelectLeftIndex, 0);
+            } else if(m_CursorIndex > m_SelectLeftIndex) {
                 // ... or collapse to the left
                 m_SelectRightIndex--;
             }
@@ -825,12 +823,7 @@ namespace Anwill {
                 m_RenderRightIndex--;
             }
         }
-        // Clamp everything to avoid "illegal" values
-        m_CursorIndex = Utils::Max(m_CursorIndex, 0);
-        m_SelectRightIndex = Utils::Max(m_SelectRightIndex, 0);
-        m_SelectRightIndex = Utils::Min(m_SelectRightIndex, m_RenderRightIndex);
-        m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, 0);
-        m_SelectLeftIndex = Utils::Max(m_SelectLeftIndex, m_RenderLeftIndex);
+        DebugIndices();
     }
 
     bool GuiInputText::IsTextWiderThanBox() const
@@ -857,6 +850,13 @@ namespace Anwill {
             m_ShowCursor = !m_ShowCursor;
             m_TimeCountMS -= GuiStyling::Text::cursorShowTimeIntervalMS;
         }
+    }
+
+    void GuiInputText::DebugIndices() const
+    {
+        AW_INFO("Cursor: {0}", m_CursorIndex);
+        AW_INFO("Render: {0}, {1}", m_RenderLeftIndex, m_RenderRightIndex);
+        AW_INFO("Select: {0}, {1}", m_SelectLeftIndex, m_SelectRightIndex);
     }
 
     #pragma endregion
