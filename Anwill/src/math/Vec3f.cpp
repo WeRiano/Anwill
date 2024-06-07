@@ -57,6 +57,26 @@ namespace Anwill::Math {
         return {m_X / d, m_Y / d, m_Z / d};
     }
 
+    bool Vec3f::operator>=(const Vec3f& other) const
+    {
+        return m_X >= other.m_X && m_Y >= other.m_Y && m_Z >= other.m_Z;
+    }
+
+    bool Vec3f::operator<=(const Vec3f& other) const
+    {
+        return m_X <= other.m_X && m_Y <= other.m_Y && m_Z <= other.m_Z;
+    }
+
+    bool Vec3f::operator>(const Vec3f& other) const
+    {
+        return m_X > other.m_X && m_Y > other.m_Y && m_Z > other.m_Z;
+    }
+
+    bool Vec3f::operator<(const Vec3f& other) const
+    {
+        return m_X < other.m_X && m_Y < other.m_Y && m_Z < other.m_Z;
+    }
+
     Vec3f operator-(const Vec3f rhs)
     {
         return {-rhs.GetX(), -rhs.GetY(), -rhs.GetZ()};

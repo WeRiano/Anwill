@@ -17,8 +17,17 @@ namespace Anwill::Math {
         Vec2f operator-(const Vec2f& other) const;
         void operator+=(const Vec2f& other);
         void operator*=(const float other);
+        /**
+         * Greater than and less than (or equals) operators return true if and only if the condition
+         * is satisfied for all coordinates.
+         */
+        bool operator>=(const Vec2f& other) const;
+        bool operator<=(const Vec2f& other) const;
+        bool operator>(const Vec2f& other) const;
+        bool operator<(const Vec2f& other) const;
         operator Vec3f() const;
 
+        Vec2f Abs() const;
         float ScalarProjection(Vec2f vec2f) const;
         float DotProduct(const Vec2f& other) const;
         void Move(float deltaX, float deltaY);

@@ -33,57 +33,8 @@ namespace Anwill {
          *              if @str is empty or if @maxUniqueChars <= 0.
          */
         static std::string UniqueCharsSubstr(const std::string& str,
-                                              const unsigned int maxUniqueChars);
-
-        static std::string RoundAndConvertFloatToString(float value, unsigned int decimals);
+                                             const unsigned int maxUniqueChars);
 
         static unsigned int GetNrOfDigits(int number);
-
-        static int RoundToInt(float value);
-
-        /**
-         * @brief inclusive ([0, 1])
-         * @tparam T
-         * @param value
-         * @param min
-         * @param max
-         * @return
-         */
-        template <typename T>
-        static float NormalizeBetween0And1(T value, T min, T max) {
-            return static_cast<float>(value - min) / static_cast<float>(max - min);
-        }
-
-        template <typename T>
-        static double NormalizeBetween0And1d(T value, T min, T max) {
-            return static_cast<double>(value - min) / static_cast<double>(max - min);
-        }
-
-        template <typename T>
-        static T ScaleToRange(T value, T targetMin, T targetMax, T sourceMin, T sourceMax) {
-            return (targetMax - targetMin) * (value - sourceMin) / (sourceMax - sourceMin) + targetMin;
-        }
-
-        template <typename T>
-        static T Clamp(T value, T min, T max) {
-            /* if(value < min) {
-                return min;
-            }
-            if(value > max) {
-                return max;
-            }
-            return value; */
-            return min * (value < min) + max * (value > max) + (value >= min && value <= max) * value;
-        }
-
-        template <typename T>
-        static T Max(T value1, T value2) {
-            return value1 * (value1 >= value2) + value2 * (value1 < value2);
-        }
-
-        template <typename T>
-        static T Min(T value1, T value2) {
-            return value1 * (value1 <= value2) + value2 * (value1 > value2);
-        }
     };
 }

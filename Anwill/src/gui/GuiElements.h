@@ -9,6 +9,7 @@
 #include "gfx/Mesh.h"
 #include "gfx/Font.h"
 #include "gfx/Renderer2D.h"
+#include "math/Math.h"
 #include "math/Mat4f.h"
 #include "utils/Utils.h"
 
@@ -207,7 +208,7 @@ namespace Anwill {
             if(std::is_same<T, float>::value)
             {
                 m_OnPressSet = [](float f) { return f; };
-                m_SetValueText = [this](){ m_ValueText.Set(Utils::RoundAndConvertFloatToString(m_Source, 2)); };
+                m_SetValueText = [this](){ m_ValueText.Set(Math::RoundToString(m_Source, 2)); };
             }
             else if(std::is_same<T, int>::value)
             {
@@ -223,12 +224,12 @@ namespace Anwill {
             GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
             // Render "slider" (marker) rectangle
-            float markerXPosDelta = Utils::ScaleToRange<float>(static_cast<float>(m_Source),
+            float markerXPosDelta = Math::ScaleToRange<float>(static_cast<float>(m_Source),
                                                                m_MarkerXOffset,
                                                                GuiButton::GetWidth() - m_MarkerXOffset,
                                                                static_cast<float>(m_Min),
                                                                static_cast<float>(m_Max));
-            markerXPosDelta = Utils::Clamp(markerXPosDelta, m_MarkerXOffset, GetWidth() - m_MarkerXOffset);
+            markerXPosDelta = Math::Clamp(markerXPosDelta, m_MarkerXOffset, GetWidth() - m_MarkerXOffset);
             Math::Vec2f markerPos = {markerXPosDelta - m_MarkerXOffset,
                                      -(m_ButtonSize.GetY() - GuiStyling::Slider::markerSize.GetY()) * 0.5f + 1.0f};
 
@@ -244,12 +245,12 @@ namespace Anwill {
         }
 
         void OnPress(const Math::Vec2f& mousePos) override {
-            float t = Utils::ScaleToRange<float>(mousePos.GetX(),
+            float t = Math::ScaleToRange<float>(mousePos.GetX(),
                                              static_cast<float>(m_Min),
                                              static_cast<float>(m_Max),
                                              m_MarkerXOffset,
                                              GetWidth() - m_MarkerXOffset);
-            t = Utils::Clamp(t, static_cast<float>(m_Min), static_cast<float>(m_Max));
+            t = Math::Clamp(t, static_cast<float>(m_Min), static_cast<float>(m_Max));
             m_Source = m_OnPressSet(t);
         }
 

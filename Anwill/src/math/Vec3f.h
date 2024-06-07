@@ -17,6 +17,14 @@ namespace Anwill::Math {
         void operator-=(const Vec3f& other);
         void operator*=(const float s);
         Vec3f operator/(const float d) const;
+        /**
+         * Greater than and less than (or equals) operators return true if and only if the condition
+         * is satisfied for all coordinates.
+         */
+        bool operator>=(const Vec3f& other) const;
+        bool operator<=(const Vec3f& other) const;
+        bool operator>(const Vec3f& other) const;
+        bool operator<(const Vec3f& other) const;
         operator Vec2f() const;
 
         float DotProduct(const Vec3f& other) const;

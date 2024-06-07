@@ -652,8 +652,8 @@ namespace Anwill {
         if(m_SelectLeftIndex != m_SelectRightIndex)
         {
             // If we are selecting more than we are rendering, use the render indices instead
-            int leftIndex = Utils::Max(m_RenderLeftIndex, m_SelectLeftIndex);
-            int rightIndex = Utils::Min(m_RenderRightIndex, m_SelectRightIndex);
+            int leftIndex = Math::Max(m_RenderLeftIndex, m_SelectLeftIndex);
+            int rightIndex = Math::Min(m_RenderRightIndex, m_SelectRightIndex);
             // Get the text box start position (at left index)
             float selectedStartXPos = m_Text.GetWidth(0, leftIndex);
             // Adjust the start position if there is overflow from the left (render index is larger than 0)
@@ -783,7 +783,7 @@ namespace Anwill {
         if(m_Text.RemoveCharacter(m_CursorIndex - 1) == -1)
             return;
         m_CursorIndex--;
-        m_RenderRightIndex = Utils::Max(--m_RenderRightIndex, 0);
+        m_RenderRightIndex = Math::Max(--m_RenderRightIndex, 0);
         RefillOverflowFromLeft();
     }
 
@@ -801,12 +801,12 @@ namespace Anwill {
     void GuiInputText::MoveRight()
     {
         // Move the cursor to the right
-        m_CursorIndex = Utils::Min(++m_CursorIndex, (int) m_Text.ToString().length());
+        m_CursorIndex = Math::Min(++m_CursorIndex, (int) m_Text.ToString().length());
         if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
             // If we are selecting ...
             if(m_CursorIndex > m_SelectRightIndex) {
                 // ... expand to the right
-                m_SelectRightIndex = Utils::Min(++m_SelectRightIndex, (int) m_Text.ToString().length());
+                m_SelectRightIndex = Math::Min(++m_SelectRightIndex, (int) m_Text.ToString().length());
             } else if(m_CursorIndex < m_SelectRightIndex) {
                 // ... or collapse to the right
                 m_SelectLeftIndex++;
@@ -832,12 +832,12 @@ namespace Anwill {
     void GuiInputText::MoveLeft()
     {
         // Move the cursor to the left
-        m_CursorIndex = Utils::Max(--m_CursorIndex, 0);
+        m_CursorIndex = Math::Max(--m_CursorIndex, 0);
         if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
             // If we are selecting ...
             if(m_CursorIndex < m_SelectLeftIndex) {
                 // ... expand to the left
-                m_SelectLeftIndex = Utils::Max(--m_SelectLeftIndex, 0);
+                m_SelectLeftIndex = Math::Max(--m_SelectLeftIndex, 0);
             } else if(m_CursorIndex > m_SelectLeftIndex) {
                 // ... or collapse to the left
                 m_SelectRightIndex--;
@@ -873,8 +873,8 @@ namespace Anwill {
         {
             return false;
         }
-        leftIndex = Utils::Max(leftIndex, 0);
-        rightIndex = Utils::Min(rightIndex, (int) m_Text.ToString().length());
+        leftIndex = Math::Max(leftIndex, 0);
+        rightIndex = Math::Min(rightIndex, (int) m_Text.ToString().length());
         int size = rightIndex - leftIndex;
         return m_Text.GetWidth(leftIndex, size) >
                (m_ButtonSize.GetX() - GuiStyling::TextButton::textPadding * 2.0f);
@@ -994,15 +994,23 @@ namespace Anwill {
         Math::Vec2f elementGridPos = firstPos;
         float newRowXPos = firstPos.GetX();
         std::shared_ptr<GuiElement> lastElement = nullptr;
+        AW_INFO("START!");
         for (unsigned int i = 0; i < m_Elements.size(); i++) {
             auto element = m_Elements[i];
-            if(i > 0) {
+            if(i > 0)
+            {
                 bool wantsNewRow = m_NewRowChecks[i].first;
                 bool forcedToNewRow = m_NewRowChecks[i].second;
                 elementGridPos = GetNextElementPos(elementGridPos, lastElement->GetWidth(),
                                                    lastElement->GetGridDepth(),
                                                    newRowXPos,
                                                    wantsNewRow || forcedToNewRow);
+            }
+            AW_INFO("Element: {0}, {1} --- Max size: {2}, {3}", elementGridPos.GetX(), elementGridPos.GetY(),
+                    assignedMaxSize.GetX(), assignedMaxSize.GetY());
+            if(elementGridPos >= assignedMaxSize)
+            {
+                break;
             }
             element->Render(assignedPos + elementGridPos,
                             GetNewMaxSize(elementGridPos

@@ -42,8 +42,8 @@ void BatchRendererHelloWorld::BatchRendering() const
     {
         for(unsigned int x = 0; x < m_NrQuadsX; x++)
         {
-            float xClamp = Anwill::Utils::NormalizeBetween0And1(x, 0u, m_NrQuadsY);
-            float yClamp = Anwill::Utils::NormalizeBetween0And1(y, 0u, m_NrQuadsX);
+            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NrQuadsY);
+            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NrQuadsX);
             Anwill::Math::Vec3f color(xClamp, yClamp, 0.5f);
             if((y % 2 == 0 && x % 2 == 0) || (y % 2 == 1 && x % 2 == 1))
             {
@@ -70,8 +70,8 @@ void BatchRendererHelloWorld::SlowRendering()
     {
         for(unsigned int x = 0; x < m_NrQuadsX; x++)
         {
-            float xClamp = Anwill::Utils::NormalizeBetween0And1(x, 0u, m_NrQuadsY);
-            float yClamp = Anwill::Utils::NormalizeBetween0And1(y, 0u, m_NrQuadsX);
+            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NrQuadsY);
+            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NrQuadsX);
             Anwill::Math::Vec3f color(xClamp, yClamp, 0.5f);
 
             m_SlowColorShader->Bind();
@@ -124,8 +124,8 @@ void BatchRendererHelloWorld::SlowRenderingTextureQuads()
     {
         for(unsigned int y = 0; y < m_SpriteSheet->GetSpriteXCount(); y++)
         {
-            float xClamp = Anwill::Utils::NormalizeBetween0And1(x, 0u, m_SpriteSheet->GetSpriteXCount());
-            float yClamp = Anwill::Utils::NormalizeBetween0And1(y, 0u, m_SpriteSheet->GetSpriteYCount());
+            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_SpriteSheet->GetSpriteXCount());
+            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_SpriteSheet->GetSpriteYCount());
             Anwill::Math::Vec3f color(xClamp, yClamp, 0.5f);
 
             m_SlowColorShader->Bind();

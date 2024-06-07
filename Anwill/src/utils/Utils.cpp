@@ -2,9 +2,7 @@
 #include "utils/Utils.h"
 
 #include <set>
-#include <cmath>
 #include <sstream>
-#include <iomanip>
 
 namespace Anwill {
 
@@ -49,18 +47,6 @@ namespace Anwill {
         return str;
     }
 
-    std::string Utils::RoundAndConvertFloatToString(float value, unsigned int decimals)
-    {
-        //unsigned int nrOfDigits = GetNrOfDigits(static_cast<int>(value));
-        float coeff = pow(10, decimals);
-        float fResult = static_cast<int>(value * coeff + 0.5f);
-        fResult = static_cast<float>(fResult) / coeff;
-
-        std::stringstream stream;
-        stream << std::fixed << std::setprecision(decimals) << fResult;
-        return stream.str();
-    }
-
     unsigned int Utils::GetNrOfDigits(int number)
     {
         unsigned int result = 0;
@@ -70,10 +56,5 @@ namespace Anwill {
             number /= 10;
         }
         return result;
-    }
-
-    int Utils::RoundToInt(float value)
-    {
-        return static_cast<int>(value + 0.5f);
     }
 }

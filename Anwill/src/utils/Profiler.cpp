@@ -1,6 +1,7 @@
 #include "Profiler.h"
 #include "utils/Utils.h"
 #include "utils/FileIO.h"
+#include "math/Math.h"
 #include "core/Log.h"
 
 namespace Anwill {
@@ -94,9 +95,9 @@ namespace Anwill {
         for(auto& it : s_Data.funcData) {
             auto& fData = it.second;
             fData.overallLoadDecimal =
-                    Utils::NormalizeBetween0And1(fData.totalTime.GetMilliseconds(),
-                                                 0.0l,
-                                                 s_Data.totalTime.GetMilliseconds());
+                    Math::NormalizeToFloat(fData.totalTime.GetMilliseconds(),
+                                           0.0l,
+                                           s_Data.totalTime.GetMilliseconds());
             fData.cycleAverageTime = fData.totalTime / fData.calls;
         }
     }

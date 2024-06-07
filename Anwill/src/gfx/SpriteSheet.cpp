@@ -1,5 +1,6 @@
 #include "gfx/SpriteSheet.h"
 #include "core/Log.h"
+#include "math/Math.h"
 #include "utils/Utils.h"
 #include "utils/Profiler.h"
 
@@ -30,19 +31,19 @@ namespace Anwill {
             return {nullptr, {-1.0f, -1.0f, -1.0f, -1.0f}};
         }
         QuadTexCoords texCoords = {
-                Utils::NormalizeBetween0And1<int>(
+                Math::NormalizeToFloat<int>(
                         m_SpriteXCount * (spriteXPos - 1) - leftPadPixels,
                         0,
                         m_Texture->GetWidth()),
-                Utils::NormalizeBetween0And1<int>(
+                Math::NormalizeToFloat<int>(
                         m_SpriteYCount * (spriteYPos - 1) - bottomPadPixels,
                         0,
                         m_Texture->GetHeight()),
-                Utils::NormalizeBetween0And1<int>(
+                Math::NormalizeToFloat<int>(
                         m_SpriteXCount * spriteXPos + rightPadPixels,
                         0,
                         m_Texture->GetWidth()),
-                Utils::NormalizeBetween0And1<int>(
+                Math::NormalizeToFloat<int>(
                         m_SpriteYCount * spriteYPos + topPadPixels,
                         0,
                         m_Texture->GetHeight())
@@ -58,22 +59,22 @@ namespace Anwill {
             AW_ERROR("Incorrect sprite coordinates.");
             return {nullptr, {-1.0f, -1.0f, -1.0f, -1.0f}};
         }
-        QuadTexCoords texCoords = { Utils::NormalizeBetween0And1(
+        QuadTexCoords texCoords = {Math::NormalizeToFloat(
                 x,
                 0u,
                 m_Texture->GetWidth()),
-                Utils::NormalizeBetween0And1(
-                y,
-                0u,
-                m_Texture->GetHeight()),
-                Utils::NormalizeBetween0And1(
-                x + width,
-                0u,
-                m_Texture->GetWidth()),
-                Utils::NormalizeBetween0And1(
-                y + height,
-                0u,
-                m_Texture->GetHeight()) };
+                                   Math::NormalizeToFloat(
+                                           y,
+                                           0u,
+                                           m_Texture->GetHeight()),
+                                   Math::NormalizeToFloat(
+                                           x + width,
+                                           0u,
+                                           m_Texture->GetWidth()),
+                                   Math::NormalizeToFloat(
+                                           y + height,
+                                           0u,
+                                           m_Texture->GetHeight()) };
 
         return {m_Texture, texCoords};
     }

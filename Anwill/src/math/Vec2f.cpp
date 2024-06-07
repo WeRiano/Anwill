@@ -54,12 +54,37 @@ namespace Anwill::Math {
 
     Vec2f Math::operator*(const float lhs, const Vec2f& rhs)
     {
-        return {lhs * rhs.GetX(),lhs * rhs.GetY()};
+        return {lhs * rhs.GetX(), lhs * rhs.GetY()};
+    }
+
+    bool Vec2f::operator>=(const Vec2f& other) const
+    {
+        return m_X >= other.m_X && m_Y >= other.m_Y;
+    }
+
+    bool Vec2f::operator<=(const Vec2f& other) const
+    {
+        return m_X <= other.m_X && m_Y <= other.m_Y;
+    }
+
+    bool Vec2f::operator>(const Vec2f& other) const
+    {
+        return m_X > other.m_X && m_Y > other.m_Y;
+    }
+
+    bool Vec2f::operator<(const Vec2f& other) const
+    {
+        return m_X < other.m_X && m_Y < other.m_Y;
     }
 
     Vec2f::operator Vec3f() const
     {
         return {m_X, m_Y, 0.0f};
+    }
+
+    Vec2f Vec2f::Abs() const
+    {
+        return {m_X, m_Y};
     }
 
     float Vec2f::ScalarProjection(Vec2f vec2f) const
