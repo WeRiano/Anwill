@@ -590,74 +590,23 @@ namespace Anwill {
         // Render button
         GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
-
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
 
         Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f,
                               -GuiStyling::Window::elementHeight * 0.5f};
-
         if(m_IsSelected) {
-            // Render "selected text box"
-            if(m_SelectLeftIndex != m_SelectRightIndex)
+            RenderSelected(assignedPos, offset);
+            RenderText(assignedPos, assignedMaxSize, delta);
+            if(m_ShowCursor)
             {
-                // If we are selecting more than we are rendering, use the render indices instead
-                int leftIndex = Utils::Max(m_RenderLeftIndex, m_SelectLeftIndex);
-                int rightIndex = Utils::Min(m_RenderRightIndex, m_SelectRightIndex);
-                // Get the text box start position (at left index)
-                float selectedStartXPos = m_Text.GetWidth(0, leftIndex);
-                // Adjust the start position if there is overflow from the left (render index is larger than 0)
-                selectedStartXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
-                // Get the width of the text box
-                float selectedTextWidth = m_Text.GetWidth(leftIndex,rightIndex - leftIndex);
-                Math::Vec2f size = {selectedTextWidth, GuiStyling::Window::elementHeight - 2.0f};
-                Math::Mat4f transform = Math::Mat4f::Scale({}, size);
-                transform = Math::Mat4f::Translate(transform,
-                                                   {assignedPos + Math::Vec2f(selectedStartXPos, 0.0f) +
-                                                   Math::Vec2f(size.GetX() * 0.5f, 0.0f)
-                                                   + offset});
-                GuiStyling::primitiveShader->SetUniformVec3f(m_InputTextStyle.selectedTextHighlightColor,
-                                                             "u_Color");
-                Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::rectMesh, transform);
-            }
-
-            // Render text
-            Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
-            int renderStrLength = m_RenderRightIndex - m_RenderLeftIndex;
-            m_Text.Render(assignedPos + padding,
-                          assignedMaxSize - padding,
-                          delta, m_RenderLeftIndex, renderStrLength);
-
-            if(m_ShowCursor) {
-                // Render cursor
-                Math::Mat4f transform = Math::Mat4f::Scale({}, {1.0f, GuiStyling::Text::cursorHeight, 0.0f});
-                float cursorXPos = m_Text.GetWidth(0, m_CursorIndex);
-                cursorXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
-                transform = Math::Mat4f::Translate(transform, assignedPos
-                                                              + Math::Vec2f(cursorXPos, 0.0f) + offset);
-                GuiStyling::primitiveShader->Bind();
-                GuiStyling::primitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
-                Renderer2D::SubmitLines(GuiStyling::primitiveShader, GuiStyling::Text::cursorVertexArray,
-                                        transform, 1);
+                RenderCursor(assignedPos, offset);
             }
         } else {
             // Render text
-            Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
-            m_Text.Render(assignedPos + padding,
-                          assignedMaxSize - padding,
-                          delta, m_RenderLeftIndex, m_RenderRightIndex - m_RenderLeftIndex);
+            RenderText(assignedPos, assignedMaxSize, delta);
         }
-    }
-
-    void GuiInputText::OnHover(const Math::Vec2f& mousePos)
-    {
-
-    }
-
-    void GuiInputText::OnPress(const Math::Vec2f& mousePos)
-    {
-        GuiElement::OnPress(mousePos);
     }
 
     void GuiInputText::OnKeyPress(const KeyCode& keyCode)
@@ -692,28 +641,88 @@ namespace Anwill {
         //AW_INFO("Text width: {0}", m_Text.GetWidth());
     }
 
+    void GuiInputText::RenderButton()
+    {
+
+    }
+
+    void GuiInputText::RenderSelected(const Math::Vec2f& assignedPos, const Math::Vec2f& offset)
+    {
+        // Render "selected text box"
+        if(m_SelectLeftIndex != m_SelectRightIndex)
+        {
+            // If we are selecting more than we are rendering, use the render indices instead
+            int leftIndex = Utils::Max(m_RenderLeftIndex, m_SelectLeftIndex);
+            int rightIndex = Utils::Min(m_RenderRightIndex, m_SelectRightIndex);
+            // Get the text box start position (at left index)
+            float selectedStartXPos = m_Text.GetWidth(0, leftIndex);
+            // Adjust the start position if there is overflow from the left (render index is larger than 0)
+            selectedStartXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
+            // Get the width of the text box
+            float selectedTextWidth = m_Text.GetWidth(leftIndex, rightIndex - leftIndex);
+            Math::Vec2f size = {selectedTextWidth, GuiStyling::Window::elementHeight - 2.0f};
+            Math::Mat4f transform = Math::Mat4f::Scale({}, size);
+            transform = Math::Mat4f::Translate(transform,
+                                               {assignedPos + Math::Vec2f(selectedStartXPos, 0.0f) +
+                                                Math::Vec2f(size.GetX() * 0.5f, 0.0f)
+                                                + offset});
+            GuiStyling::primitiveShader->SetUniformVec3f(m_InputTextStyle.selectedTextHighlightColor,
+                                                         "u_Color");
+            Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::rectMesh, transform);
+        }
+    }
+
+    void GuiInputText::RenderText(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                                  const Timestamp& delta)
+    {
+        Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
+        int renderStrLength = m_RenderRightIndex - m_RenderLeftIndex;
+        m_Text.Render(assignedPos + padding,
+                      assignedMaxSize - padding,
+                      delta, m_RenderLeftIndex, renderStrLength);
+    }
+
+    void GuiInputText::RenderCursor(const Math::Vec2f& assignedPos, const Math::Vec2f& offset)
+    {
+        // Render cursor
+        Math::Mat4f transform = Math::Mat4f::Scale({}, {1.0f, GuiStyling::Text::cursorHeight, 0.0f});
+        float cursorXPos = m_Text.GetWidth(0, m_CursorIndex);
+        cursorXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
+        transform = Math::Mat4f::Translate(transform, assignedPos
+                                                      + Math::Vec2f(cursorXPos, 0.0f) + offset);
+        GuiStyling::primitiveShader->Bind();
+        GuiStyling::primitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
+        Renderer2D::SubmitLines(GuiStyling::primitiveShader, GuiStyling::Text::cursorVertexArray,
+                                transform, 1);
+    }
+
     void GuiInputText::KeycodeToAction(const KeyCode& keyCode)
     {
         switch(keyCode) {
             case KeyCode::Backspace:
-                return RemoveText();
+                DeleteText();
+                break;
             case KeyCode::Enter:
-                return GuiEvents::Add(GuiLoseFocusEvent());
+                GuiEvents::Add(GuiLoseFocusEvent());
+                break;
             case KeyCode::A:
                 if(Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl))
                     SelectAll();
                     break;
                 break;
             case KeyCode::Right:
-                return MoveRight();
+                MoveRight();
+                break;
             case KeyCode::Left:
-                return MoveLeft();
+                MoveLeft();
+                break;
             default:
-                return;
+                break;
         }
+        DebugIndices();
     }
 
-    void GuiInputText::RemoveText()
+    void GuiInputText::DeleteText()
     {
         if(m_SelectLeftIndex < m_SelectRightIndex)
         {
@@ -723,8 +732,7 @@ namespace Anwill {
         {
             RemoveCharacterAtCursor();
         }
-        // Deal with any potential text overflow that should now be visible
-        RefillOverflowFromLeft();
+        ResetSelect();
     }
 
     void GuiInputText::RefillOverflowFromLeft()
@@ -736,13 +744,38 @@ namespace Anwill {
         }
     }
 
+    void GuiInputText::RefillOverflow()
+    {
+        bool left = true, right = true;
+        while(left || right)
+        {
+            left = right = false;
+            if (m_RenderLeftIndex > 0
+                && !IsTextWiderThanBox(m_RenderLeftIndex - 1, m_RenderRightIndex))
+            {
+                m_RenderLeftIndex--;
+                left = true;
+            }
+            if (m_RenderRightIndex < m_Text.ToString().length()
+                && !IsTextWiderThanBox(m_RenderLeftIndex, m_RenderRightIndex + 1))
+            {
+                m_RenderRightIndex++;
+                right = true;
+            }
+        }
+    }
+
     void GuiInputText::RemoveSelectedCharacters()
     {
-        std::string removedStr = m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
-        // Update indices accordingly
-        m_RenderRightIndex -= removedStr.length();
+        /// 1. Remove selected substring from text
+        m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
+
+        /// 2. Set cursor index to
         m_CursorIndex = m_SelectLeftIndex;
-        ResetSelect();
+
+        /// 3. Set render indices to cursor index and expand accordingly
+        m_RenderLeftIndex = m_RenderRightIndex = m_CursorIndex;
+        RefillOverflow();
     }
 
     void GuiInputText::RemoveCharacterAtCursor()
@@ -751,6 +784,7 @@ namespace Anwill {
             return;
         m_CursorIndex--;
         m_RenderRightIndex = Utils::Max(--m_RenderRightIndex, 0);
+        RefillOverflowFromLeft();
     }
 
     void GuiInputText::ResetSelect()
@@ -792,7 +826,7 @@ namespace Anwill {
                 m_RenderLeftIndex++;
             }
         }
-        DebugIndices();
+        //DebugIndices();
     }
 
     void GuiInputText::MoveLeft()
@@ -823,7 +857,7 @@ namespace Anwill {
                 m_RenderRightIndex--;
             }
         }
-        DebugIndices();
+        //DebugIndices();
     }
 
     bool GuiInputText::IsTextWiderThanBox() const
@@ -835,6 +869,10 @@ namespace Anwill {
 
     bool GuiInputText::IsTextWiderThanBox(int leftIndex, int rightIndex) const
     {
+        if(m_Text.ToString().empty())
+        {
+            return false;
+        }
         leftIndex = Utils::Max(leftIndex, 0);
         rightIndex = Utils::Min(rightIndex, (int) m_Text.ToString().length());
         int size = rightIndex - leftIndex;
@@ -854,9 +892,12 @@ namespace Anwill {
 
     void GuiInputText::DebugIndices() const
     {
+        AW_INFO("-------------------------");
         AW_INFO("Cursor: {0}", m_CursorIndex);
         AW_INFO("Render: {0}, {1}", m_RenderLeftIndex, m_RenderRightIndex);
         AW_INFO("Select: {0}, {1}", m_SelectLeftIndex, m_SelectRightIndex);
+        AW_INFO("Text size: {0}", m_Text.ToString().length());
+        AW_INFO("-------------------------");
     }
 
     #pragma endregion
@@ -874,9 +915,11 @@ namespace Anwill {
         }
     }
 
-    void GuiImage::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize, const Timestamp& delta) {
+    void GuiImage::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                          const Timestamp& delta) {
 
-        Math::Vec2f imageSize = {static_cast<float>(m_Texture->GetWidth()), static_cast<float>(m_Texture->GetHeight())};
+        Math::Vec2f imageSize = {static_cast<float>(m_Texture->GetWidth()),
+                                 static_cast<float>(m_Texture->GetHeight())};
         imageSize = imageSize * m_ScaleFactor;
         Math::Mat4f transform = Math::Mat4f::Scale({}, imageSize);
         transform = Math::Mat4f::Translate(transform, {assignedPos.GetX() + imageSize.GetX() * 0.5f,

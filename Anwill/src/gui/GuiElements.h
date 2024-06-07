@@ -269,16 +269,21 @@ namespace Anwill {
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
-        void OnHover(const Math::Vec2f& mousePos) override;
-        void OnPress(const Math::Vec2f& mousePos) override;
         void OnKeyPress(const KeyCode& keyCode) override;
         void OnKeyRepeat(const KeyCode& keyCode) override;
         void OnKeyChar(unsigned char c) override;
 
     private:
+        void RenderButton();
+        void RenderSelected(const Math::Vec2f& assignedPos, const Math::Vec2f& offset);
+        void RenderText(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                        const Timestamp& delta);
+        void RenderCursor(const Math::Vec2f& assignedPos, const Math::Vec2f& offset);
+
         void KeycodeToAction(const KeyCode& keyCode);
-        void RemoveText();
+        void DeleteText();
         void RefillOverflowFromLeft();
+        void RefillOverflow();
         void RemoveSelectedCharacters();
         void RemoveCharacterAtCursor();
         void ResetSelect();
@@ -293,6 +298,7 @@ namespace Anwill {
         /// Styling
         GuiStyling::InputText m_InputTextStyle;
         /// Indicates what part of the string to render
+        /// The left index is equal to the number of characters that are hidden due to overflow
         int m_RenderLeftIndex, m_RenderRightIndex;
         /// Indicates what part of the string that is selected
         /// Can be larger than
