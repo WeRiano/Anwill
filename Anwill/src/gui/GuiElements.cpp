@@ -1035,7 +1035,8 @@ namespace Anwill {
         {
             return;
         }
-        m_ScrollOffset.Y = Math::Min(Math::Abs(m_ScrollOffset.Y - s_ScrollSpeed), m_HiddenSize.Y);
+        m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - s_ScrollSpeed, 0.0f);
+        //AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
         /*
         if(Math::Abs(m_ScrollOffset.Y) < m_HiddenSize.Y)
         {
@@ -1050,6 +1051,7 @@ namespace Anwill {
         {
             return;
         }
+        // TODO: Has to include the cutoff distance here.
         m_ScrollOffset.Y = Math::Min(Math::Abs(m_ScrollOffset.Y + s_ScrollSpeed), m_HiddenSize.Y);
         /*
         if(Math::Abs(m_ScrollOffset.Y) <= m_HiddenSize.Y)
@@ -1282,8 +1284,8 @@ namespace Anwill {
         newSize.Clamp(minSize, maxSize);
         m_Size = newSize;
 
-        AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
-        AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
+        //AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
+        //AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
 
         if(m_ScrollOffset.Y >= 0.0f && m_HiddenSize.Y != 0.0f && m_HiddenSize.Y <= m_ScrollOffset.Y) {
             m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - delta.Y, 0.0f);
