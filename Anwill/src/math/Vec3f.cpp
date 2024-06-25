@@ -103,6 +103,11 @@ namespace Anwill::Math {
         return {Math::Abs(X), Math::Abs(Y), Math::Abs(Z)};
     }
 
+    Vec3f Vec3f::Negate() const
+    {
+        return {-X, -Y, -Z};
+    }
+
     float Vec3f::DotProduct(const Vec3f& other) const
     {
         return X * other.X + Y * other.Y + Z * other.Z;
@@ -132,13 +137,6 @@ namespace Anwill::Math {
         X = X / length;
         Y = Y / length;
         Z = Z / length;
-    }
-
-    void Vec3f::Negate()
-    {
-        X = -X;
-        Y = -Y;
-        Z = -Z;
     }
 
     bool Vec3f::IsZero() const

@@ -65,7 +65,6 @@ namespace Anwill {
 
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
-        GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
     }
@@ -81,7 +80,6 @@ namespace Anwill {
 
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
-        GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
     }
@@ -104,7 +102,6 @@ namespace Anwill {
 
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
-        GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::checkmarkMesh, iconTransform);
     }
@@ -119,7 +116,6 @@ namespace Anwill {
 
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
-        GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::rectMesh, iconTransform);
     }
@@ -134,7 +130,6 @@ namespace Anwill {
 
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::circleShader->Bind();
-        GuiStyling::circleShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         GuiStyling::circleShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::circleShader, GuiStyling::rectMesh, iconTransform);
     }
@@ -197,8 +192,6 @@ namespace Anwill {
         transform = Math::Mat4f::Scale({}, {m_TooltipTextScale, m_TooltipTextScale, 0.0f});
         transform = Math::Mat4f::Translate(transform, textStartPos + correctedOffset);
         GuiStyling::Text::shader->Bind();
-        GuiStyling::Text::shader->SetUniformVec2f({gameWindowSize.X, -gameWindowSize.Y},
-                                                "u_CutoffPos");
         GuiStyling::Text::shader->Unbind();
         Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, m_TooltipText, transform);
     }
@@ -295,7 +288,6 @@ namespace Anwill {
         // Render
         std::string renderStr = m_Text.substr(startIndex, length);
         GuiStyling::Text::shader->Bind();
-        GuiStyling::Text::shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, renderStr, thisTransform);
     }
 
@@ -419,7 +411,6 @@ namespace Anwill {
         shader->Bind();
         shader->SetUniform1i(m_IsHovered, "u_Hovering");
         shader->SetUniform1i(m_IsPressed, "u_Pressing");
-        shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         shader->SetUniformVec3f(m_ButtonStyle.buttonColor, "u_Color");
         shader->SetUniformVec3f(m_ButtonStyle.buttonHoverColor, "u_HoverColor");
         shader->SetUniformVec3f(m_ButtonStyle.buttonPressColor, "u_PressColor");
@@ -601,9 +592,6 @@ namespace Anwill {
         GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
-        GuiStyling::primitiveShader->Bind();
-        GuiStyling::primitiveShader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
-
         Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f,
                               -GuiStyling::Window::elementHeight * 0.5f};
         if(m_IsSelected) {
@@ -936,8 +924,6 @@ namespace Anwill {
                                                        assignedPos.Y - imageSize.Y * 0.5f,
                                                        0.0f});
         Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
-        GuiStyling::Image::shader->Bind();
-        GuiStyling::Image::shader->SetUniformVec2f(cutoffPos, "u_CutoffPos");
         Renderer2D::SubmitMesh(GuiStyling::Image::shader, Mesh::GetUnitRectangle(true),
                                transform, m_Texture);
     }
@@ -999,11 +985,11 @@ namespace Anwill {
     }
 
     void GuiContainer::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                              const Math::Vec2f& firstPos, const Timestamp& delta)
+                              const Timestamp& delta)
     {
-        //unsigned int nrOfHideElements = 0;
-        Math::Vec2f elementGridPos = firstPos + m_ScrollOffset;
-        float newRowXPos = firstPos.X;
+        Renderer::SetScissor({assignedPos.X, assignedPos.Y - assignedMaxSize.Y}, assignedMaxSize);
+        Math::Vec2f elementPos = m_ScrollOffset;
+        float newRowXPos = elementPos.X;
         std::shared_ptr<GuiElement> lastElement = nullptr;
         for (unsigned int i = 0; i < m_ContainerElements.size(); i++) {
             auto& containerElement = m_ContainerElements[i];
@@ -1014,33 +1000,28 @@ namespace Anwill {
                 bool wantsNewRow = m_ContainerElements[i].onNewRow;
                 // wrong? Should be bool from prev element
                 bool forcedToNewRow = m_ContainerElements[i - 1].forceNextToNewRow;
-                elementGridPos = GetNextElementPos(elementGridPos,
-                                                   lastElement->GetWidth(),
-                                                   lastElement->GetGridDepth(),
-                                                   newRowXPos,
-                                                   wantsNewRow || forcedToNewRow);
+                elementPos = GetNextElementPos(elementPos,
+                                               lastElement->GetWidth(),
+                                               lastElement->GetGridDepth(),
+                                               newRowXPos,
+                                               wantsNewRow || forcedToNewRow);
             }
-            // Get the absolute position vector since elements have a negative y position
-            // (while the max size vector does not)
-            // TODO: Optimize(?), use positive y-pos
-            const auto abs = elementGridPos.Abs();
+            const auto abs = elementPos.Abs();
             if(abs >= assignedMaxSize)
             {
                 m_ContainerElements[i].isHidden = true;
-                //nrOfHideElements++;
             } else
             {
+
                 m_ContainerElements[i].isHidden = false;
-                containerElement.element->Render(assignedPos + elementGridPos,
-                                                 GetNewMaxSize(elementGridPos
-                                                      + Math::Vec2f(GuiStyling::Window::cutoffPadding,
-                                                                    -GuiStyling::Window::cutoffPadding),
-                                                      assignedMaxSize),
+                containerElement.element->Render(assignedPos + elementPos,
+                                                 GetNewMaxSize(elementPos, assignedMaxSize),
                                                  delta);
-                containerElement.position = elementGridPos;
-                lastElement = containerElement.element;
             }
+            containerElement.position = elementPos;
+            lastElement = containerElement.element;
         }
+        //Renderer::ResetScissor();
     }
 
     bool GuiContainer::IsHidingElements() const
@@ -1087,15 +1068,17 @@ namespace Anwill {
                               (GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin);
         float hiddenHeight = Math::Max(contentHeight - visibleHeight, 0.0f);
         m_HiddenSize.Y = hiddenHeight;
-
         if(hiddenHeight <= 0.0f) {
             m_CanScroll = false;
             return;
         }
         m_CanScroll = true;
         float scrollbarHeight = (visibleHeight * visibleHeight) / contentHeight;
+        float missingHeight = (visibleHeight - scrollbarHeight);
+        float c = m_ScrollOffset.Y / visibleHeight;
         m_Scrollbar.SetHeight(scrollbarHeight);
-        m_Scrollbar.Render(assignedPos, {9999.9f, 9999.9f}, delta);
+        m_Scrollbar.Render(assignedPos - Math::Vec2f(0.0f, missingHeight * c),
+                           {9999.9f, 9999.9f}, delta);
     }
 
     #pragma endregion
@@ -1136,10 +1119,9 @@ namespace Anwill {
                       delta);
 
         if(m_HideElements) { return; }
-        GuiContainer::Render(assignedPos, assignedMaxSize,
-                             {GuiStyling::Dropdown::elementIndent,
+        GuiContainer::Render({GuiStyling::Dropdown::elementIndent,
                               -GuiStyling::Window::elementHeight - GuiStyling::Window::elementVerticalMargin},
-                              delta);
+                             assignedMaxSize, delta);
     }
 
     bool GuiDropdown::IsHovering(const Math::Vec2f& mousePos) const
@@ -1197,13 +1179,15 @@ namespace Anwill {
         if(m_MinimizeButton->IsHovering(mousePos - m_Pos)) {
             return m_MinimizeButton;
         }
-        auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos, mousePos - m_Pos);
-        hoverElementPos = hoverElementPos + m_Pos;
+        auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos,
+                                                  mousePos - m_Pos - GuiStyling::Window::elementStartPos);
+        hoverElementPos = m_Pos + GuiStyling::Window::elementStartPos;
         return hoverElement;
     }
 
     void GuiWindow::Render(bool isSelected, const Timestamp& delta)
     {
+        Renderer::SetScissor({m_Pos.X, m_Pos.Y - m_Size.Y}, m_Size);
         // Render window
         GuiStyling::Window::shader->Bind();
         GuiStyling::Window::shader->SetUniform1i(isSelected, "u_Selected");
@@ -1225,6 +1209,7 @@ namespace Anwill {
                                       m_Size - Math::Vec2f(GuiStyling::Window::cutoffPadding,
                                                            GuiStyling::Window::cutoffPadding),
                                       GuiStyling::iconColor);
+            Renderer::ResetScissor();
             return;
         } else {
             GuiIcon::RenderDownArrow(m_Pos,
@@ -1234,14 +1219,16 @@ namespace Anwill {
         }
 
         // Render elements inside window
-        Math::Vec2f firstElementPos = {GuiStyling::Window::elementIndent,
-                           -(GuiStyling::Window::headerSize + GuiStyling::Window::elementVerticalMargin)};
-        GuiContainer::Render(m_Pos, m_Size, firstElementPos, delta);
+        GuiContainer::Render(m_Pos + GuiStyling::Window::elementStartPos,
+                             m_Size - GuiStyling::Window::elementStartPos.NegateY()
+                             - Math::Vec2f(GuiStyling::Window::cutoffPadding, GuiStyling::Window::cutoffPadding),
+                             delta);
 
         // Render scrollbar
         Math::Vec2f scrollBarPos = {m_Pos.X + m_Size.X - m_Scrollbar.GetWidth() - 3.0f,
                                     m_Pos.Y + -GuiStyling::Window::headerSize - 4.0f};
         RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize, delta);
+        Renderer::ResetScissor();
     }
 
     bool GuiWindow::IsHoveringHeader(const Math::Vec2f& mousePos)
@@ -1294,6 +1281,13 @@ namespace Anwill {
         Math::Vec2f newSize = m_Size + delta;
         newSize.Clamp(minSize, maxSize);
         m_Size = newSize;
+
+        AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
+        AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
+
+        if(m_HiddenSize.Y <= 0 && m_ScrollOffset.Y >= 0.0f) {
+            m_ScrollOffset.Y -= delta.Y;
+        }
     }
 
     Math::Vec2f GuiWindow::GetPos() const

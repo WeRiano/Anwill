@@ -30,11 +30,11 @@ namespace Anwill::Math {
         operator Vec2f() const;
 
         Vec3f Abs() const;
+        Vec3f Negate() const;
         float DotProduct(const Vec3f& other) const;
         Vec3f CrossProduct(const Vec3f& other) const;
         void Move(float deltaX, float deltaY, float deltaZ);
         void Normalize();
-        void Negate();
         bool IsZero() const;
         float GetLength() const;
     };

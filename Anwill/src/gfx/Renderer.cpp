@@ -34,6 +34,16 @@ namespace Anwill {
         s_API->SetViewport(x, y, width, height);
     }
 
+    void Renderer::SetScissor(const Math::Vec2f& pos, const Math::Vec2f& size)
+    {
+        s_API->SetScissor(pos, size);
+    }
+
+    void Renderer::ResetScissor()
+    {
+        s_API->ResetScissor();
+    }
+
     void Renderer::SetClearColor(const Math::Vec3f& color)
     {
         s_API->SetClearColor(color);

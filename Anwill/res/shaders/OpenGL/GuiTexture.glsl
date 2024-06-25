@@ -27,8 +27,5 @@ uniform vec2 u_CutoffPos;
 
 void main()
 {
-    if(gl_FragCoord.x > u_CutoffPos.x || gl_FragCoord.y < u_CutoffPos.y) {
-        discard;
-    }
     color = texture(u_TextureSampler, v_FragTexCoords);
 }

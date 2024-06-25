@@ -115,7 +115,7 @@ namespace Anwill {
             static float elementVerticalMargin, elementHorizontalMargin;
             static float cutoffPadding;
             static float borderSize, headerSize;
-            static Math::Vec2f titlePos;
+            static Math::Vec2f titlePos, elementStartPos;
             static std::shared_ptr<Shader> shader;
         };
 

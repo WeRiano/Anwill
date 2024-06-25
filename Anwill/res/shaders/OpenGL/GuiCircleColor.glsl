@@ -18,7 +18,6 @@ layout(location = 0) out vec4 color;
 
 uniform mat4 u_Transform;
 uniform vec3 u_Color;
-uniform vec2 u_CutoffPos;
 
 bool IsOutsideEllipse(vec2 point, vec2 origin, vec2 radius)
 {
@@ -33,10 +32,6 @@ void main()
     vec2 size = vec2( length(vec2(u_Transform[0][0], u_Transform[0][1])),
     length(vec2(u_Transform[1][0], u_Transform[1][1])) );
     vec2 radius = vec2(size.x * 0.5f, size.y * 0.5f);
-
-    if(gl_FragCoord.x > u_CutoffPos.x || gl_FragCoord.y < u_CutoffPos.y) {
-        discard;
-    }
 
     if (IsOutsideEllipse(gl_FragCoord.xy, centre, radius))
     {

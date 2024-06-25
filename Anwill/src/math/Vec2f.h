@@ -30,11 +30,13 @@ namespace Anwill::Math {
         operator Vec3f() const;
 
         Vec2f Abs() const;
+        Vec2f Negate() const;
+        Vec2f NegateX() const;
+        Vec2f NegateY() const;
         float ScalarProjection(Vec2f vec2f) const;
         float DotProduct(const Vec2f& other) const;
         void Move(float deltaX, float deltaY);
         void Normalize();
-        void Negate();
         void Clamp(const Vec2f& min, const Vec2f& max);
         float GetLength() const;
         std::string ToString() const;

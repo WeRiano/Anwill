@@ -28,14 +28,10 @@ out vec4 FragColor;
 
 uniform mat4 u_Transform;
 uniform sampler2D u_TextBitmaps[AW_MAX_FRAGMENT_SAMPLERS];
-uniform vec2 u_CutoffPos;
 
 void main()
 {
     vec2 centre = vec2(u_Transform[3][0], u_Transform[3][1]);
-    if(gl_FragCoord.x > u_CutoffPos.x || gl_FragCoord.y < u_CutoffPos.y) {
-        discard;
-    }
 
     vec3 textColor = vec3(1.0f, 1.0f, 1.0f);
     // We only care about the "x" element because our bitmap is monochrome/an 'alpha'

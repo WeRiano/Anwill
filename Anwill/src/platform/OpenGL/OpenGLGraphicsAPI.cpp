@@ -39,10 +39,15 @@ namespace Anwill {
                               0, NULL, GL_FALSE);
         AW_INFO("OpenGL debug output enabled!");
 
+        // Blending
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+        // Scissors
+        glEnable(GL_SCISSOR_TEST);
+
         // This is probably going to bite me in the ass some day
+        // No idea what it is
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
         // Texture slots is exclusive interval (we can go maximum 1 below when using glActiveTexture()
@@ -67,14 +72,21 @@ namespace Anwill {
         glViewport(x, y, width, height);
     }
 
-    void OpenGLGraphicsAPI::SetClearColor(const Math::Vec3f& color) const
-    {
-        glClearColor(color.X, color.Y, color.Z, 1.0f);
-    }
-
     void OpenGLGraphicsAPI::SetScissor(const Math::Vec2f& pos, const Math::Vec2f& size) const
     {
         glScissor(pos.X, pos.Y, size.X, size.Y);
+    }
+
+    void OpenGLGraphicsAPI::ResetScissor() const
+    {
+        GLint viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        glScissor(viewport[0], viewport[1], viewport[2], viewport[3]);
+    }
+
+    void OpenGLGraphicsAPI::SetClearColor(const Math::Vec3f& color) const
+    {
+        glClearColor(color.X, color.Y, color.Z, 1.0f);
     }
 
     void OpenGLGraphicsAPI::ClearBuffers() const

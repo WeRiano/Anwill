@@ -13,7 +13,7 @@ namespace Anwill {
     unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS;
 
     Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos,
-    GuiStyling::Tooltip::windowMargin, GuiStyling::Slider::markerSize;
+    GuiStyling::Tooltip::windowMargin, GuiStyling::Slider::markerSize, GuiStyling::Window::elementStartPos;
 
     Math::Vec3f GuiStyling::iconColor;
 
@@ -44,6 +44,8 @@ namespace Anwill {
         iconSize = { Window::elementHeight, Window::elementHeight };
         Window::titlePos = { Window::borderSize + iconSize.X,
                              Window::elementHeight / 2.0f - Window::headerSize / 2.0f };
+        Window::elementStartPos = {GuiStyling::Window::elementIndent,
+                           -(GuiStyling::Window::headerSize + GuiStyling::Window::elementVerticalMargin)};
         ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", Window::borderSize);
         ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", Window::headerSize);
 

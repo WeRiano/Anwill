@@ -88,6 +88,22 @@ namespace Anwill::Math {
         return {Math::Abs(X), Math::Abs(Y)};
     }
 
+    Vec2f Vec2f::Negate() const
+    {
+        return {-X, -Y};
+    }
+
+    Vec2f Vec2f::NegateX() const
+    {
+        return {-X, Y};
+    }
+
+    Vec2f Vec2f::NegateY() const
+    {
+        return {X, -Y};
+    }
+
+
     float Vec2f::ScalarProjection(Vec2f vec2f) const
     {
         vec2f.Normalize();
@@ -110,12 +126,6 @@ namespace Anwill::Math {
         float length = GetLength();
         X = X / length;
         Y = Y / length;
-    }
-
-    void Vec2f::Negate()
-    {
-        X = -X;
-        Y = -Y;
     }
 
     void Vec2f::Clamp(const Vec2f& min, const Vec2f& max)

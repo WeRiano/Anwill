@@ -361,7 +361,7 @@ namespace Anwill {
         virtual std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                             const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Math::Vec2f& firstPos, const Timestamp& delta);
+                    const Timestamp& delta);
         bool IsHidingElements() const;
         void ScrollUp();
         void ScrollDown();
