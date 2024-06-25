@@ -1285,8 +1285,8 @@ namespace Anwill {
         AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
         AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
 
-        if(m_HiddenSize.Y <= 0 && m_ScrollOffset.Y >= 0.0f) {
-            m_ScrollOffset.Y -= delta.Y;
+        if(m_ScrollOffset.Y >= 0.0f && m_HiddenSize.Y != 0.0f && m_HiddenSize.Y <= m_ScrollOffset.Y) {
+            m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - delta.Y, 0.0f);
         }
     }
 
