@@ -69,7 +69,12 @@ namespace Anwill {
 
     void OpenGLGraphicsAPI::SetClearColor(const Math::Vec3f& color) const
     {
-        glClearColor(color.GetX(), color.GetY(), color.GetZ(), 1.0f);
+        glClearColor(color.X, color.Y, color.Z, 1.0f);
+    }
+
+    void OpenGLGraphicsAPI::SetScissor(const Math::Vec2f& pos, const Math::Vec2f& size) const
+    {
+        glScissor(pos.X, pos.Y, size.X, size.Y);
     }
 
     void OpenGLGraphicsAPI::ClearBuffers() const

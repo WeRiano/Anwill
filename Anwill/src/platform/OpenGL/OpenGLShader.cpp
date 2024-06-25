@@ -69,7 +69,7 @@ namespace Anwill {
     void OpenGLShader::SetUniformVec2f(const Math::Vec2f& vec2f, const std::string &name)
     {
         float temp[2] = {
-                vec2f.GetX(), vec2f.GetY()
+                vec2f.X, vec2f.Y
         };
         int location = GetUniformLocation(name);
         glUniform2fv(location, 1, temp);
@@ -78,7 +78,7 @@ namespace Anwill {
     void OpenGLShader::SetUniformVec3f(const Math::Vec3f &vec3f, const std::string &name)
     {
         float temp[3] = {
-                vec3f.GetX(), vec3f.GetY(), vec3f.GetZ()
+                vec3f.X, vec3f.Y, vec3f.Z
         };
         int location = GetUniformLocation(name);
         glUniform3fv(location, 1, temp);

@@ -141,19 +141,19 @@ namespace Anwill {
             {
                 case GLFW_PRESS:
                 {
-                    KeyPressEvent keyPressEvent((Anwill::KeyCode) key);
+                    KeyPressEvent keyPressEvent((KeyCode) key);
                     SystemEvents::Add(keyPressEvent);
                     break;
                 }
                 case GLFW_REPEAT:
                 {
-                    KeyRepeatEvent keyRepeatEvent((Anwill::KeyCode) key);
+                    KeyRepeatEvent keyRepeatEvent((KeyCode) key);
                     SystemEvents::Add(keyRepeatEvent);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    KeyReleaseEvent keyReleaseEvent((Anwill::KeyCode) key);
+                    KeyReleaseEvent keyReleaseEvent((KeyCode) key);
                     SystemEvents::Add(keyReleaseEvent);
                     break;
                 }
@@ -183,19 +183,32 @@ namespace Anwill {
             switch(action) {
                 case GLFW_PRESS:
                 {
-                    MouseButtonPressEvent mouseButtonPressEvent((Anwill::MouseButtonCode) button);
+                    MouseButtonPressEvent mouseButtonPressEvent((MouseButtonCode) button);
                     SystemEvents::Add(mouseButtonPressEvent);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
-                    MouseButtonReleaseEvent mouseButtonReleaseEvent((Anwill::MouseButtonCode) button);
+                    MouseButtonReleaseEvent mouseButtonReleaseEvent((MouseButtonCode) button);
                     SystemEvents::Add(mouseButtonReleaseEvent);
                     break;
                 }
                 default:
                     AW_ERROR("Mouse button action recognized!");
                     break;
+            }
+        });
+
+        glfwSetScrollCallback(m_Window, [](GLFWwindow* window, double xOffset, double yOffset){
+            if(xOffset)
+            {
+                MouseScrollEvent mouseScrollEvent((MouseScrollCode) xOffset);
+                SystemEvents::Add(mouseScrollEvent);
+            }
+            else if(yOffset)
+            {
+                MouseScrollEvent mouseScrollEvent((MouseScrollCode) (yOffset + 1));
+                SystemEvents::Add(mouseScrollEvent);
             }
         });
 

@@ -28,16 +28,16 @@ namespace Anwill::Math {
     Mat4f Mat4f::Translate(const Mat4f& mat, const Vec3f& vec)
     {
         Mat4f translateMat = Identity();
-        translateMat.SetTranslateCol(vec);
+        translateMat.SetTranslation(vec);
         return translateMat * mat;
     }
 
     Mat4f Mat4f::Scale(const Mat4f& mat, const Vec3f& scaleVec)
     {
         Mat4f result = mat;
-        result.m_Mat[0] *= scaleVec.GetX();
-        result.m_Mat[5] *= scaleVec.GetY();
-        result.m_Mat[10] *= scaleVec.GetZ();
+        result.m_Mat[0] *= scaleVec.X;
+        result.m_Mat[5] *= scaleVec.Y;
+        result.m_Mat[10] *= scaleVec.Z;
         return result;
     }
 
@@ -74,17 +74,17 @@ namespace Anwill::Math {
 
     Vec2f Mat4f::operator*(const Vec2f& vec) const
     {
-        float x = vec.GetX();
-        float y = vec.GetY();
+        float x = vec.X;
+        float y = vec.Y;
         return { m_Mat[0] * x + m_Mat[4] * y + m_Mat[12] * 1,
                  m_Mat[1] * x + m_Mat[5] * y + m_Mat[13] * 1};
     }
 
     Vec3f Mat4f::operator*(const Vec3f& vec) const
     {
-        float x = vec.GetX();
-        float y = vec.GetY();
-        float z = vec.GetZ();
+        float x = vec.X;
+        float y = vec.Y;
+        float z = vec.Z;
         return {m_Mat[0] * x + m_Mat[4] * y + m_Mat[8] * z + m_Mat[12],
                 m_Mat[1] * x + m_Mat[5] * y + m_Mat[9] * z + m_Mat[13],
                 m_Mat[2] * x + m_Mat[6] * y + m_Mat[10] * z + m_Mat[14]};
@@ -107,11 +107,11 @@ namespace Anwill::Math {
     Vec3f Mat4f::GetRotation() const
     {
         Vec3f scale = GetScale();
-        float r11 = m_Mat[0] / scale.GetX();
-        float r21 = m_Mat[1] / scale.GetY();
-        float r31 = m_Mat[2] / scale.GetZ();
-        float r32 = m_Mat[6] / scale.GetZ();
-        float r33 = m_Mat[10] / scale.GetZ();
+        float r11 = m_Mat[0] / scale.X;
+        float r21 = m_Mat[1] / scale.Y;
+        float r31 = m_Mat[2] / scale.Z;
+        float r32 = m_Mat[6] / scale.Z;
+        float r33 = m_Mat[10] / scale.Z;
         float thetaX = atan2f(r32, r33);
         float thetaY = atan2f(-r31, sqrtf(r32*r32 + r33*r33));
         float thetaZ = atan2f(r21, r11);
@@ -143,20 +143,20 @@ namespace Anwill::Math {
         m_Mat[4 * 1 + 1] = cosf(rad);
     }
 
-    void Mat4f::SetTranslateCol(const Vec2f& tVec)
+    void Mat4f::SetTranslation(const Vec2f& translationVector)
     {
-        m_Mat[4 * 3 + 0] = tVec.GetX();
-        m_Mat[4 * 3 + 1] = tVec.GetY();
+        m_Mat[4 * 3 + 0] = translationVector.X;
+        m_Mat[4 * 3 + 1] = translationVector.Y;
     }
 
-    void Mat4f::SetTranslateCol(const Vec3f& tVec)
+    void Mat4f::SetTranslation(const Vec3f& translationVector)
     {
-        m_Mat[4 * 3 + 0] = tVec.GetX();
-        m_Mat[4 * 3 + 1] = tVec.GetY();
-        m_Mat[4 * 3 + 2] = tVec.GetZ();
+        m_Mat[4 * 3 + 0] = translationVector.X;
+        m_Mat[4 * 3 + 1] = translationVector.Y;
+        m_Mat[4 * 3 + 2] = translationVector.Z;
     }
 
-    void Mat4f::SetTranslateCol(float tx, float ty, float tz)
+    void Mat4f::SetTranslation(float tx, float ty, float tz)
     {
         m_Mat[4 * 3 + 0] = tx;
         m_Mat[4 * 3 + 1] = ty;

@@ -90,8 +90,8 @@ namespace Anwill {
         }
 
         auto scaleVec = transform.GetScale();
-        float xRadius = scaleVec.GetX() / 2;
-        float yRadius = scaleVec.GetY() / 2;
+        float xRadius = scaleVec.X / 2;
+        float yRadius = scaleVec.Y / 2;
         auto centre = (transform * Math::Vec2f()) + s_SceneData.CameraPos;
         s_CData.VertexToArr({transform * QuadBatchData::unitPositions[0], {},
                              color, centre, Math::Vec2f(xRadius, yRadius)});

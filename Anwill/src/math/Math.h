@@ -7,11 +7,8 @@
 namespace Anwill::Math {
 
     float DegToRad(float deg);
-
     float RadToDeg(float rad);
-
     std::string RoundToString(float value, unsigned int decimals);
-
     int RoundToInt(float value);
 
     /**

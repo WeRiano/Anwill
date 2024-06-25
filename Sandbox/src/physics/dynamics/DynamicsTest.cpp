@@ -48,8 +48,8 @@ void DynamicsTest::KillObjects()
 {
     Anwill::Ecs::ForEach<Anwill::RBody>([](Anwill::EntityID id,
                     Anwill::RBody& rBody){
-        if ( (rBody.GetPosition().GetY() <= -10.0f) or
-             (rBody.GetPosition().GetX() >= 1500.0f) )
+        if ( (rBody.GetPosition().Y <= -10.0f) or
+             (rBody.GetPosition().X >= 1500.0f) )
         {
             Anwill::Ecs::RemoveEntity(id);
         }

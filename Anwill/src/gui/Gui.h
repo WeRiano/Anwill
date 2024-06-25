@@ -128,6 +128,7 @@ namespace Anwill {
         static void OnMouseMove(std::unique_ptr<Event>& event);
         static void OnMousePress(std::unique_ptr<Event>& event);
         static void OnMouseRelease(std::unique_ptr<Event>& event);
+        static void OnMouseScroll(std::unique_ptr<Event>& event);
         static void OnKeyPress(std::unique_ptr<Event>& event);
         static void OnKeyRepeat(std::unique_ptr<Event>& event);
         static void OnKeyRelease(std::unique_ptr<Event>& event);

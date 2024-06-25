@@ -74,13 +74,13 @@ namespace Anwill {
 
         void VertexToArr(const QuadVertex& vertex, int textureID)
         {
-            verticesArr[verticesArrIndex + 0] = vertex.pos.GetX();
-            verticesArr[verticesArrIndex + 1] = vertex.pos.GetY();
-            verticesArr[verticesArrIndex + 2] = vertex.texCoords.GetX();
-            verticesArr[verticesArrIndex + 3] = vertex.texCoords.GetY();
-            verticesArr[verticesArrIndex + 4] = vertex.color.GetX();
-            verticesArr[verticesArrIndex + 5] = vertex.color.GetY();
-            verticesArr[verticesArrIndex + 6] = vertex.color.GetZ();
+            verticesArr[verticesArrIndex + 0] = vertex.pos.X;
+            verticesArr[verticesArrIndex + 1] = vertex.pos.Y;
+            verticesArr[verticesArrIndex + 2] = vertex.texCoords.X;
+            verticesArr[verticesArrIndex + 3] = vertex.texCoords.Y;
+            verticesArr[verticesArrIndex + 4] = vertex.color.X;
+            verticesArr[verticesArrIndex + 5] = vertex.color.Y;
+            verticesArr[verticesArrIndex + 6] = vertex.color.Z;
             verticesArr[verticesArrIndex + 7] = static_cast<float>(textureID);
             verticesArrIndex += vertexAttribCount;
         }
@@ -102,17 +102,17 @@ namespace Anwill {
 
         void VertexToArr(const CircleVertex& vertex)
         {
-            verticesArr[verticesArrIndex + 0] = vertex.pos.GetX();
-            verticesArr[verticesArrIndex + 1] = vertex.pos.GetY();
-            verticesArr[verticesArrIndex + 2] = vertex.texCoords.GetX();
-            verticesArr[verticesArrIndex + 3] = vertex.texCoords.GetY();
-            verticesArr[verticesArrIndex + 4] = vertex.color.GetX();
-            verticesArr[verticesArrIndex + 5] = vertex.color.GetY();
-            verticesArr[verticesArrIndex + 6] = vertex.color.GetZ();
-            verticesArr[verticesArrIndex + 7] = vertex.centre.GetX();
-            verticesArr[verticesArrIndex + 8] = vertex.centre.GetY();
-            verticesArr[verticesArrIndex + 9] = vertex.radius.GetX();
-            verticesArr[verticesArrIndex + 10] = vertex.radius.GetY();
+            verticesArr[verticesArrIndex + 0] = vertex.pos.X;
+            verticesArr[verticesArrIndex + 1] = vertex.pos.Y;
+            verticesArr[verticesArrIndex + 2] = vertex.texCoords.X;
+            verticesArr[verticesArrIndex + 3] = vertex.texCoords.Y;
+            verticesArr[verticesArrIndex + 4] = vertex.color.X;
+            verticesArr[verticesArrIndex + 5] = vertex.color.Y;
+            verticesArr[verticesArrIndex + 6] = vertex.color.Z;
+            verticesArr[verticesArrIndex + 7] = vertex.centre.X;
+            verticesArr[verticesArrIndex + 8] = vertex.centre.Y;
+            verticesArr[verticesArrIndex + 9] = vertex.radius.X;
+            verticesArr[verticesArrIndex + 10] = vertex.radius.Y;
             verticesArrIndex += vertexAttribCount;
         }
     };

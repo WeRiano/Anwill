@@ -36,8 +36,8 @@ void TPSCalcs::ChangePlayerLookDir(std::unique_ptr<Anwill::Event>& event)
 {
     auto e = static_cast<Anwill::MouseMoveEvent&>(*event);
     Anwill::Ecs::ForEach<EntityComponent>([e](Anwill::EntityID id, EntityComponent& comp) {
-        comp.dir = Anwill::Math::Vec2f(e.GetXPos() - (comp.playerPos.GetX() + comp.camPos.GetX()),
-                                       e.GetYPos() - (comp.playerPos.GetY() + comp.camPos.GetY()));
+        comp.dir = Anwill::Math::Vec2f(e.GetXPos() - (comp.playerPos.X + comp.camPos.X),
+                                       e.GetYPos() - (comp.playerPos.Y + comp.camPos.Y));
         comp.dir.Normalize();
     });
 }

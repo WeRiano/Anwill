@@ -36,7 +36,7 @@ namespace Anwill {
         float collisionDistance = (m_Radius + circleCollider->m_Radius);
         if( bodyDistance <= collisionDistance) {
             Math::Vec2f temp = thisCentre - otherCentre;
-            colData.normal = {temp.GetX(), temp.GetY(), 0.0f};
+            colData.normal = {temp.X, temp.Y, 0.0f};
             colData.normal.Normalize();
             colData.depth = collisionDistance - bodyDistance;
             return true;
@@ -76,7 +76,7 @@ namespace Anwill {
         if (axisDepth < colData.depth)
         {
             colData.depth = axisDepth;
-            colData.normal = Math::Vec3f(axis.GetX(), axis.GetY(), 0.0f);
+            colData.normal = Math::Vec3f(axis.X, axis.Y, 0.0f);
             colData.normal.Normalize();
         }
         // There is a collision according to the SAT algorithm projected onto the axes 'created' by this polygon.

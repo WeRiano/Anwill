@@ -42,11 +42,10 @@ namespace Anwill {
         Window::borderSize = 8.0f;
         Window::headerSize = Window::elementHeight;
         iconSize = { Window::elementHeight, Window::elementHeight };
-        Window::titlePos = { Window::borderSize + iconSize.GetX(),
+        Window::titlePos = { Window::borderSize + iconSize.X,
                              Window::elementHeight / 2.0f - Window::headerSize / 2.0f };
         ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", Window::borderSize);
         ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", Window::headerSize);
-
 
         // --- Tooltip ---
         Tooltip::offset = 15.0f;

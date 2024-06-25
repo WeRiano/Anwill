@@ -114,7 +114,7 @@ namespace Anwill {
             }
 
             if( maxWidth > 0.0f && (float) nextGlyphStart > maxWidth ) {
-                advance = { startPos.GetX(), advance.GetY() + m_Height };
+                advance = { startPos.X, advance.Y + m_Height };
             }
             SetCharVertices(vertices, advance, glyph, offset, thisIterationTextSlot);
         }
@@ -231,10 +231,10 @@ namespace Anwill {
     void Font::SetCharVertices(float* vertices, Math::Vec2f& advance, const Glyph& glyph,
                                unsigned int offset, unsigned int textureSlot)
     {
-        float x0 = glyph.x0 + advance.GetX();
-        float x1 = glyph.x1 + advance.GetX();
-        float y0 = glyph.y0 - advance.GetY();
-        float y1 = glyph.y1 - advance.GetY();
+        float x0 = glyph.x0 + advance.X;
+        float x1 = glyph.x1 + advance.X;
+        float y0 = glyph.y0 - advance.Y;
+        float y1 = glyph.y1 - advance.Y;
 
         vertices[offset + 0] = x0;
         vertices[offset + 1] = y1;
@@ -276,7 +276,7 @@ namespace Anwill {
         // "now advance cursors for next glyph
         // (note that advance is number of 1/64 pixels)
         // bitshift by 6 to get value in pixels (2^6 = 64)"
-        advance = {advance.GetX() + ((glyph.advance) >> 6), advance.GetY()};
+        advance = {advance.X + ((glyph.advance) >> 6), advance.Y};
     }
 
     bool Font::SetEscapeCharVertices(float* vertices, Math::Vec2f& advance, unsigned char escapeChar,
@@ -296,7 +296,7 @@ namespace Anwill {
             }
             // Newline character.
             case '\n': {
-                advance = {0.0f, advance.GetY() + m_Height * m_NewlineSpaceCoefficient};
+                advance = {0.0f, advance.Y + m_Height * m_NewlineSpaceCoefficient};
                 return true;
             }
             default:

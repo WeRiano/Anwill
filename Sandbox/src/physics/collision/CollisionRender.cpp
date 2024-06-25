@@ -74,7 +74,7 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
                                                                        Anwill::RBody& body) {
 
         Anwill::Math::Vec3f pos = body.GetPosition();
-        transform.SetTranslateCol(pos);
+        transform.SetTranslation(pos);
 
         if(id == s_Player)
         {

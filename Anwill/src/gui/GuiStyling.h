@@ -15,6 +15,7 @@ namespace Anwill {
     struct GuiStyling
     {
         // --- Global/Shared members (Icon and more) ---
+        static float scrollbarWidth;
         static Math::Vec2f iconSize;
         static Math::Vec3f iconColor;
         static Mesh rectMesh, triangleMesh, checkmarkMesh;

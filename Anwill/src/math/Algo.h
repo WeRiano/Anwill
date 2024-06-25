@@ -23,8 +23,4 @@ namespace Anwill::Math {
                                         float radius,
                                         const Math::Vec2f& point);
     };
-
-    void f();
-
-    bool t();
 }

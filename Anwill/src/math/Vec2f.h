@@ -4,11 +4,13 @@
 
 namespace Anwill::Math {
 
-    class Vec3f;
+    struct Vec3f;
 
-    class Vec2f
+    struct Vec2f
     {
     public:
+        float X, Y;
+
         Vec2f();
         Vec2f(float x, float y);
 
@@ -16,7 +18,7 @@ namespace Anwill::Math {
         Vec2f operator+(const Vec2f& other) const;
         Vec2f operator-(const Vec2f& other) const;
         void operator+=(const Vec2f& other);
-        void operator*=(const float other);
+        void operator*=(float other);
         /**
          * Greater than and less than (or equals) operators return true if and only if the condition
          * is satisfied for all coordinates.
@@ -35,12 +37,7 @@ namespace Anwill::Math {
         void Negate();
         void Clamp(const Vec2f& min, const Vec2f& max);
         float GetLength() const;
-        float GetX() const;
-        float GetY() const;
         std::string ToString() const;
-
-    private:
-        float m_X, m_Y;
     };
 
     Vec2f operator-(const Vec2f rhs);

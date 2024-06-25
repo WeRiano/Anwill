@@ -8,7 +8,7 @@ namespace Anwill {
     class MouseMoveEvent : public Event {
     public:
         MouseMoveEvent(float mouseXPos, float mouseYPos)
-        : m_XPos(mouseXPos), m_YPos(mouseYPos) {}
+            : m_XPos(mouseXPos), m_YPos(mouseYPos) {}
         inline const float GetXPos() const { return m_XPos; }
         inline const float GetYPos() const { return m_YPos; }
     private:
@@ -18,8 +18,8 @@ namespace Anwill {
     class MouseButtonPressEvent : public Event {
     public:
         MouseButtonPressEvent(MouseButtonCode mouseButtonCode)
-        : m_MouseButtonCode(mouseButtonCode) {}
-        inline const MouseButtonCode GetKeyCode() const { return m_MouseButtonCode; }
+            : m_MouseButtonCode(mouseButtonCode) {}
+        inline const MouseButtonCode GetMouseCode() const { return m_MouseButtonCode; }
     private:
         MouseButtonCode m_MouseButtonCode;
     };
@@ -27,10 +27,19 @@ namespace Anwill {
     class MouseButtonReleaseEvent : public Event {
     public:
         MouseButtonReleaseEvent(MouseButtonCode mouseButtonCode)
-        : m_MouseButtonCode(mouseButtonCode) {}
-        inline const MouseButtonCode GetKeyCode() const { return m_MouseButtonCode; }
+            : m_MouseButtonCode(mouseButtonCode) {}
+        inline const MouseButtonCode GetMouseCode() const { return m_MouseButtonCode; }
     private:
         MouseButtonCode m_MouseButtonCode;
+    };
+
+    class MouseScrollEvent : public Event {
+    public:
+        MouseScrollEvent(MouseScrollCode mouseScrollCode)
+            : m_MouseScrollCode(mouseScrollCode) {}
+        inline const MouseScrollCode GetScrollCode() const { return m_MouseScrollCode; }
+    private:
+        MouseScrollCode m_MouseScrollCode;
     };
 
     class SetMouseCursorEvent : public Event {

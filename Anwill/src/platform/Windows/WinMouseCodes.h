@@ -17,4 +17,11 @@ namespace Anwill {
         ButtonRight = Button2,
         ButtonMiddle = Button3
     };
+
+    enum class MouseScrollCode : int {
+        Right = -1,
+        Left = 1,
+        Down = 0,
+        Up = 2,
+    };
 }

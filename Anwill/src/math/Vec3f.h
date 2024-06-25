@@ -4,9 +4,11 @@
 
 namespace Anwill::Math {
 
-    class Vec3f
+    struct Vec3f
     {
     public:
+        float X, Y, Z;
+
         Vec3f();
         Vec3f(float x, float y, float z);
 
@@ -15,8 +17,8 @@ namespace Anwill::Math {
         Vec3f operator-(const Vec3f& other) const;
         void operator+=(const Vec3f& other);
         void operator-=(const Vec3f& other);
-        void operator*=(const float s);
-        Vec3f operator/(const float d) const;
+        void operator*=(float s);
+        Vec3f operator/(float d) const;
         /**
          * Greater than and less than (or equals) operators return true if and only if the condition
          * is satisfied for all coordinates.
@@ -27,6 +29,7 @@ namespace Anwill::Math {
         bool operator<(const Vec3f& other) const;
         operator Vec2f() const;
 
+        Vec3f Abs() const;
         float DotProduct(const Vec3f& other) const;
         Vec3f CrossProduct(const Vec3f& other) const;
         void Move(float deltaX, float deltaY, float deltaZ);
@@ -34,11 +37,6 @@ namespace Anwill::Math {
         void Negate();
         bool IsZero() const;
         float GetLength() const;
-        float GetX() const;
-        float GetY() const;
-        float GetZ() const;
-    private:
-        float m_X, m_Y, m_Z;
     };
 
     Vec3f operator-(const Vec3f rhs);

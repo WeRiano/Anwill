@@ -15,7 +15,7 @@ namespace Anwill::Math {
 
     bool Algo::IsPointInsideCircle(const Vec2f& centre, float radius, const Vec2f& point)
     {
-        return (point.GetX() < centre.GetX() + radius && point.GetX() > centre.GetX() - radius) &&
-               (point.GetY() < centre.GetY() + radius && point.GetY() > centre.GetY() - radius);
+        return (point.X < centre.X + radius && point.X > centre.X - radius) &&
+               (point.Y < centre.Y + radius && point.Y > centre.Y - radius);
     }
 }

@@ -27,6 +27,7 @@ namespace Anwill {
         SystemEvents::Subscribe<MouseMoveEvent>(OnMouseMove);
         SystemEvents::Subscribe<MouseButtonPressEvent>(OnMousePress);
         SystemEvents::Subscribe<MouseButtonReleaseEvent>(OnMouseRelease);
+        SystemEvents::Subscribe<MouseScrollEvent>(OnMouseScroll);
         SystemEvents::Subscribe<KeyPressEvent>(OnKeyPress);
         SystemEvents::Subscribe<KeyRepeatEvent>(OnKeyRepeat);
         SystemEvents::Subscribe<KeyReleaseEvent>(OnKeyRelease);
@@ -82,9 +83,12 @@ namespace Anwill {
         return container->AddElement<GuiText>(onNewRow, false, text, GuiStyling::Text::fontSize);
     }
 
-    std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text, const std::function<void()>& callback, bool onNewRow, GuiWindowID windowID)
+    std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text,
+                                               const std::function<void()>& callback,
+                                               bool onNewRow, GuiWindowID windowID)
     {
-        return AddElementToWindow<GuiTextButton>(windowID, onNewRow, false, text, GuiStyling::Text::fontSize, callback);
+        return AddElementToWindow<GuiTextButton>(windowID, onNewRow, false, text,
+                                                 GuiStyling::Text::fontSize, callback);
     }
 
     std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text,
@@ -92,7 +96,8 @@ namespace Anwill {
                                                const std::function<void()>& callback,
                                                bool onNewRow)
     {
-        return container->AddElement<GuiTextButton>(onNewRow, false, text, GuiStyling::Text::fontSize, callback);
+        return container->AddElement<GuiTextButton>(onNewRow, false, text,
+                                                    GuiStyling::Text::fontSize, callback);
     }
 
     std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::string& text,
@@ -110,13 +115,14 @@ namespace Anwill {
                                                   GuiStyling::Text::fontSize, callback);
     }
 
-    std::shared_ptr<GuiSlider<float>> Gui::Slider(float min, float max, float& sliderValue, GuiWindowID windowID)
+    std::shared_ptr<GuiSlider<float>> Gui::Slider(float min, float max, float& sliderValue,
+                                                  GuiWindowID windowID)
     {
         return AddElementToWindow<GuiSlider<float>>(windowID, true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiSlider<float>>
-    Gui::Slider(float min, float max, float& sliderValue, const std::shared_ptr<GuiContainer>& container)
+    std::shared_ptr<GuiSlider<float>> Gui::Slider(float min, float max, float& sliderValue,
+                                                  const std::shared_ptr<GuiContainer>& container)
     {
         return container->AddElement<GuiSlider<float>>(true, true, min, max, sliderValue);
     }
@@ -181,7 +187,8 @@ namespace Anwill {
         return container->AddElement<GuiDropdown>(true, true, text, GuiStyling::Text::fontSize);
     }
 
-    std::shared_ptr<GuiImage> Gui::Image(const std::string &filePath, unsigned int maxRows, GuiWindowID windowID)
+    std::shared_ptr<GuiImage> Gui::Image(const std::string &filePath, unsigned int maxRows,
+                                         GuiWindowID windowID)
     {
         return AddElementToWindow<GuiImage>(windowID, true, true, filePath, maxRows);
     }
@@ -211,13 +218,13 @@ namespace Anwill {
 
         if(s_State.movingWindow) {
             // If state is set to move window, we move the window.
-            s_Windows[0]->Move(mouseDelta, {0.0f, 0.0f}, maxPos);
+            s_Windows.front()->Move(mouseDelta, {0.0f, 0.0f}, maxPos);
         } else if(s_State.scalingHorizontally || s_State.scalingVertically)
         {
             // If state is set to scale window, we scale window.
-            Math::Vec2f windowPos = s_Windows[0]->GetPos();
-            s_Windows[0]->Resize({mouseDelta.GetX(), -mouseDelta.GetY()}, {000.0f, 000.0f},
-                                 {maxPos.GetX() - windowPos.GetX(), windowPos.GetY()});
+            Math::Vec2f windowPos = s_Windows.front()->GetPos();
+            s_Windows.front()->Resize({mouseDelta.X, -mouseDelta.Y}, {000.0f, 000.0f},
+                                 {maxPos.X - windowPos.X, windowPos.Y});
         } else {
             // Otherwise we update the hover state.
             SetHoverState(newMousePos);
@@ -234,6 +241,20 @@ namespace Anwill {
     void Gui::OnMouseRelease(std::unique_ptr<Event>& event)
     {
         ResetPressState();
+    }
+
+    void Gui::OnMouseScroll(std::unique_ptr<Event>& event)
+    {
+        auto e = static_cast<MouseScrollEvent&>(*event);
+        MouseScrollCode mouseScrollCode = e.GetScrollCode();
+        switch(mouseScrollCode) {
+            case MouseScrollCode::Up:
+                s_Windows.front()->ScrollUp();
+                break;
+            case MouseScrollCode::Down:
+                s_Windows.front()->ScrollDown();
+                break;
+        }
     }
 
     void Gui::OnKeyPress(std::unique_ptr<Event>& event)
@@ -279,6 +300,7 @@ namespace Anwill {
 
     void Gui::SetHoverState(const Math::Vec2f& mousePos)
     {
+        // TODO: What the f is this function
         bool lastIterHoveringDiagonalScaling = s_State.hoveringDiagonalScaling;
         bool lastIterHoveringHeader = s_State.hoveringWindowHeader;
         for (int i = 0; i < s_Windows.size(); i++)
@@ -330,8 +352,8 @@ namespace Anwill {
         SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
 
         if(s_State.hoverElement != nullptr) {
-            // If we did not hit a window, but we are hovering something from last iteration we stop hovering
-            // that
+            // If we did not hit a window,
+            // but we are hovering something from last iteration, we stop hovering
             s_State.hoverElement->StopHovering();
             s_State.hoverElement = nullptr;
         }

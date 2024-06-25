@@ -13,6 +13,7 @@ namespace Anwill {
         void SetViewport(unsigned int x, unsigned int y, unsigned int width,
                          unsigned int height) const override;
         void SetClearColor(const Math::Vec3f& color) const override;
+        void SetScissor(const Math::Vec2f& pos, const Math::Vec2f& size) const;
         void ClearBuffers() const override;
 
         void DrawFont(Font& font, const std::string& text) override;

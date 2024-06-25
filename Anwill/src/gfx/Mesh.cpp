@@ -75,9 +75,9 @@ namespace Anwill {
     Mesh Mesh::CreateTriangleMesh(const Math::Vec2f& a, const Math::Vec2f& b, const Math::Vec2f& c)
     {
         float vertices[] = {
-                a.GetX(), a.GetY(), 0.0f,
-                b.GetX(), b.GetY(), 0.0f,
-                c.GetX(), c.GetY(), 0.0f
+                a.X, a.Y, 0.0f,
+                b.X, b.Y, 0.0f,
+                c.X, c.Y, 0.0f
         };
 
         unsigned int indices[] = {
@@ -96,21 +96,21 @@ namespace Anwill {
         // Width is distance between the leftmost vertex (e) and the rightmost vertex (a)
         // Height is distance between the most north vertex (b) and the most south vertex (c)
         Math::Vec2f a = {0.5f * width, 0.375f * height};
-        Math::Vec2f b = {a.GetY(), a.GetX()};
+        Math::Vec2f b = {a.Y, a.X};
         Math::Vec2f c = {-0.1f * width, -0.5f * height};
-        Math::Vec2f d = {b.GetX() - a.GetX() + c.GetX(), b.GetY() - a.GetY() + c.GetY()};
-        Math::Vec2f e = {c.GetY(), c.GetX()};
-        Math::Vec2f f = {e.GetX() + a.GetX() - b.GetX(), e.GetY() + b.GetY() - a.GetY()};
-        Math::Vec2f g = {f.GetX() - e.GetX() + d.GetX(), f.GetY() - e.GetY() + d.GetY()};
+        Math::Vec2f d = {b.X - a.X + c.X, b.Y - a.Y + c.Y};
+        Math::Vec2f e = {c.Y, c.X};
+        Math::Vec2f f = {e.X + a.X - b.X, e.Y + b.Y - a.Y};
+        Math::Vec2f g = {f.X - e.X + d.X, f.Y - e.Y + d.Y};
 
         float vertices[] = {
-                a.GetX(), a.GetY(), 0.0f,
-                b.GetX(), b.GetY(), 0.0f,
-                c.GetX(), c.GetY(), 0.0f,
-                d.GetX(), d.GetY(), 0.0f,
-                e.GetX(), e.GetY(), 0.0f,
-                f.GetX(), f.GetY(), 0.0f,
-                g.GetX(), g.GetY(), 0.0f
+                a.X, a.Y, 0.0f,
+                b.X, b.Y, 0.0f,
+                c.X, c.Y, 0.0f,
+                d.X, d.Y, 0.0f,
+                e.X, e.Y, 0.0f,
+                f.X, f.Y, 0.0f,
+                g.X, g.Y, 0.0f
         };
 
         unsigned int indices[] = {

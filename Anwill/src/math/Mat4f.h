@@ -47,9 +47,9 @@ namespace Anwill::Math {
         std::array<Math::Vec3f, 3> Get3DBasisVectors() const;
         const float* GetInternal() const;
         void SetRotZValues(const float rad);
-        void SetTranslateCol(const Vec2f& tVec);
-        void SetTranslateCol(const Vec3f& tVec);
-        void SetTranslateCol(float tx, float ty, float tz);
+        void SetTranslation(const Vec2f& translationVector);
+        void SetTranslation(const Vec3f& translationVector);
+        void SetTranslation(float tx, float ty, float tz);
         void SetIdentity();
         std::string ToString();
 

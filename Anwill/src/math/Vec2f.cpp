@@ -1,90 +1,91 @@
 #include <cmath>
 
-#include "Vec2f.h"
-#include "Vec3f.h"
+#include "math/Math.h"
+#include "math/Vec2f.h"
+#include "math/Vec3f.h"
 
 namespace Anwill::Math {
 
     Vec2f::Vec2f()
-        : m_X(0.0f), m_Y(0.0f)
+        : X(0.0f), Y(0.0f)
     {}
 
     Vec2f::Vec2f(float x, float y)
-        : m_X(x), m_Y(y)
+        : X(x), Y(y)
     {}
 
     Vec2f& Vec2f::operator=(const Vec3f& other)
     {
-        m_X = other.GetX();
-        m_Y = other.GetY();
+        X = other.X;
+        Y = other.Y;
         return *this;
     }
 
     Vec2f Vec2f::operator+(const Vec2f& other) const
     {
-        return {m_X + other.m_X, m_Y + other.m_Y};
+        return {X + other.X, Y + other.Y};
     }
 
     Vec2f Vec2f::operator-(const Vec2f& other) const
     {
-        return {m_X - other.m_X, m_Y - other.m_Y};
+        return {X - other.X, Y - other.Y};
     }
 
     void Vec2f::operator+=(const Vec2f& other)
     {
-        m_X += other.m_X;
-        m_Y += other.m_Y;
+        X += other.X;
+        Y += other.Y;
     }
 
     void Vec2f::operator*=(const float other)
     {
-        m_X *= other;
-        m_Y *= other;
+        X *= other;
+        Y *= other;
     }
 
     Vec2f operator-(const Vec2f rhs)
     {
-        return {rhs.GetX(), rhs.GetY()};
+        return {rhs.X, rhs.Y};
     }
 
     Vec2f operator*(const Vec2f& lhs, const float rhs)
     {
-        return {lhs.GetX() * rhs, lhs.GetY() * rhs};
+        return {lhs.X * rhs, lhs.Y * rhs};
     }
 
     Vec2f Math::operator*(const float lhs, const Vec2f& rhs)
     {
-        return {lhs * rhs.GetX(), lhs * rhs.GetY()};
+        return {lhs * rhs.X, lhs * rhs.Y};
     }
 
     bool Vec2f::operator>=(const Vec2f& other) const
     {
-        return m_X >= other.m_X && m_Y >= other.m_Y;
+        return X >= other.X || Y >= other.Y;
     }
 
     bool Vec2f::operator<=(const Vec2f& other) const
     {
-        return m_X <= other.m_X && m_Y <= other.m_Y;
+        return X <= other.X || Y <= other.Y;
     }
 
     bool Vec2f::operator>(const Vec2f& other) const
     {
-        return m_X > other.m_X && m_Y > other.m_Y;
+        return X > other.X || Y > other.Y;
     }
 
     bool Vec2f::operator<(const Vec2f& other) const
     {
-        return m_X < other.m_X && m_Y < other.m_Y;
+        return X < other.X || Y < other.Y;
     }
 
     Vec2f::operator Vec3f() const
     {
-        return {m_X, m_Y, 0.0f};
+        return {X, Y, 0.0f};
     }
 
     Vec2f Vec2f::Abs() const
     {
-        return {m_X, m_Y};
+        return {Math::Abs(X), Math::Abs(Y)};
     }
 
     float Vec2f::ScalarProjection(Vec2f vec2f) const
@@ -95,53 +96,43 @@ namespace Anwill::Math {
 
     float Vec2f::DotProduct(const Vec2f& other) const
     {
-        return m_X * other.m_X + m_Y * other.m_Y;
+        return X * other.X + Y * other.Y;
     }
 
     void Vec2f::Move(float deltaX, float deltaY)
     {
-        m_X += deltaX;
-        m_Y += deltaY;
+        X += deltaX;
+        Y += deltaY;
     }
 
     void Vec2f::Normalize()
     {
         float length = GetLength();
-        m_X = m_X / length;
-        m_Y = m_Y / length;
+        X = X / length;
+        Y = Y / length;
     }
 
     void Vec2f::Negate()
     {
-        m_X = -m_X;
-        m_Y = -m_Y;
+        X = -X;
+        Y = -Y;
     }
 
     void Vec2f::Clamp(const Vec2f& min, const Vec2f& max)
     {
-        if(m_X < min.m_X) { m_X = min.m_X; }
-        if(m_X > max.m_X) { m_X = max.m_X; }
-        if(m_Y < min.m_Y) { m_Y = min.m_Y; }
-        if(m_Y > max.m_Y) { m_Y = max.m_Y; }
+        if(X < min.X) { X = min.X; }
+        if(X > max.X) { X = max.X; }
+        if(Y < min.Y) { Y = min.Y; }
+        if(Y > max.Y) { Y = max.Y; }
     }
 
     float Vec2f::GetLength() const
     {
-        return sqrtf(m_X*m_X + m_Y*m_Y);
-    }
-
-    float Vec2f::GetX() const
-    {
-        return m_X;
-    }
-
-    float Vec2f::GetY() const
-    {
-        return m_Y;
+        return sqrtf(X * X + Y * Y);
     }
 
     std::string Vec2f::ToString() const
     {
-        return std::string("[" + std::to_string(GetX()) + ", " + std::to_string(GetY()) + "]");
+        return std::string("[" + std::to_string(X) + ", " + std::to_string(Y) + "]");
     }
 }

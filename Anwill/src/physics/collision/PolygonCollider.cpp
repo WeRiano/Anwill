@@ -13,7 +13,7 @@ namespace Anwill {
     {
         for(unsigned int i = 0; i < vertices.size(); i++)
         {
-            m_Vertices.emplace_back(vertices[i].GetX(), vertices[i].GetY());
+            m_Vertices.emplace_back(vertices[i].X, vertices[i].Y);
         }
     }
 
@@ -89,7 +89,7 @@ namespace Anwill {
         for(unsigned int i = 0; i < m_Vertices.size(); i++)
         {
             Math::Vec2f edge = (thisTransform * m_Vertices[i]) - (thisTransform * m_Vertices[(i + 1) % m_Vertices.size()]);
-            Math::Vec2f axis = {-edge.GetY(), edge.GetX()}; // Vector perpendicular to the edge
+            Math::Vec2f axis = {-edge.Y, edge.X}; // Vector perpendicular to the edge
             axis.Normalize();
 
             float thisMin, thisMax, otherMin, otherMax;
@@ -105,7 +105,7 @@ namespace Anwill {
             if(axisDepth < colData.depth)
             {
                 colData.depth = axisDepth;
-                colData.normal = Math::Vec3f(axis.GetX(), axis.GetY(), 0.0f);
+                colData.normal = Math::Vec3f(axis.X, axis.Y, 0.0f);
                 colData.normal.Normalize();
             }
         }

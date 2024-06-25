@@ -142,6 +142,8 @@ namespace Anwill {
         void Release() override;
 
         void SetCallback(const std::function<void()>& callback);
+        void SetWidth(float width);
+        void SetHeight(float height);
     protected:
         Math::Vec2f m_ButtonSize;
         std::function<void()> m_Callback;
@@ -214,6 +216,9 @@ namespace Anwill {
             {
                 m_OnPressSet = [](float f){ return std::round(f); };
                 m_SetValueText = [this](){ m_ValueText.Set(std::to_string(m_Source)); };
+            } else {
+                // TODO: Double, long, etc
+                AW_FATAL("GuiSlider template type not supported");
             }
         }
 
@@ -231,21 +236,21 @@ namespace Anwill {
                                                                static_cast<float>(m_Max));
             markerXPosDelta = Math::Clamp(markerXPosDelta, m_MarkerXOffset, GetWidth() - m_MarkerXOffset);
             Math::Vec2f markerPos = {markerXPosDelta - m_MarkerXOffset,
-                                     -(m_ButtonSize.GetY() - GuiStyling::Slider::markerSize.GetY()) * 0.5f + 1.0f};
+                                     -(m_ButtonSize.Y - GuiStyling::Slider::markerSize.Y) * 0.5f + 1.0f};
 
             GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::Slider::markerSize,
                                      assignedMaxSize - markerPos, m_SliderStyle.markerColor);
 
             // Render text
             m_SetValueText();
-            float centeredTextXPos = m_ButtonSize.GetX() * 0.5f - m_ValueText.GetWidth() * 0.5f;
+            float centeredTextXPos = m_ButtonSize.X * 0.5f - m_ValueText.GetWidth() * 0.5f;
             m_ValueText.Render(assignedPos + Math::Vec2f(centeredTextXPos, 0.0f),
                                assignedMaxSize - Math::Vec2f(centeredTextXPos + GuiStyling::TextButton::textPadding, 0.0f),
                                delta);
         }
 
         void OnPress(const Math::Vec2f& mousePos) override {
-            float t = Math::ScaleToRange<float>(mousePos.GetX(),
+            float t = Math::ScaleToRange<float>(mousePos.X,
                                              static_cast<float>(m_Min),
                                              static_cast<float>(m_Max),
                                              m_MarkerXOffset,
@@ -255,7 +260,7 @@ namespace Anwill {
         }
 
     protected:
-        const float m_MarkerXOffset = GuiStyling::Slider::markerSize.GetX() * 0.5f;
+        const float m_MarkerXOffset = GuiStyling::Slider::markerSize.X * 0.5f;
 
         T m_Min, m_Max;
         T& m_Source;
@@ -329,34 +334,60 @@ namespace Anwill {
         float m_ScaleFactor;
     };
 
+    struct ContainerElement {
+    public:
+        std::shared_ptr<GuiElement> element;
+        Math::Vec2f position;
+        bool onNewRow, forceNextToNewRow;
+        bool isHidden;
+
+        ContainerElement(std::shared_ptr<GuiElement> element, Math::Vec2f position,
+                         bool onNewRow, bool forceNextToNewRow, bool isHidden)
+            : element(element), position(position), onNewRow(onNewRow),
+              forceNextToNewRow(forceNextToNewRow), isHidden(isHidden)
+        {}
+    };
+
     class GuiContainer {
     public:
         GuiContainer();
 
+        /**
+         * Get the current element that is being hovered by the mouse cursor, if any.
+         * @param hoverElementPos The position of the hovered element. Ignore if result is null.
+         * @param mousePos Position of the mouse cursor.
+         * @return The element currently being hovered or a nullptr if there isn't one.
+         */
         virtual std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                             const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Math::Vec2f& firstPos, const Timestamp& delta);
         bool IsHidingElements() const;
+        void ScrollUp();
+        void ScrollDown();
 
         template <class E, typename... Args>
         std::shared_ptr<E> AddElement(bool onNewRow, bool forceNextToNewRow, Args&&... args) {
-            if(m_Elements.empty() || (onNewRow || m_NewRowChecks.back().second)) {
+            if(m_ContainerElements.empty() || (onNewRow || m_ContainerElements.back().forceNextToNewRow)) {
                 m_GridDepth++;
             }
-            m_Elements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...));
-            m_NewRowChecks.emplace_back(onNewRow, forceNextToNewRow);
-            return std::static_pointer_cast<E>(m_Elements.back());
+            m_ContainerElements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...),
+                    Math::Vec2f(), onNewRow, forceNextToNewRow, false);
+            return std::static_pointer_cast<E>(m_ContainerElements.back().element);
         }
 
     protected:
+        static constexpr float s_ScrollSpeed = 5.0f;
+        GuiButton m_Scrollbar;
+        Math::Vec2f m_ScrollOffset, m_HiddenSize;
+        bool m_CanScroll;
         unsigned int m_GridDepth;
-        std::vector<std::shared_ptr<GuiElement>> m_Elements;
-        std::vector<Math::Vec2f> m_ElementPosCache;
-        // first bool describes if the element wants to be on this row,
-        // second bool describes if it wants the next element to be on a new row
-        std::vector<std::pair<bool, bool>> m_NewRowChecks;
+        std::vector<ContainerElement> m_ContainerElements;
+        // TODO: This is volatile because?
         volatile bool m_HideElements;
+
+        void RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight,
+                                     const Timestamp& delta);
     };
 
     class GuiDropdown : public GuiTextButton, public GuiContainer {

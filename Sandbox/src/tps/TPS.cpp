@@ -54,7 +54,7 @@ void TPS::Update(const Anwill::Timestamp& timestamp)
 
     Anwill::Ecs::ForEach<EntityComponent>([this](Anwill::EntityID id,
             EntityComponent& comp) {
-        m_PlayerTransform.SetTranslateCol(comp.playerPos);
+        m_PlayerTransform.SetTranslation(comp.playerPos);
 
         m_ShadowShader->Bind();
         m_ShadowShader->SetUniformVec2f(comp.dir, "u_LookDir");

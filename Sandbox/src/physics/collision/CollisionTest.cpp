@@ -108,16 +108,16 @@ void CollisionTest::WrapBodies()
         float margin = 10.0f;
 
         auto pos = body.GetPosition();
-        if(pos.GetX() < -margin) {
+        if(pos.X < -margin) {
             body.Move({(float) m_WS.width + margin * 2, 0.0f, 0.0f});
         }
-        if(pos.GetX() > m_WS.width + margin) {
+        if(pos.X > m_WS.width + margin) {
             body.Move({-(float) m_WS.width - margin * 2, 0.0f, 0.0f});
         }
-        if(pos.GetY() < -margin) {
+        if(pos.Y < -margin) {
             body.Move({0.0f, (float) m_WS.height + margin * 2, 0.0f});
         }
-        if(pos.GetY() > m_WS.height + margin) {
+        if(pos.Y > m_WS.height + margin) {
             body.Move({0.0f, -(float) m_WS.height - margin * 2, 0.0f});
         }
     });
