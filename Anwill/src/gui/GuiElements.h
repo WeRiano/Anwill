@@ -19,27 +19,21 @@ namespace Anwill {
     public:
         static void RenderRightArrow(const Math::Vec2f& assignedPos,
                                      const Math::Vec2f& assignedSize,
-                                     const Math::Vec2f& assignedMaxSize,
                                      const Math::Vec3f& color);
         static void RenderDownArrow(const Math::Vec2f& assignedPos,
                                     const Math::Vec2f& assignedSize,
-                                    const Math::Vec2f& assignedMaxSize,
                                     const Math::Vec3f& color);
         static void RenderCross(const Math::Vec2f& assignedPos,
                                 const Math::Vec2f& assignedSize,
-                                const Math::Vec2f& assignedMaxSize,
                                 const Math::Vec3f& color);
         static void RenderCheckmark(const Math::Vec2f& assignedPos,
                                     const Math::Vec2f& assignedSize,
-                                    const Math::Vec2f& assignedMaxSize,
                                     const Math::Vec3f& color);
         static void RenderRectangle(const Math::Vec2f& assignedPos,
                                     const Math::Vec2f& assignedSize,
-                                    const Math::Vec2f& assignedMaxSize,
                                     const Math::Vec3f& color);
         static void RenderEllipse(const Math::Vec2f& assignedPos,
                                  const Math::Vec2f& assignedSize,
-                                 const Math::Vec2f& assignedMaxSize,
                                  const Math::Vec3f& color);
     };
 
@@ -238,8 +232,7 @@ namespace Anwill {
             Math::Vec2f markerPos = {markerXPosDelta - m_MarkerXOffset,
                                      -(m_ButtonSize.Y - GuiStyling::Slider::markerSize.Y) * 0.5f + 1.0f};
 
-            GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::Slider::markerSize,
-                                     assignedMaxSize - markerPos, m_SliderStyle.markerColor);
+            GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::Slider::markerSize, m_SliderStyle.markerColor);
 
             // Render text
             m_SetValueText();
@@ -332,6 +325,7 @@ namespace Anwill {
     private:
         std::shared_ptr<Texture> m_Texture;
         float m_ScaleFactor;
+        unsigned int m_GridDepth;
     };
 
     struct ContainerElement {
@@ -368,16 +362,17 @@ namespace Anwill {
 
         template <class E, typename... Args>
         std::shared_ptr<E> AddElement(bool onNewRow, bool forceNextToNewRow, Args&&... args) {
-            if(m_ContainerElements.empty() || (onNewRow || m_ContainerElements.back().forceNextToNewRow)) {
-                m_GridDepth++;
-            }
             m_ContainerElements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...),
                     Math::Vec2f(), onNewRow, forceNextToNewRow, false);
+            if(m_ContainerElements.empty() || (onNewRow || m_ContainerElements.back().forceNextToNewRow))
+            {
+                m_GridDepth += m_ContainerElements.back().element->GetGridDepth();
+            }
             return std::static_pointer_cast<E>(m_ContainerElements.back().element);
         }
 
     protected:
-        static constexpr float s_ScrollSpeed = 5.0f;
+        static constexpr float s_ScrollSpeed = 10.0f;
         GuiButton m_Scrollbar;
         Math::Vec2f m_ScrollOffset, m_HiddenSize;
         bool m_CanScroll;

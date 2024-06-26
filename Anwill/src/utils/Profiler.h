@@ -59,11 +59,8 @@ namespace Anwill {
 #define AW_PROFILE_APP_STOP() Anwill::Profiler::StopAppProfiling()
 #define AW_PROFILE_SAVE_TO_DISK() Anwill::Profiler::SaveDataToDisk()
 #define AW_PROFILE_PRINT_TO_CONSOLE() Anwill::Profiler::PrintDataToConsole()
-
-#define AW_PROFILE_FUNC_3(line) const Anwill::Profiler anwillFuncProfiler##line = \
-                                Anwill::Profiler(AW_GET_FUNC_NAME)
-#define AW_PROFILE_FUNC_2(line) AW_PROFILE_FUNC_3(line)
-#define AW_PROFILE_FUNC() AW_PROFILE_FUNC_2(__LINE__) // __LINE__ is c++ standard, yay
+// __LINE__ is c++ standard, yay
+#define AW_PROFILE_FUNC() const Anwill::Profiler anwillFuncProfiler##__LINE__ = Anwill::Profiler(AW_GET_FUNC_NAME)
 #else
 #define AW_PROFILE_APP_START()
 #define AW_PROFILE_APP_STOP()

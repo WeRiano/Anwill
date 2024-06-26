@@ -7,6 +7,8 @@
 #include "gfx/Shader.h"
 #include "gfx/Font.h"
 
+#define AW_GUI_WINDOW_ROW_HEIGHT (GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin)
+
 namespace Anwill {
 
     /**

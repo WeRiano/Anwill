@@ -6,18 +6,11 @@
 #include "gui/GuiElements.h"
 #include "math/Algo.h"
 #include "utils/Utils.h"
+#include "utils/Profiler.h"
 
 namespace Anwill {
 
     #pragma region Helpers
-
-    /**
-     * @brief Get the cutoff position of an element given its position and the maximum allowed size
-     */
-    Math::Vec2f GetCutoffPos(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
-    {
-        return {assignedPos.X + assignedMaxSize.X, assignedPos.Y - assignedMaxSize.Y};
-    }
 
     /**
      * @brief Get the maximum allowed width and height of an element given its position and
@@ -55,7 +48,6 @@ namespace Anwill {
 
     void GuiIcon::RenderRightArrow(const Math::Vec2f& assignedPos,
                                    const Math::Vec2f& assignedSize,
-                                   const Math::Vec2f& assignedMaxSize,
                                    const Math::Vec3f& color) {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                        {assignedSize.X, assignedSize.Y, 1.0f});
@@ -63,7 +55,6 @@ namespace Anwill {
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
         + Math::Vec2f(assignedSize.X, -assignedSize.Y));
 
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
@@ -71,14 +62,12 @@ namespace Anwill {
 
     void GuiIcon::RenderDownArrow(const Math::Vec2f& assignedPos,
                                   const Math::Vec2f& assignedSize,
-                                  const Math::Vec2f& assignedMaxSize,
                                   const Math::Vec3f& color) {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                        {assignedSize.X, assignedSize.Y, 1.0f});
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
         + Math::Vec2f(assignedSize.X, -assignedSize.Y));
 
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
@@ -86,57 +75,50 @@ namespace Anwill {
 
     void GuiIcon::RenderCross(const Math::Vec2f& assignedPos,
                               const Math::Vec2f& assignedSize,
-                              const Math::Vec2f& assignedMaxSize,
                               const Math::Vec3f& color) {
         // TODO
     }
 
     void GuiIcon::RenderCheckmark(const Math::Vec2f& assignedPos,
                                   const Math::Vec2f& assignedSize,
-                                  const Math::Vec2f& assignedMaxSize,
                                   const Math::Vec3f& color) {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                        {assignedSize.X, assignedSize.Y, 1.0f});
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
         + (Math::Vec2f(assignedSize.X, -assignedSize.Y) * 0.5f));
 
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::checkmarkMesh, iconTransform);
     }
 
     void GuiIcon::RenderRectangle(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
-                                  const Math::Vec2f& assignedMaxSize, const Math::Vec3f& color)
+                                  const Math::Vec3f& color)
     {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), assignedSize);
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
                                                               + (Math::Vec2f(assignedSize.X,
                                                                              -assignedSize.Y) * 0.5f));
 
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::rectMesh, iconTransform);
     }
 
     void GuiIcon::RenderEllipse(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedSize,
-                                const Math::Vec2f& assignedMaxSize, const Math::Vec3f& color)
+                                const Math::Vec3f& color)
     {
         Math::Mat4f iconTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), assignedSize);
         iconTransform = Math::Mat4f::Translate(iconTransform, assignedPos
                                                               + (Math::Vec2f(assignedSize.X,
                                                                              -assignedSize.Y) * 0.5f));
 
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         GuiStyling::circleShader->Bind();
         GuiStyling::circleShader->SetUniformVec3f(color, "u_Color");
         Renderer2D::SubmitMesh(GuiStyling::circleShader, GuiStyling::rectMesh, iconTransform);
     }
 
-    typedef std::function<void(const Math::Vec2f&, const Math::Vec2f&, const Math::Vec2f&,
-                               const Math::Vec3f&)> RenderIconFunction;
-
+    typedef std::function<void(const Math::Vec2f&, const Math::Vec2f&, const Math::Vec3f&)> RenderIconFunction;
     static std::array<RenderIconFunction,
                       (size_t) GuiStyling::Checkbox::CheckmarkType::Size> renderIconFunctions = {
             GuiIcon::RenderCheckmark,
@@ -155,6 +137,7 @@ namespace Anwill {
 
     void GuiTooltip::Render(const Math::Vec2f& mousePos, const Math::Vec2f& gameWindowSize)
     {
+        AW_PROFILE_FUNC();
         // First render the tooltip background window
         Math::Vec2f backgroundTopLeftCorner = mousePos + Math::Vec2f(GuiStyling::Tooltip::offset, 0.0f);
         Math::Vec2f textStartPos = backgroundTopLeftCorner +
@@ -191,8 +174,6 @@ namespace Anwill {
         // Then render the tooltip text
         transform = Math::Mat4f::Scale({}, {m_TooltipTextScale, m_TooltipTextScale, 0.0f});
         transform = Math::Mat4f::Translate(transform, textStartPos + correctedOffset);
-        GuiStyling::Text::shader->Bind();
-        GuiStyling::Text::shader->Unbind();
         Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, m_TooltipText, transform);
     }
 
@@ -280,7 +261,7 @@ namespace Anwill {
     void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                          const Timestamp& delta, int startIndex, int length)
     {
-        Math::Vec2f cutoffPos = GetCutoffPos(Math::Vec2f(m_TextPos.X, 0.0f) + assignedPos, assignedMaxSize);
+        AW_PROFILE_FUNC();
         auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
                                                 {m_TextScale, m_TextScale, 1.0f});
         thisTransform = Math::Mat4f::Translate(thisTransform, m_TextPos + assignedPos);
@@ -398,9 +379,10 @@ namespace Anwill {
           m_Callback(callback)
     {}
 
-    void GuiButton::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize,
-                           const Timestamp& delta) {
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
+    void GuiButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                           const Timestamp& delta)
+    {
+        AW_PROFILE_FUNC();
         auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(), m_ButtonSize);
         thisTransform = Math::Mat4f::Translate(thisTransform,
                                                assignedPos + Math::Vec2f(m_ButtonSize.X / 2.0f,
@@ -472,6 +454,7 @@ namespace Anwill {
     void GuiTextButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                                const Timestamp& delta)
     {
+        AW_PROFILE_FUNC();
         GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
         // Render text
@@ -502,7 +485,9 @@ namespace Anwill {
     {}
 
     void GuiCheckbox::Render(const Math::Vec2f &assignedPos, const Math::Vec2f &assignedMaxSize,
-                             const Timestamp& delta) {
+                             const Timestamp& delta)
+    {
+        AW_PROFILE_FUNC();
         // Render text
         Math::Vec2f textPosDelta = {m_ButtonSize.X + GuiStyling::Checkbox::textMargin, 0.0f};
         m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta, delta);
@@ -516,7 +501,6 @@ namespace Anwill {
         RenderIconFunction renderFunc = renderIconFunctions[(size_t) m_CheckboxStyle.checkmarkType];
         renderFunc(assignedPos + Math::Vec2f(margin.X, -margin.Y),
                                  m_ButtonSize - margin * 2.0f,
-                                 assignedMaxSize - margin,
                                  m_CheckboxStyle.checkmarkColor);
     }
 
@@ -548,6 +532,7 @@ namespace Anwill {
     void GuiRadioButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                                 const Timestamp& delta)
     {
+        AW_PROFILE_FUNC();
         Math::Vec2f textPosDelta = {m_ButtonSize.X + GuiStyling::Checkbox::textMargin, 0.0f};
         m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta, delta);
 
@@ -559,7 +544,6 @@ namespace Anwill {
         Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 1.0f};
         GuiIcon::RenderEllipse(assignedPos + Math::Vec2f(margin.X, -margin.Y),
                    m_ButtonSize - margin * 2.0f,
-                   assignedMaxSize - margin,
                    m_RadioButtonStyle.checkmarkColor);
     }
 
@@ -586,12 +570,12 @@ namespace Anwill {
     void GuiInputText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                               const Timestamp& delta)
     {
+        AW_PROFILE_FUNC();
         CalcCursorTimeInterval(delta);
 
         // Render button
         GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f,
                               -GuiStyling::Window::elementHeight * 0.5f};
         if(m_IsSelected) {
@@ -905,16 +889,18 @@ namespace Anwill {
     GuiImage::GuiImage(const std::string& fileName, unsigned int maxRows)
         : m_Texture(Texture::Create(fileName))
     {
-        float rowHeight = GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin;
-        if(m_Texture->GetHeight() > maxRows * rowHeight) {
-            m_ScaleFactor = maxRows * rowHeight / m_Texture->GetHeight();
+        if(m_Texture->GetHeight() > maxRows * AW_GUI_WINDOW_ROW_HEIGHT) {
+            m_ScaleFactor = maxRows * AW_GUI_WINDOW_ROW_HEIGHT / m_Texture->GetHeight();
         } else {
             m_ScaleFactor = 1.0f;
         }
+        m_GridDepth = std::ceil(m_Texture->GetHeight() * m_ScaleFactor / AW_GUI_WINDOW_ROW_HEIGHT);
     }
 
     void GuiImage::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                          const Timestamp& delta) {
+                          const Timestamp& delta)
+    {
+        AW_PROFILE_FUNC();
 
         Math::Vec2f imageSize = {static_cast<float>(m_Texture->GetWidth()),
                                  static_cast<float>(m_Texture->GetHeight())};
@@ -923,7 +909,6 @@ namespace Anwill {
         transform = Math::Mat4f::Translate(transform, {assignedPos.X + imageSize.X * 0.5f,
                                                        assignedPos.Y - imageSize.Y * 0.5f,
                                                        0.0f});
-        Math::Vec2f cutoffPos = GetCutoffPos(assignedPos, assignedMaxSize);
         Renderer2D::SubmitMesh(GuiStyling::Image::shader, Mesh::GetUnitRectangle(true),
                                transform, m_Texture);
     }
@@ -942,8 +927,7 @@ namespace Anwill {
     }
 
     unsigned int GuiImage::GetGridDepth() const {
-        float rowHeight = GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin;
-        return std::ceil(m_Texture->GetHeight() * m_ScaleFactor / rowHeight);
+        return m_GridDepth;
     }
 
     #pragma endregion
@@ -1021,7 +1005,6 @@ namespace Anwill {
             containerElement.position = elementPos;
             lastElement = containerElement.element;
         }
-        //Renderer::ResetScissor();
     }
 
     bool GuiContainer::IsHidingElements() const
@@ -1037,12 +1020,7 @@ namespace Anwill {
         }
         m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - s_ScrollSpeed, 0.0f);
         //AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
-        /*
-        if(Math::Abs(m_ScrollOffset.Y) < m_HiddenSize.Y)
-        {
-            m_ScrollOffset.Y -= s_ScrollSpeed;
-        }
-         */
+        //AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
     }
 
     void GuiContainer::ScrollDown()
@@ -1052,35 +1030,33 @@ namespace Anwill {
             return;
         }
         // TODO: Has to include the cutoff distance here.
-        m_ScrollOffset.Y = Math::Min(Math::Abs(m_ScrollOffset.Y + s_ScrollSpeed), m_HiddenSize.Y);
-        /*
-        if(Math::Abs(m_ScrollOffset.Y) <= m_HiddenSize.Y)
-        {
-            m_ScrollOffset.Y += s_ScrollSpeed;
-        }
-         */
+        m_ScrollOffset.Y = Math::Min(m_ScrollOffset.Y + s_ScrollSpeed, m_HiddenSize.Y);
+        //AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
+        //AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
     }
 
     void GuiContainer::RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight,
                                                const Timestamp& delta)
     {
-        // Distance from start of canvas to end of canvas.
-        // Distance from start of hidden canvas to end of canvas.
-        float contentHeight = (m_GridDepth - 0) *
-                              (GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin);
+        float contentHeight = m_GridDepth * AW_GUI_WINDOW_ROW_HEIGHT;
+        // How much of the window is hidden due to content overflow
         float hiddenHeight = Math::Max(contentHeight - visibleHeight, 0.0f);
         m_HiddenSize.Y = hiddenHeight;
         if(hiddenHeight <= 0.0f) {
+        // Can only scroll if there is some hidden content
             m_CanScroll = false;
             return;
         }
+
         m_CanScroll = true;
         float scrollbarHeight = (visibleHeight * visibleHeight) / contentHeight;
-        float missingHeight = (visibleHeight - scrollbarHeight);
-        float c = m_ScrollOffset.Y / visibleHeight;
+        float emptyHeight = (visibleHeight - scrollbarHeight);
+        // This coefficient represents how "far" the user has scrolled into hidden territory (and will be on [0, 1])
+        float scrollDistNorm = m_ScrollOffset.Y / m_HiddenSize.Y;
+        Math::Vec2f scrollbarPosOffset = Math::Vec2f(0.0f, emptyHeight * scrollDistNorm);
         m_Scrollbar.SetHeight(scrollbarHeight);
-        m_Scrollbar.Render(assignedPos - Math::Vec2f(0.0f, missingHeight * c),
-                           {9999.9f, 9999.9f}, delta);
+        // TODO: Max size unused
+        m_Scrollbar.Render(assignedPos - scrollbarPosOffset, {9999.9f, 9999.9f}, delta);
     }
 
     #pragma endregion
@@ -1098,6 +1074,7 @@ namespace Anwill {
     void GuiDropdown::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                              const Timestamp& delta)
     {
+        AW_PROFILE_FUNC();
         // Force button size to max width render it
         m_ButtonSize = { assignedMaxSize.X, m_ButtonSize.Y};
         GuiButton::Render(assignedPos, assignedMaxSize, delta);
@@ -1106,12 +1083,10 @@ namespace Anwill {
         if(m_HideElements) {
             GuiIcon::RenderRightArrow(assignedPos,
                                       GuiStyling::iconSize * 0.5f,
-                                      assignedMaxSize,
                                       GuiStyling::iconColor);
         } else {
             GuiIcon::RenderDownArrow(assignedPos,
                                      GuiStyling::iconSize * 0.5f,
-                                     assignedMaxSize,
                                      GuiStyling::iconColor);
         }
 
@@ -1199,25 +1174,20 @@ namespace Anwill {
         Renderer2D::SubmitMesh(GuiStyling::Window::shader, GuiStyling::rectMesh, transform);
 
         // Render title
-        m_Title.Render(m_Pos + GuiStyling::Window::titlePos, m_Size - GuiStyling::Window::titlePos
-                                                           - Math::Vec2f(GuiStyling::Window::cutoffPadding,
-                                                                         GuiStyling::Window::cutoffPadding),
-                                                           delta);
+        m_Title.Render(m_Pos + GuiStyling::Window::titlePos,
+                       m_Size - GuiStyling::Window::titlePos - Math::Vec2f(GuiStyling::Window::cutoffPadding,
+                                                                           GuiStyling::Window::cutoffPadding),
+                                                                           delta);
         // Render minimize button
         m_MinimizeButton->Render(m_Pos, m_Size, delta);
         if(m_HideElements) {
             GuiIcon::RenderRightArrow(m_Pos,
                                       GuiStyling::iconSize * 0.5f,
-                                      m_Size - Math::Vec2f(GuiStyling::Window::cutoffPadding,
-                                                           GuiStyling::Window::cutoffPadding),
                                       GuiStyling::iconColor);
             Renderer::ResetScissor();
             return;
         } else {
-            GuiIcon::RenderDownArrow(m_Pos,
-                                     GuiStyling::iconSize * 0.5f,
-                                     m_Size - Math::Vec2f(GuiStyling::Window::cutoffPadding, GuiStyling::Window::cutoffPadding),
-                                     GuiStyling::iconColor);
+            GuiIcon::RenderDownArrow(m_Pos, GuiStyling::iconSize * 0.5f, GuiStyling::iconColor);
         }
 
         // Render elements inside window

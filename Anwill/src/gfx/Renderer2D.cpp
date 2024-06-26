@@ -124,7 +124,6 @@ namespace Anwill {
         auto maxTextSlots = *ShaderMacros::GetMacro<unsigned int>("AW_MAX_FRAGMENT_SAMPLERS");
         std::string remainingText = text; // Everything is remaining at the start
         while (!remainingText.empty()) {
-            //UNIQUE CHARS SUBSTR IS SUS
             auto thisStr = Utils::UniqueCharsSubstr(remainingText, maxTextSlots);
             // Prepare and draw the text
             batchStartPos = font.Prepare(thisStr, shader, batchStartPos, maxWidth);

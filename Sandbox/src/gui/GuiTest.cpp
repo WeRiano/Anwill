@@ -67,6 +67,9 @@ GuiTest::GuiTest(const unsigned int ups)
     Anwill::Gui::RadioButton("Radio 3", *e, 3, [](){}, false);
 
     Anwill::Gui::TextInput("", 150.0f);
+    Anwill::Gui::Image("Sandbox/assets/textures/anwill.jpg", 5);
+    Anwill::Gui::Button("Fill button to debug overflow stuff");
+    Anwill::Gui::Button("Fill button to debug overflow stuff");
 
     /*
     auto id2 = Anwill::Gui::CreateWindow("Reallylongtitlethatprobablyshouldnotfittttttttttttttttttttttttttttttttttttttttt");
