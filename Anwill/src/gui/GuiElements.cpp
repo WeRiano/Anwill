@@ -935,17 +935,18 @@ namespace Anwill {
         if(m_HideElements) { return nullptr; }
         for(unsigned int i = 0; i < m_ContainerElements.size(); i++) {
             auto& containerElement = m_ContainerElements[i];
-            if (containerElement.element->IsHovering(mousePos - (containerElement.position))) {
+            if (containerElement.element->IsHovering(mousePos - containerElement.position)) {
                 hoverElementPos = containerElement.position;
                 return containerElement.element;
             }
             if (dynamic_cast<GuiContainer*>(containerElement.element.get()) != nullptr) {
                 // If element is a container we need to check with those elements
-                auto container = std::dynamic_pointer_cast<GuiContainer>(containerElement.element);
+                auto container =
+                    std::dynamic_pointer_cast<GuiContainer>(containerElement.element);
                 Math::Vec2f elementPosInsideContainer = {};
                 auto maybeResult = container->GetHoverElement(
                         elementPosInsideContainer,
-                        mousePos - (containerElement.position));
+                        mousePos - containerElement.position);
                 if (maybeResult != nullptr) {
                     // If we found an element we return it, otherwise we continue
                     hoverElementPos = containerElement.position + elementPosInsideContainer;
@@ -1058,6 +1059,13 @@ namespace Anwill {
         m_GridDepth++;
     }
 
+    std::shared_ptr<GuiElement> GuiDropdown::GetHoverElement(Math::Vec2f& hoverElementPos,
+                                                             const Math::Vec2f& mousePos) const
+    {
+        return GuiContainer::GetHoverElement(hoverElementPos,
+                                             mousePos - GuiStyling::Dropdown::elementStartPos);
+    }
+
     void GuiDropdown::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                              const Timestamp& delta)
     {
@@ -1088,16 +1096,20 @@ namespace Anwill {
 
     bool GuiDropdown::IsHovering(const Math::Vec2f& mousePos) const
     {
+        return GuiTextButton::IsHovering(mousePos);
+        /*
         if (GuiTextButton::IsHovering(mousePos)) {
             return true;
-        } else {
-            for(unsigned int i = 0; i < m_ContainerElements.size(); i++) {
-                if(m_ContainerElements[i].element->IsHovering(mousePos)) {
-                    return true;
+        }
+        else {
+            for(const auto& containerElement : m_ContainerElements) {
+                if(containerElement.element->IsHovering(mousePos)) {
+                    return false;
                 }
             }
         }
         return false;
+         */
     }
 
     float GuiDropdown::GetWidth() const

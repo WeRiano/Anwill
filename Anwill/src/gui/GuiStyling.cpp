@@ -12,8 +12,8 @@ namespace Anwill {
 
     unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS;
 
-    Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos,
-    GuiStyling::Tooltip::windowMargin, GuiStyling::Slider::markerSize, GuiStyling::Window::elementStartPos;
+    Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos, GuiStyling::Tooltip::windowMargin,
+    GuiStyling::Slider::markerSize, GuiStyling::Window::elementStartPos, GuiStyling::Dropdown::elementStartPos;
 
     Math::Vec3f GuiStyling::iconColor;
 
@@ -80,6 +80,7 @@ namespace Anwill {
 
         // --- Dropdown --
         Dropdown::elementIndent = 10.0f;
+        Dropdown::elementStartPos = {Dropdown::elementIndent, -AW_GUI_WINDOW_ROW_HEIGHT};
 
         // --- Slider ---
         Slider::markerSize = {13.0f, Window::elementHeight - 1.5f * 2.0f};

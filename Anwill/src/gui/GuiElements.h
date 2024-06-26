@@ -392,6 +392,8 @@ namespace Anwill {
     public:
         GuiDropdown(const std::string& text, unsigned int textSize);
 
+        std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
+                                                    const Math::Vec2f& mousePos) const override;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;

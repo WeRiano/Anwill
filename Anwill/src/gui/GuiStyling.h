@@ -105,12 +105,19 @@ namespace Anwill {
             Math::Vec3f selectedTextHighlightColor = {0.30f, 0.38f, 1.0f};
         };
 
-        struct Dropdown {
+        struct Container {
         public:
-            static float elementIndent;
+            float elementIndent = 10.0f;
+            Math::Vec3f elementStartPos;
         };
 
-        struct Window {
+        struct Dropdown : public Container {
+        public:
+            static float elementIndent;
+            static Math::Vec2f elementStartPos;
+        };
+
+        struct Window : public Container {
         public:
             static float elementIndent;
             static float elementHeight;
