@@ -57,7 +57,8 @@ namespace Anwill {
 
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f(color, "u_Color");
-        Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh, iconTransform);
+        Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::triangleMesh,
+                               iconTransform);
     }
 
     void GuiIcon::RenderDownArrow(const Math::Vec2f& assignedPos,
@@ -141,10 +142,8 @@ namespace Anwill {
         // First render the tooltip background window
         Math::Vec2f backgroundTopLeftCorner = mousePos + Math::Vec2f(GuiStyling::Tooltip::offset, 0.0f);
         Math::Vec2f textStartPos = backgroundTopLeftCorner +
-                Math::Vec2f(GuiStyling::Tooltip::windowMargin.X,
-                            -GuiStyling::Tooltip::windowMargin.Y) +
-                            Math::Vec2f(0.0f, -GuiStyling::Text::font->GetFontHeight())
-                            * m_TooltipTextScale;
+                Math::Vec2f(GuiStyling::Tooltip::windowMargin.X, -GuiStyling::Tooltip::windowMargin.Y) +
+                            Math::Vec2f(0.0f, -GuiStyling::Text::font->GetFontHeight()) * m_TooltipTextScale;
 
         Math::Vec2f textSize = GuiStyling::Text::font->GetTextSize(m_TooltipText) * m_TooltipTextScale;
         Math::Vec2f backgroundSize = textSize + GuiStyling::Tooltip::windowMargin * 2.0f;
@@ -174,7 +173,8 @@ namespace Anwill {
         // Then render the tooltip text
         transform = Math::Mat4f::Scale({}, {m_TooltipTextScale, m_TooltipTextScale, 0.0f});
         transform = Math::Mat4f::Translate(transform, textStartPos + correctedOffset);
-        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, m_TooltipText, transform);
+        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, m_TooltipText,
+                               transform);
     }
 
     #pragma endregion
@@ -212,13 +212,11 @@ namespace Anwill {
 
     void GuiElement::Select()
     {
-        //AW_INFO("Element selected!");
         m_IsSelected = true;
     }
 
     void GuiElement::Deselect()
     {
-        //AW_INFO("Element deselected!");
         m_IsSelected = false;
     }
 
@@ -255,7 +253,7 @@ namespace Anwill {
     void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                          const Timestamp& delta)
     {
-        Render(assignedPos, assignedMaxSize, delta, 0, m_Text.length());
+        Render(assignedPos, assignedMaxSize, delta, 0, (int) m_Text.length());
     }
 
     void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
@@ -269,7 +267,8 @@ namespace Anwill {
         // Render
         std::string renderStr = m_Text.substr(startIndex, length);
         GuiStyling::Text::shader->Bind();
-        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, renderStr, thisTransform);
+        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, renderStr,
+                               thisTransform);
     }
 
     bool GuiText::IsHovering(const Math::Vec2f& mousePos) const {
@@ -289,7 +288,7 @@ namespace Anwill {
     float GuiText::GetWidth(unsigned int startIndex, unsigned int size) const
     {
         std::string substr = m_Text.substr(startIndex, size);
-        return GuiStyling::Text::font->GetTextWidth(substr) * m_TextScale;
+        return (float)GuiStyling::Text::font->GetTextWidth(substr) * m_TextScale;
     }
 
     unsigned int GuiText::GetGridDepth() const
@@ -305,20 +304,18 @@ namespace Anwill {
     void GuiText::AddCharacter(unsigned char c, unsigned int index)
     {
         m_Text.insert(index, std::string(1, c));
-        //AW_INFO("Glyph width: {0}", GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale);
         m_TextWidth += GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
     }
 
     void GuiText::PrependCharacter(unsigned char c)
     {
-        m_Text = std::string(1, c) + m_Text;
+        m_Text = std::string(1, (char) c) + m_Text;
         m_TextWidth += GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
-        //m_TextWidth = (float) GuiStyling::Text::font->GetTextWidth(m_Text) * m_TextScale;
     }
 
     void GuiText::AppendCharacter(unsigned char c)
     {
-        m_Text.push_back(c);
+        m_Text.push_back((char) c);
         m_TextWidth += GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
     }
 
@@ -329,7 +326,7 @@ namespace Anwill {
             m_Text.erase(characterIndex, 1);
             m_TextWidth -= GuiStyling::Text::font->GetGlyphWidth(removedChar) * m_TextScale;
             //AW_INFO("Glyph width: {0}", GuiStyling::Text::font->GetGlyphWidth(removedChar) * m_TextScale);
-            return removedChar;
+            return (char) removedChar;
         }
         return -1;
     }
@@ -338,7 +335,7 @@ namespace Anwill {
     {
         auto removedSubstr = m_Text.substr(startCharacterIndex, endCharacterIndex - startCharacterIndex);
         m_Text.erase(startCharacterIndex, endCharacterIndex - startCharacterIndex);
-        m_TextWidth = GuiStyling::Text::font->GetTextWidth(m_Text) * m_TextScale;
+        m_TextWidth = (float) GuiStyling::Text::font->GetTextWidth(m_Text) * m_TextScale;
         return removedSubstr;
     }
 
@@ -620,12 +617,6 @@ namespace Anwill {
             // Shift the text to the left until it fits
             m_RenderLeftIndex++;
         }
-        //AW_INFO("Text width: {0}", m_Text.GetWidth());
-    }
-
-    void GuiInputText::RenderButton()
-    {
-        // TODO
     }
 
     void GuiInputText::RenderSelected(const Math::Vec2f& assignedPos, const Math::Vec2f& offset)
@@ -659,8 +650,7 @@ namespace Anwill {
     {
         Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
         int renderStrLength = m_RenderRightIndex - m_RenderLeftIndex;
-        m_Text.Render(assignedPos + padding,
-                      assignedMaxSize - padding,
+        m_Text.Render(assignedPos + padding,assignedMaxSize - padding,
                       delta, m_RenderLeftIndex, renderStrLength);
     }
 
@@ -701,7 +691,7 @@ namespace Anwill {
             default:
                 break;
         }
-        DebugIndices();
+        //DebugIndices();
     }
 
     void GuiInputText::DeleteText()
@@ -777,7 +767,7 @@ namespace Anwill {
     void GuiInputText::SelectAll()
     {
         m_SelectLeftIndex = 0;
-        m_SelectRightIndex = m_Text.ToString().length();
+        m_SelectRightIndex = (int) m_Text.ToString().length();
     }
 
     void GuiInputText::MoveRight()
@@ -808,7 +798,6 @@ namespace Anwill {
                 m_RenderLeftIndex++;
             }
         }
-        //DebugIndices();
     }
 
     void GuiInputText::MoveLeft()
@@ -839,7 +828,6 @@ namespace Anwill {
                 m_RenderRightIndex--;
             }
         }
-        //DebugIndices();
     }
 
     bool GuiInputText::IsTextWiderThanBox() const
@@ -971,7 +959,8 @@ namespace Anwill {
     void GuiContainer::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                               const Timestamp& delta)
     {
-        Renderer::SetScissor({assignedPos.X, assignedPos.Y - assignedMaxSize.Y}, assignedMaxSize);
+        // TODO: Cleanup, big function
+        Renderer::PushScissor({assignedPos.X, assignedPos.Y - assignedMaxSize.Y}, assignedMaxSize);
         Math::Vec2f elementPos = m_ScrollOffset;
         float newRowXPos = elementPos.X;
         std::shared_ptr<GuiElement> lastElement = nullptr;
@@ -990,8 +979,8 @@ namespace Anwill {
                                                newRowXPos,
                                                wantsNewRow || forcedToNewRow);
             }
-            const auto abs = elementPos.Abs();
-            if(abs >= assignedMaxSize)
+            // Only render the element if it is inside the
+            if(elementPos.Abs() >= assignedMaxSize)
             {
                 m_ContainerElements[i].isHidden = true;
             } else
@@ -1005,6 +994,7 @@ namespace Anwill {
             containerElement.position = elementPos;
             lastElement = containerElement.element;
         }
+        Renderer::EndScissor();
     }
 
     bool GuiContainer::IsHidingElements() const
@@ -1019,8 +1009,6 @@ namespace Anwill {
             return;
         }
         m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - s_ScrollSpeed, 0.0f);
-        //AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
-        //AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
     }
 
     void GuiContainer::ScrollDown()
@@ -1031,14 +1019,12 @@ namespace Anwill {
         }
         // TODO: Has to include the cutoff distance here.
         m_ScrollOffset.Y = Math::Min(m_ScrollOffset.Y + s_ScrollSpeed, m_HiddenSize.Y);
-        //AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
-        //AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
     }
 
     void GuiContainer::RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight,
                                                const Timestamp& delta)
     {
-        float contentHeight = m_GridDepth * AW_GUI_WINDOW_ROW_HEIGHT;
+        float contentHeight = (float)m_GridDepth * AW_GUI_WINDOW_ROW_HEIGHT;
         // How much of the window is hidden due to content overflow
         float hiddenHeight = Math::Max(contentHeight - visibleHeight, 0.0f);
         m_HiddenSize.Y = hiddenHeight;
@@ -1056,7 +1042,8 @@ namespace Anwill {
         Math::Vec2f scrollbarPosOffset = Math::Vec2f(0.0f, emptyHeight * scrollDistNorm);
         m_Scrollbar.SetHeight(scrollbarHeight);
         // TODO: Max size unused
-        m_Scrollbar.Render(assignedPos - scrollbarPosOffset, {9999.9f, 9999.9f}, delta);
+        m_Scrollbar.Render(assignedPos - scrollbarPosOffset, {9999.9f, 9999.9f},
+                           delta);
     }
 
     #pragma endregion
@@ -1075,8 +1062,8 @@ namespace Anwill {
                              const Timestamp& delta)
     {
         AW_PROFILE_FUNC();
-        // Force button size to max width render it
-        m_ButtonSize = { assignedMaxSize.X, m_ButtonSize.Y};
+        // Set button size to the maximum allowed width
+        m_ButtonSize = {assignedMaxSize.X, m_ButtonSize.Y};
         GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
         // Render arrow icon
@@ -1092,12 +1079,10 @@ namespace Anwill {
 
         // Render text slightly to the right compared to a regular text button
         m_Text.Render(assignedPos + Math::Vec2f(GuiStyling::iconSize.X, 0.0f),
-                      assignedMaxSize - Math::Vec2f(GuiStyling::iconSize.X, 0.0f),
-                      delta);
+                      assignedMaxSize - Math::Vec2f(GuiStyling::iconSize.X, 0.0f), delta);
 
         if(m_HideElements) { return; }
-        GuiContainer::Render({GuiStyling::Dropdown::elementIndent,
-                              -GuiStyling::Window::elementHeight - GuiStyling::Window::elementVerticalMargin},
+        GuiContainer::Render(assignedPos + Math::Vec2f(GuiStyling::Dropdown::elementIndent,-AW_GUI_WINDOW_ROW_HEIGHT),
                              assignedMaxSize, delta);
     }
 
@@ -1151,7 +1136,7 @@ namespace Anwill {
                                                            const Math::Vec2f& mousePos) const
     {
         // Two things in addition to GuiContainer implementation:
-        //  1. We have a static minimize button element that we have to consider
+        //  1. We have a static minimize button element that we have to check for hovering
         //  2. We have to consider the position of the window since it is the "outer" most container
         if(m_MinimizeButton->IsHovering(mousePos - m_Pos)) {
             return m_MinimizeButton;
@@ -1164,7 +1149,8 @@ namespace Anwill {
 
     void GuiWindow::Render(bool isSelected, const Timestamp& delta)
     {
-        Renderer::SetScissor({m_Pos.X, m_Pos.Y - m_Size.Y}, m_Size);
+        // TODO: Cleanup, big function
+        Renderer::PushScissor({m_Pos.X, m_Pos.Y - m_Size.Y}, m_Size);
         // Render window
         GuiStyling::Window::shader->Bind();
         GuiStyling::Window::shader->SetUniform1i(isSelected, "u_Selected");
@@ -1184,23 +1170,21 @@ namespace Anwill {
             GuiIcon::RenderRightArrow(m_Pos,
                                       GuiStyling::iconSize * 0.5f,
                                       GuiStyling::iconColor);
-            Renderer::ResetScissor();
-            return;
         } else {
             GuiIcon::RenderDownArrow(m_Pos, GuiStyling::iconSize * 0.5f, GuiStyling::iconColor);
+
+            // Render elements inside window
+            GuiContainer::Render(m_Pos + GuiStyling::Window::elementStartPos,
+                                 m_Size - GuiStyling::Window::elementStartPos.NegateY()
+                                 - Math::Vec2f(GuiStyling::Window::cutoffPadding, GuiStyling::Window::cutoffPadding),
+                                 delta);
+
+            // Render scrollbar
+            Math::Vec2f scrollBarPos = {m_Pos.X + m_Size.X - m_Scrollbar.GetWidth() - 3.0f,
+                                        m_Pos.Y + -GuiStyling::Window::headerSize - 4.0f};
+            RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize, delta);
         }
-
-        // Render elements inside window
-        GuiContainer::Render(m_Pos + GuiStyling::Window::elementStartPos,
-                             m_Size - GuiStyling::Window::elementStartPos.NegateY()
-                             - Math::Vec2f(GuiStyling::Window::cutoffPadding, GuiStyling::Window::cutoffPadding),
-                             delta);
-
-        // Render scrollbar
-        Math::Vec2f scrollBarPos = {m_Pos.X + m_Size.X - m_Scrollbar.GetWidth() - 3.0f,
-                                    m_Pos.Y + -GuiStyling::Window::headerSize - 4.0f};
-        RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize, delta);
-        Renderer::ResetScissor();
+        Renderer::EndScissor();
     }
 
     bool GuiWindow::IsHoveringHeader(const Math::Vec2f& mousePos)
@@ -1253,9 +1237,6 @@ namespace Anwill {
         Math::Vec2f newSize = m_Size + delta;
         newSize.Clamp(minSize, maxSize);
         m_Size = newSize;
-
-        //AW_DEBUG("SCROLL: {0}", m_ScrollOffset.Y);
-        //AW_DEBUG("HIDDEN: {0}", m_HiddenSize.Y);
 
         if(m_ScrollOffset.Y >= 0.0f && m_HiddenSize.Y != 0.0f && m_HiddenSize.Y <= m_ScrollOffset.Y) {
             m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - delta.Y, 0.0f);

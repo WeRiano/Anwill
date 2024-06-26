@@ -31,7 +31,12 @@ namespace Anwill {
         static void SetViewport(unsigned int x, unsigned int y,
                                 unsigned int width, unsigned int height);
         static void SetScissor(const Math::Vec2f& pos, const Math::Vec2f& size);
-        static void ResetScissor();
+        /**
+         * Set the scissor to match the current viewport.
+         */
+        static void SetDefaultScissor();
+        static void PushScissor(const Math::Vec2f& pos, const Math::Vec2f& size);
+        static void EndScissor();
         static void SetClearColor(const Math::Vec3f& color);
         static void ClearBuffers();
 

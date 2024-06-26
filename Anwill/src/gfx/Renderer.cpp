@@ -39,9 +39,19 @@ namespace Anwill {
         s_API->SetScissor(pos, size);
     }
 
-    void Renderer::ResetScissor()
+    void Renderer::SetDefaultScissor()
     {
-        s_API->ResetScissor();
+        s_API->SetDefaultScissor();
+    }
+
+    void Renderer::PushScissor(const Math::Vec2f& pos, const Math::Vec2f& size)
+    {
+        s_API->PushScissor(pos, size);
+    }
+
+    void Renderer::EndScissor()
+    {
+        s_API->EndScissor();
     }
 
     void Renderer::SetClearColor(const Math::Vec3f& color)

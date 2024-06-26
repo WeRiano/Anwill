@@ -273,7 +273,6 @@ namespace Anwill {
         void OnKeyChar(unsigned char c) override;
 
     private:
-        void RenderButton();
         void RenderSelected(const Math::Vec2f& assignedPos, const Math::Vec2f& offset);
         void RenderText(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                         const Timestamp& delta);

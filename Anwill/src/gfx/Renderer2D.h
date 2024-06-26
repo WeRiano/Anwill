@@ -66,7 +66,7 @@ namespace Anwill {
                                  const Sprite& sprite,
                                  const Math::Mat4f& transform);
         static void SubmitLines(const std::shared_ptr<Shader>& shader,
-                                const std::shared_ptr<VertexArray> vertexArray,
+                                const std::shared_ptr<VertexArray>& vertexArray,
                                 const Math::Mat4f transform, unsigned int linesCount);
 
     private:

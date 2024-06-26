@@ -219,7 +219,7 @@ namespace Anwill {
     }
 
     void Renderer2D::SubmitLines(const std::shared_ptr<Shader>& shader,
-                                 const std::shared_ptr<VertexArray> vertexArray,
+                                 const std::shared_ptr<VertexArray>& vertexArray,
                                  const Math::Mat4f transform,
                                  unsigned int linesCount)
     {

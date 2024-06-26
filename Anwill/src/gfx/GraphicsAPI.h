@@ -20,10 +20,11 @@ namespace Anwill {
 
         static std::shared_ptr<GraphicsAPI> Create(API api);
 
-        virtual void SetViewport(unsigned int x, unsigned int y, unsigned int width,
-                                 unsigned int height) const = 0;
+        virtual void SetViewport(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const = 0;
         virtual void SetScissor(const Math::Vec2f& pos, const Math::Vec2f& size) const = 0;
-        virtual void ResetScissor() const = 0;
+        virtual void SetDefaultScissor() const = 0;
+        virtual void PushScissor(const Math::Vec2f& pos, const Math::Vec2f& size) = 0;
+        virtual void EndScissor() = 0;
         virtual void SetClearColor(const Math::Vec3f& color) const = 0;
         virtual void ClearBuffers() const = 0;
 
@@ -32,8 +33,7 @@ namespace Anwill {
         virtual void DrawIndexed(const std::shared_ptr<VertexArray>& vertexArray,
                                  const std::shared_ptr<IndexBuffer>& indexBuffer) = 0;
         virtual void DrawLine(const std::shared_ptr<VertexArray>& vertexArray) = 0;
-        virtual void DrawLines(const std::shared_ptr<VertexArray>& vertexArray,
-                               unsigned int vertexCount) = 0;
+        virtual void DrawLines(const std::shared_ptr<VertexArray>& vertexArray, unsigned int vertexCount) = 0;
 
         virtual std::shared_ptr<Shader> CreateQuadBatchShader() const = 0;
         virtual std::shared_ptr<Shader> CreateCircleBatchShader() const = 0;

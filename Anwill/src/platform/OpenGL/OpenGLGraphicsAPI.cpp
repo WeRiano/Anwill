@@ -31,6 +31,7 @@ namespace Anwill {
     }
 
     OpenGLGraphicsAPI::OpenGLGraphicsAPI()
+        : m_ScissorStack()
     {
         glEnable(GL_DEBUG_OUTPUT);
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -69,19 +70,44 @@ namespace Anwill {
     void OpenGLGraphicsAPI::SetViewport(unsigned int x, unsigned int y,
                                         unsigned int width, unsigned int height) const
     {
-        glViewport(x, y, width, height);
+        glViewport((GLint) x, (GLint) y, (GLint) width, (GLint) height);
     }
 
     void OpenGLGraphicsAPI::SetScissor(const Math::Vec2f& pos, const Math::Vec2f& size) const
     {
-        glScissor(pos.X, pos.Y, size.X, size.Y);
+        Scissor scissor{pos, size};
+        scissor.Set();
     }
 
-    void OpenGLGraphicsAPI::ResetScissor() const
+    void OpenGLGraphicsAPI::SetDefaultScissor() const
     {
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
         glScissor(viewport[0], viewport[1], viewport[2], viewport[3]);
+    }
+
+    void OpenGLGraphicsAPI::PushScissor(const Math::Vec2f& pos, const Math::Vec2f& size)
+    {
+        m_ScissorStack.emplace(pos, size);
+        Scissor scissor = m_ScissorStack.top();
+        scissor.Set();
+    }
+
+    void OpenGLGraphicsAPI::EndScissor()
+    {
+        if(m_ScissorStack.empty()) { return; }
+        // Pop the current scissor
+        m_ScissorStack.pop();
+        if(m_ScissorStack.empty())
+        {
+            // No more scissors on the stack, return to default
+            SetDefaultScissor();
+        } else
+        {
+            // Restore the scissor next in line
+            Scissor nextScissor = m_ScissorStack.top();
+            nextScissor.Set();
+        }
     }
 
     void OpenGLGraphicsAPI::SetClearColor(const Math::Vec3f& color) const
@@ -141,5 +167,10 @@ namespace Anwill {
     std::shared_ptr<Shader> OpenGLGraphicsAPI::CreateCircleBatchShader() const
     {
         return Shader::Create("Anwill/res/shaders/OpenGL/AwCircleBatch.glsl");
+    }
+
+    void OpenGLGraphicsAPI::Scissor::Set() const
+    {
+        glScissor((GLint) pos.X, (GLint) pos.Y, (GLint) size.X, (GLint) size.Y);
     }
 }
