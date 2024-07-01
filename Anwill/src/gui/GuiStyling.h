@@ -7,17 +7,19 @@
 #include "gfx/Shader.h"
 #include "gfx/Font.h"
 
-#define AW_GUI_WINDOW_ROW_HEIGHT (GuiStyling::Window::elementHeight + GuiStyling::Window::elementVerticalMargin)
+#define AW_GUI_WINDOW_ROW_HEIGHT 30.0f
 
 namespace Anwill {
 
     /**
      * Colors, margins, padding, shaders, meshes, etc. Anything that alters the look of the GUI.
+     * Static and non-static members represent global and non-global styling.
+     * Non-const members can be altered by the client, const members are meant to be unchanged.
      */
     struct GuiStyling
     {
-        // --- Global/Shared members (Icon and more) ---
-        static float scrollbarWidth;
+    public:
+        // --- Styling of shared elements (icons, scrollbar, etc.) ---
         static Math::Vec2f iconSize;
         static Math::Vec3f iconColor;
         static Mesh rectMesh, triangleMesh, checkmarkMesh;
@@ -64,18 +66,19 @@ namespace Anwill {
             Math::Vec3f buttonPressColor = {0.28f, 0.28f, 1.00f};
         };
 
-        struct TextButton {
+        // Text button
+        struct TextButton : public Text, public Button {
         public:
             static float textPadding; // X distance from button edge to text
         };
 
-        struct Checkbox : public Button {
+        struct Checkbox : public Text, public Button {
         public:
             enum class CheckmarkType : short {
                 Tick = 0,
                 Rectangle,
                 Ellipse,
-                // TODO: Cross?
+                // TODO: Cross
 
                 Size
             };
@@ -87,49 +90,75 @@ namespace Anwill {
             Math::Vec3f checkmarkColor = {0.35f, 0.45f, 1.0f};
         };
 
-        struct RadioButton {
+        struct RadioButton : public Text, public Button {
         public:
             Math::Vec3f checkmarkColor = {0.35f, 0.45f, 1.0f};
         };
 
-        struct Slider {
+        struct Slider : public Text, public Button {
         public:
             static Math::Vec2f markerSize;
 
             Math::Vec3f markerColor = {0.30f, 0.38f, 1.0f};
         };
 
-        struct InputText {
+        struct InputText : public Button, public Text {
         public:
 
             Math::Vec3f selectedTextHighlightColor = {0.30f, 0.38f, 1.0f};
         };
 
-        struct Container {
+        struct Image {
         public:
-            float elementIndent = 10.0f;
-            Math::Vec3f elementStartPos;
+            static std::shared_ptr<Shader> shader;
         };
 
-        struct Dropdown : public Container {
+        // Used to prevent creation of duplicate members
+        struct Container {
         public:
-            static float elementIndent;
-            static Math::Vec2f elementStartPos;
+            // Indent is the initial horizontal spacing, margin is the space between elements.
+            float elementIndent, elementHeight;
+            float elementVerticalMargin, elementHorizontalMargin;
+            float edgeCutoffPadding;
+            float scrollbarWidth; // TODO: Nested struct for scrollbar settings
+
+            inline Math::Vec2f GetFirstElementPos() const {
+                return {elementIndent, -(elementIndent + elementHeight)};
+            }
+
+        protected:
+            Container(float elementIndent, float elementHeight, float elementVerticalMargin,
+                      float elementHorizontalMargin, float edgeCutoffPadding)
+                : elementIndent(elementIndent), elementHeight(elementHeight),
+                  elementVerticalMargin(elementVerticalMargin), elementHorizontalMargin(elementHorizontalMargin),
+                  edgeCutoffPadding(edgeCutoffPadding)
+            {}
+        };
+
+        struct Dropdown : public Container, public Text, public Button {
+        public:
+            //static float elementIndent;
+            //static Math::Vec2f elementStartPos;
+            Dropdown()
+                : Container(10.0f, 30.0f, 5.0f, 6.0f,
+                            4.0f)
+            {}
         };
 
         struct Window : public Container {
         public:
-            static float elementIndent;
+            /*static float elementIndent;
             static float elementHeight;
             static float elementVerticalMargin, elementHorizontalMargin;
-            static float cutoffPadding;
-            static float borderSize, headerSize;
-            static Math::Vec2f titlePos, elementStartPos;
-            static std::shared_ptr<Shader> shader;
-        };
+            static float cutoffPadding;*/
 
-        struct Image {
-        public:
+            Window()
+                : Container(5.0f, 30.0f, 5.0f, 6.0f,
+                            4.0f)
+            {}
+
+            static float borderSize, headerSize;
+            static Math::Vec2f titlePos;
             static std::shared_ptr<Shader> shader;
         };
 

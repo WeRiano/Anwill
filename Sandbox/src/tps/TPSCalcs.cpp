@@ -4,7 +4,7 @@ TPSCalcs::TPSCalcs(const unsigned int ups)
     : Anwill::Layer(ups)
 {
     Anwill::Ecs::RegisterComponent<EntityComponent>();
-    Anwill::SystemEvents::Subscribe<Anwill::MouseMoveEvent>(
+    Anwill::SystemEventHandler::Subscribe<Anwill::MouseMoveEvent>(
             AW_BIND_THIS_MEMBER_FUNC(ChangePlayerLookDir));
 }
 

@@ -4,9 +4,7 @@
 
 namespace Anwill {
 
-    struct GuiLoseFocusEvent : public Event {};
-
-    class GuiEvents
+    class SystemEventHandler
     {
     public:
         static void Init();
@@ -14,17 +12,18 @@ namespace Anwill {
         template<typename E>
         static void Add(E const& child)
         {
-            s_GuiEvents.Add<E>(child);
+            s_SysEvents.Add<E>(child);
         }
+
         static void Pop();
 
-        template <class E>
+        template<class E>
         static void Subscribe(std::function<void(std::unique_ptr<Event>&)> func)
         {
-            s_GuiEvents.Subscribe<E>(func);
+            s_SysEvents.Subscribe<E>(func);
         }
 
     private:
-        static EventQueue s_GuiEvents;
+        static EventQueue s_SysEvents;
     };
 }

@@ -1,13 +1,13 @@
-#include "SystemEvents.h"
+#include "SystemEventHandler.h"
 #include "WindowEvents.h"
 #include "MouseEvents.h"
 #include "KeyEvents.h"
 
 namespace Anwill {
 
-    EventQueue SystemEvents::s_SysEvents = EventQueue();
+    EventQueue SystemEventHandler::s_SysEvents = EventQueue();
 
-    void SystemEvents::Init()
+    void SystemEventHandler::Init()
     {
         s_SysEvents.Register<WindowCloseEvent>();
         s_SysEvents.Register<WindowResizeEvent>();
@@ -26,7 +26,7 @@ namespace Anwill {
         s_SysEvents.Register<KeyCharEvent>();
     }
 
-    void SystemEvents::Pop()
+    void SystemEventHandler::Pop()
     {
         s_SysEvents.Pop();
     }

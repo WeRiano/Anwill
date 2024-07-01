@@ -4,10 +4,10 @@
 #include "utils/Profiler.h"
 #include "gui/Gui.h"
 #include "gfx/Renderer.h"
-#include "events/GuiEvents.h"
+#include "events/GuiEventHandler.h"
 #include "events/MouseEvents.h"
 #include "events/WindowEvents.h"
-#include "events/SystemEvents.h"
+#include "events/SystemEventHandler.h"
 
 namespace Anwill {
 
@@ -22,19 +22,19 @@ namespace Anwill {
         s_State.gameWindowSize = {(float) ws.width, (float) ws.height};
 
         GuiStyling::InitGlobalStyling();
-        GuiEvents::Init();
+        GuiEventHandler::Init();
 
-        SystemEvents::Subscribe<MouseMoveEvent>(OnMouseMove);
-        SystemEvents::Subscribe<MouseButtonPressEvent>(OnMousePress);
-        SystemEvents::Subscribe<MouseButtonReleaseEvent>(OnMouseRelease);
-        SystemEvents::Subscribe<MouseScrollEvent>(OnMouseScroll);
-        SystemEvents::Subscribe<KeyPressEvent>(OnKeyPress);
-        SystemEvents::Subscribe<KeyRepeatEvent>(OnKeyRepeat);
-        SystemEvents::Subscribe<KeyReleaseEvent>(OnKeyRelease);
-        SystemEvents::Subscribe<KeyCharEvent>(OnKeyChar);
-        SystemEvents::Subscribe<WindowResizeEvent>(OnWindowResize);
+        SystemEventHandler::Subscribe<MouseMoveEvent>(OnMouseMove);
+        SystemEventHandler::Subscribe<MouseButtonPressEvent>(OnMousePress);
+        SystemEventHandler::Subscribe<MouseButtonReleaseEvent>(OnMouseRelease);
+        SystemEventHandler::Subscribe<MouseScrollEvent>(OnMouseScroll);
+        SystemEventHandler::Subscribe<KeyPressEvent>(OnKeyPress);
+        SystemEventHandler::Subscribe<KeyRepeatEvent>(OnKeyRepeat);
+        SystemEventHandler::Subscribe<KeyReleaseEvent>(OnKeyRelease);
+        SystemEventHandler::Subscribe<KeyCharEvent>(OnKeyChar);
+        SystemEventHandler::Subscribe<WindowResizeEvent>(OnWindowResize);
 
-        GuiEvents::Subscribe<GuiLoseFocusEvent>(OnGuiLoseFocus);
+        GuiEventHandler::Subscribe<GuiLoseFocusEvent>(OnGuiLoseFocus);
     }
 
     void Gui::Render(const Timestamp& delta)
@@ -60,7 +60,7 @@ namespace Anwill {
     void Gui::Update()
     {
         AW_PROFILE_FUNC();
-        GuiEvents::Pop();
+        GuiEventHandler::Pop();
         if(s_State.hoverElement != nullptr)
         {
             s_State.hoverElement->OnHover(s_State.mousePos - s_State.hoverElementPos);
@@ -307,7 +307,7 @@ namespace Anwill {
         {
             if(!s_Windows[i]->IsHidingElements() && s_Windows[i]->IsHoveringResize(s_State.mousePos)) {
                 if(!lastIterHoveringDiagonalScaling) {
-                    SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
+                    SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
                     s_State.hoveringDiagonalScaling = true;
                 }
                 s_State.hoveringWindowIndex = i;
@@ -315,14 +315,14 @@ namespace Anwill {
             }
             if(s_Windows[i]->IsHoveringHeader(s_State.mousePos)) {
                 if(!lastIterHoveringHeader) {
-                    SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand);
+                    SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand);
                     s_State.hoveringWindowHeader = true;
                 }
                 s_State.hoveringWindowIndex = i;
                 return;
             }
             if(s_Windows[i]->IsHoveringWindow(mousePos)) {
-                SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
+                SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
                 // Update which window we are currently hovering
                 s_State.hoveringWindowIndex = i;
                 // Remember which element we hovered last iteration
@@ -349,7 +349,7 @@ namespace Anwill {
         s_State.hoveringDiagonalScaling = false;
         s_State.hoveringWindowHeader = false;
         s_State.hoveringWindowIndex = -1;
-        SystemEvents::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
+        SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
 
         if(s_State.hoverElement != nullptr) {
             // If we did not hit a window,

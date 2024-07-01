@@ -21,7 +21,7 @@ namespace Anwill {
     App::App(const WindowSettings& ws, bool enableGUI)
         : m_Running(true), m_Minimized(false)
     {
-        SystemEvents::Init();
+        SystemEventHandler::Init();
         m_Window = Window::Create(ws);
         Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
@@ -30,13 +30,13 @@ namespace Anwill {
         Ecs::Init();
         Random::Init();
 
-        SystemEvents::Subscribe<WindowCloseEvent>(
+        SystemEventHandler::Subscribe<WindowCloseEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowClose));
-        SystemEvents::Subscribe<WindowResizeEvent>(
+        SystemEventHandler::Subscribe<WindowResizeEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowResize));
-        SystemEvents::Subscribe<WindowFocusEvent>(
+        SystemEventHandler::Subscribe<WindowFocusEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowFocus));
-        SystemEvents::Subscribe<WindowMoveEvent>(
+        SystemEventHandler::Subscribe<WindowMoveEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowMove));
 
         AW_PROFILE_APP_START();
@@ -67,7 +67,7 @@ namespace Anwill {
 
             m_Window->PostRenderUpdate();
 
-            SystemEvents::Pop();
+            SystemEventHandler::Pop();
         }
     }
 

@@ -2,7 +2,7 @@
 #include "core/Log.h"
 #include "core/KeyCodes.h"
 #include "events/WindowEvents.h"
-#include "events/SystemEvents.h"
+#include "events/SystemEventHandler.h"
 #include "events/KeyEvents.h"
 #include "events/MouseEvents.h"
 
@@ -101,12 +101,12 @@ namespace Anwill {
         // Define and setting window callbacks
         glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
             WindowResizeEvent resizeEvent(width, height);
-            SystemEvents::Add(resizeEvent);
+            SystemEventHandler::Add(resizeEvent);
         });
 
         glfwSetWindowCloseCallback(m_Window, [](GLFWwindow* window) {
             WindowCloseEvent event;
-            SystemEvents::Add(event);
+            SystemEventHandler::Add(event);
         });
         glfwSetWindowFocusCallback(m_Window, [](GLFWwindow* window, int focused) {
             bool focus;
@@ -123,17 +123,17 @@ namespace Anwill {
                     return;
             }
             WindowFocusEvent fEvent(focus);
-            SystemEvents::Add(fEvent);
+            SystemEventHandler::Add(fEvent);
         });
 
         glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
             WindowResizeEvent resizeEvent(width, height);
-            SystemEvents::Add(resizeEvent);
+            SystemEventHandler::Add(resizeEvent);
         });
 
         glfwSetWindowPosCallback(m_Window, [](GLFWwindow* window, int xpos, int ypos) {
             WindowMoveEvent moveEvent(xpos, ypos);
-            SystemEvents::Add(moveEvent);
+            SystemEventHandler::Add(moveEvent);
         });
 
         glfwSetKeyCallback(m_Window, [](GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -142,19 +142,19 @@ namespace Anwill {
                 case GLFW_PRESS:
                 {
                     KeyPressEvent keyPressEvent((KeyCode) key);
-                    SystemEvents::Add(keyPressEvent);
+                    SystemEventHandler::Add(keyPressEvent);
                     break;
                 }
                 case GLFW_REPEAT:
                 {
                     KeyRepeatEvent keyRepeatEvent((KeyCode) key);
-                    SystemEvents::Add(keyRepeatEvent);
+                    SystemEventHandler::Add(keyRepeatEvent);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
                     KeyReleaseEvent keyReleaseEvent((KeyCode) key);
-                    SystemEvents::Add(keyReleaseEvent);
+                    SystemEventHandler::Add(keyReleaseEvent);
                     break;
                 }
                 default:
@@ -168,7 +168,7 @@ namespace Anwill {
         glfwSetCharCallback(m_Window, [](GLFWwindow* window, unsigned int codepoint)
         {
             KeyCharEvent keyCharEvent(static_cast<char>(codepoint));
-            SystemEvents::Add(keyCharEvent);
+            SystemEventHandler::Add(keyCharEvent);
         });
 
         glfwSetCursorPosCallback(m_Window, [](GLFWwindow* window, double xpos, double ypos) {
@@ -176,7 +176,7 @@ namespace Anwill {
             glfwGetWindowSize(window, nullptr, &height);
 
             MouseMoveEvent mouseMoveEvent((float) xpos, (float) height - (float) ypos);
-            SystemEvents::Add(mouseMoveEvent);
+            SystemEventHandler::Add(mouseMoveEvent);
         });
 
         glfwSetMouseButtonCallback(m_Window, [](GLFWwindow* window, int button, int action, int mods){
@@ -184,13 +184,13 @@ namespace Anwill {
                 case GLFW_PRESS:
                 {
                     MouseButtonPressEvent mouseButtonPressEvent((MouseButtonCode) button);
-                    SystemEvents::Add(mouseButtonPressEvent);
+                    SystemEventHandler::Add(mouseButtonPressEvent);
                     break;
                 }
                 case GLFW_RELEASE:
                 {
                     MouseButtonReleaseEvent mouseButtonReleaseEvent((MouseButtonCode) button);
-                    SystemEvents::Add(mouseButtonReleaseEvent);
+                    SystemEventHandler::Add(mouseButtonReleaseEvent);
                     break;
                 }
                 default:
@@ -203,16 +203,16 @@ namespace Anwill {
             if(xOffset)
             {
                 MouseScrollEvent mouseScrollEvent((MouseScrollCode) xOffset);
-                SystemEvents::Add(mouseScrollEvent);
+                SystemEventHandler::Add(mouseScrollEvent);
             }
             else if(yOffset)
             {
                 MouseScrollEvent mouseScrollEvent((MouseScrollCode) (yOffset + 1));
-                SystemEvents::Add(mouseScrollEvent);
+                SystemEventHandler::Add(mouseScrollEvent);
             }
         });
 
-        SystemEvents::Subscribe<SetMouseCursorEvent>(
+        SystemEventHandler::Subscribe<SetMouseCursorEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(WinWindow::OnSetCursorEvent));
     }
 

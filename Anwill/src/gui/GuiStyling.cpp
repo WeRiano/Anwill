@@ -3,24 +3,25 @@
 
 namespace Anwill {
 
-    float GuiStyling::Window::headerSize, GuiStyling::Window::elementIndent,
-    GuiStyling::Window::elementVerticalMargin, GuiStyling::Window::elementHorizontalMargin,
-    GuiStyling::Window::cutoffPadding, GuiStyling::Text::baselineOffset, GuiStyling::TextButton::textPadding,
-    GuiStyling::Checkbox::iconMargin, GuiStyling::Window::elementHeight, GuiStyling::Window::borderSize,
-    GuiStyling::Tooltip::borderSize, GuiStyling::Tooltip::offset, GuiStyling::Checkbox::textMargin,
-    GuiStyling::Dropdown::elementIndent, GuiStyling::Text::cursorHeight;
+    float GuiStyling::Window::headerSize,
+    GuiStyling::Text::baselineOffset, GuiStyling::TextButton::textPadding, GuiStyling::Checkbox::iconMargin,
+    GuiStyling::Window::borderSize, GuiStyling::Tooltip::borderSize, GuiStyling::Tooltip::offset,
+    GuiStyling::Checkbox::textMargin, GuiStyling::Text::cursorHeight;
 
     unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS;
 
     Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos, GuiStyling::Tooltip::windowMargin,
-    GuiStyling::Slider::markerSize, GuiStyling::Window::elementStartPos, GuiStyling::Dropdown::elementStartPos;
+    GuiStyling::Slider::markerSize;
 
     Math::Vec3f GuiStyling::iconColor;
 
     std::unique_ptr<Font> GuiStyling::Text::font;
 
     std::shared_ptr<Shader> GuiStyling::Text::shader, GuiStyling::primitiveShader, GuiStyling::circleShader,
-    GuiStyling::Window::shader, GuiStyling::Tooltip::shader, GuiStyling::Image::shader;
+    GuiStyling::Window::shader,
+    GuiStyling::Tooltip::shader, GuiStyling::Image::shader;
+
+    //const std::shared_ptr<Shader> GuiStyling::Window::shader;
 
     std::shared_ptr<VertexArray> GuiStyling::Text::cursorVertexArray;
 
@@ -34,18 +35,16 @@ namespace Anwill {
         iconColor = {1.0f, 1.0f, 1.0f};
 
         // Window
-        Window::elementIndent = 5.0f;
+        /*Window::elementIndent = 5.0f;
         Window::elementHeight = 30.0f;
         Window::elementVerticalMargin = 5.0f;
         Window::elementHorizontalMargin = 6.0f;
-        Window::cutoffPadding = 4.0f;
+        Window::cutoffPadding = 4.0f;*/
         Window::borderSize = 8.0f;
         Window::headerSize = Window::elementHeight;
         iconSize = { Window::elementHeight, Window::elementHeight };
         Window::titlePos = { Window::borderSize + iconSize.X,
                              Window::elementHeight / 2.0f - Window::headerSize / 2.0f };
-        Window::elementStartPos = {GuiStyling::Window::elementIndent,
-                           -(GuiStyling::Window::headerSize + GuiStyling::Window::elementVerticalMargin)};
         ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", Window::borderSize);
         ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", Window::headerSize);
 
@@ -79,8 +78,6 @@ namespace Anwill {
         Checkbox::iconMargin = 5.0f;
 
         // --- Dropdown --
-        Dropdown::elementIndent = 10.0f;
-        Dropdown::elementStartPos = {Dropdown::elementIndent, -AW_GUI_WINDOW_ROW_HEIGHT};
 
         // --- Slider ---
         Slider::markerSize = {13.0f, Window::elementHeight - 1.5f * 2.0f};

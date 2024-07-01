@@ -49,7 +49,7 @@ namespace Anwill {
 
     class GuiElement {
     public:
-        GuiElement();
+        GuiElement(const std::shared_ptr<GuiStyling::Container>& containerStyle);
 
         virtual void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                             const Timestamp& delta) = 0;
@@ -82,11 +82,15 @@ namespace Anwill {
     protected:
         bool m_IsHovered, m_IsPressed, m_IsSelected;
         std::unique_ptr<GuiTooltip> m_Tooltip;
+        std::shared_ptr<GuiStyling::Container> m_ContainerStyle;
     };
 
     class GuiText : public GuiElement {
     public:
-        GuiText(const std::string& text, unsigned int textSize);
+        std::shared_ptr<GuiStyling::Text> m_Style;
+
+        GuiText(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
+                unsigned int textSize, const std::shared_ptr<GuiStyling::Text>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
@@ -123,46 +127,67 @@ namespace Anwill {
 
     class GuiButton : public GuiElement {
     public:
-        GuiStyling::Button m_ButtonStyle;
+        std::shared_ptr<GuiStyling::Button> m_Style;
 
-        GuiButton(const Math::Vec2f& size,
-                  const std::function<void()>& callback);
+        GuiButton(const std::shared_ptr<GuiStyling::Container>& containerStyle, const Math::Vec2f& size,
+                  const std::function<void()>& callback, const std::shared_ptr<GuiStyling::Button>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
+        float GetHeight() const;
+        Math::Vec2f GetSize() const;
         unsigned int GetGridDepth() const override;
         void Release() override;
 
         void SetCallback(const std::function<void()>& callback);
         void SetWidth(float width);
         void SetHeight(float height);
+
     protected:
         Math::Vec2f m_ButtonSize;
         std::function<void()> m_Callback;
     };
 
-    class GuiTextButton : public GuiButton {
+    class GuiTextButton : public GuiElement {
     public:
-        GuiTextButton(const std::string& text,
+        std::shared_ptr<GuiStyling::TextButton> m_Style;
+
+        GuiTextButton(const std::shared_ptr<GuiStyling::Container>& containerStyle,
+                      const std::string& text,
                       unsigned int textSize,
-                      const std::function<void()>& callback);
+                      const std::function<void()>& callback,
+                      const std::shared_ptr<GuiStyling::TextButton>& style = nullptr);
+        GuiTextButton(const std::shared_ptr<GuiStyling::Container>& containerStyle,
+                      const std::string& text,
+                      unsigned int textSize,
+                      unsigned int pixelWidth,
+                      const std::function<void()>& callback,
+                      const std::shared_ptr<GuiStyling::TextButton>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
+        void RenderText(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize, const Timestamp& delta);
+        void RenderButton(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize, const Timestamp& delta);
         void SetText(const std::string& text);
+        bool IsHovering(const Math::Vec2f& mousePos) const override;
+        Math::Vec2f GetSize() const;
+        float GetWidth() const override;
+        unsigned int GetGridDepth() const override;
 
     protected:
         GuiText m_Text;
+        GuiButton m_Button;
     };
 
-    class GuiCheckbox : public GuiButton  {
+    class GuiCheckbox : public GuiElement  {
     public:
-        GuiStyling::Checkbox m_CheckboxStyle;
+        std::shared_ptr<GuiStyling::Checkbox> m_Style;
 
-        GuiCheckbox(bool checked, const std::string& text, unsigned int textSize,
-                    const std::function<void(bool)>& callback);
+        GuiCheckbox(const std::shared_ptr<GuiStyling::Container>& containerStyle, bool checked, const std::string& text,
+                    unsigned int textSize, const std::function<void(bool)>& callback,
+                    const std::shared_ptr<GuiStyling::Checkbox>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
@@ -170,15 +195,18 @@ namespace Anwill {
 
     protected:
         GuiText m_Text;
+        GuiButton m_Button;
         bool m_Checked;
     };
 
-    class GuiRadioButton : public GuiButton {
+    class GuiRadioButton : public GuiElement {
     public:
-        GuiStyling::RadioButton m_RadioButtonStyle;
+        std::shared_ptr<GuiStyling::RadioButton> m_Style;
 
-        GuiRadioButton(const std::string& text, unsigned int textSize, int& reference,
-                       const int onSelectValue, const std::function<void()>& callback);
+        GuiRadioButton(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
+                       unsigned int textSize, int& reference, const int onSelectValue,
+                       const std::function<void()>& callback,
+                       const std::shared_ptr<GuiStyling::RadioButton>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
@@ -186,20 +214,23 @@ namespace Anwill {
 
     protected:
         GuiText m_Text;
+        GuiButton m_Button;
         int& m_Reference;
         const int m_OnSelectValue;
     };
 
     template <typename T>
-    class GuiSlider : public GuiButton {
+    class GuiSlider : public GuiElement {
     public:
-        GuiStyling::Slider m_SliderStyle;
+        std::shared_ptr<GuiStyling::Slider> m_Style;
 
-        GuiSlider(T min, T max, T& source)
-            : m_Min(min), m_Max(max), m_Source(source),
-              GuiButton({GuiStyling::Window::elementHeight * 7.0f, GuiStyling::Window::elementHeight},
-                        [](){}),
-              m_ValueText("", GuiStyling::Text::fontSize)
+        GuiSlider(const std::shared_ptr<GuiStyling::Container>& containerStyle, T min, T max, T& source,
+                  const std::shared_ptr<GuiStyling::Slider>& style = nullptr)
+            : GuiElement(containerStyle), m_Min(min), m_Max(max), m_Source(source),
+              m_Style(style == nullptr ? std::make_shared<GuiStyling::Slider>() : style),
+              m_ValueText(containerStyle, "", GuiStyling::Text::fontSize, style),
+              m_Button(containerStyle, {containerStyle->elementHeight * 7.0f, containerStyle->elementHeight}, [](){},
+                       style)
         {
             if(std::is_same<T, float>::value)
             {
@@ -220,23 +251,25 @@ namespace Anwill {
                     const Timestamp& delta) override
         {
             // Render background button
-            GuiButton::Render(assignedPos, assignedMaxSize, delta);
+            m_Button.Render(assignedPos, assignedMaxSize, delta);
 
             // Render "slider" (marker) rectangle
             float markerXPosDelta = Math::ScaleToRange<float>(static_cast<float>(m_Source),
                                                                m_MarkerXOffset,
-                                                               GuiButton::GetWidth() - m_MarkerXOffset,
+                                                               m_Button.GetWidth() - m_MarkerXOffset,
                                                                static_cast<float>(m_Min),
                                                                static_cast<float>(m_Max));
             markerXPosDelta = Math::Clamp(markerXPosDelta, m_MarkerXOffset, GetWidth() - m_MarkerXOffset);
             Math::Vec2f markerPos = {markerXPosDelta - m_MarkerXOffset,
-                                     -(m_ButtonSize.Y - GuiStyling::Slider::markerSize.Y) * 0.5f + 1.0f};
+                                     -(m_Button.GetHeight() - GuiStyling::Slider::markerSize.Y) * 0.5f + 1.0f};
 
-            GuiIcon::RenderRectangle(assignedPos + markerPos, GuiStyling::Slider::markerSize, m_SliderStyle.markerColor);
+            GuiIcon::RenderRectangle(assignedPos + markerPos,
+                                     GuiStyling::Slider::markerSize,
+                                     m_Style->markerColor);
 
             // Render text
             m_SetValueText();
-            float centeredTextXPos = m_ButtonSize.X * 0.5f - m_ValueText.GetWidth() * 0.5f;
+            float centeredTextXPos = m_Button.GetWidth() * 0.5f - m_ValueText.GetWidth() * 0.5f;
             m_ValueText.Render(assignedPos + Math::Vec2f(centeredTextXPos, 0.0f),
                                assignedMaxSize - Math::Vec2f(centeredTextXPos + GuiStyling::TextButton::textPadding, 0.0f),
                                delta);
@@ -258,13 +291,18 @@ namespace Anwill {
         T m_Min, m_Max;
         T& m_Source;
         GuiText m_ValueText;
+        GuiButton m_Button;
         std::function<T(float)> m_OnPressSet;
         std::function<void()> m_SetValueText;
     };
 
-    class GuiInputText : public GuiTextButton {
+    class GuiInputText : public GuiElement {
     public:
-        GuiInputText(const std::string& startText, unsigned int textSize, float pixelWidth);
+        std::shared_ptr<GuiStyling::InputText> m_Style;
+
+        GuiInputText(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& startText,
+                     unsigned int textSize, float pixelWidth,
+                     const std::shared_ptr<GuiStyling::InputText>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
@@ -293,8 +331,9 @@ namespace Anwill {
         void CalcCursorTimeInterval(const Timestamp& delta);
         void DebugIndices() const;
 
-        /// Styling
-        GuiStyling::InputText m_InputTextStyle;
+        /// Underlying text and button
+        GuiText m_Text;
+        GuiButton m_Button;
         /// Indicates what part of the string to render
         /// The left index is equal to the number of characters that are hidden due to overflow
         int m_RenderLeftIndex, m_RenderRightIndex;
@@ -311,7 +350,10 @@ namespace Anwill {
 
     class GuiImage : public GuiElement {
     public:
-        GuiImage(const std::string& fileName, unsigned int maxRows);
+        std::shared_ptr<GuiStyling::Image> m_Style;
+
+        GuiImage(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& fileName,
+                 unsigned int maxRows, const std::shared_ptr<GuiStyling::Image>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos,
                     const Math::Vec2f& assignedMaxSize,
@@ -334,7 +376,7 @@ namespace Anwill {
         bool onNewRow, forceNextToNewRow;
         bool isHidden;
 
-        ContainerElement(std::shared_ptr<GuiElement> element, Math::Vec2f position,
+        ContainerElement(const std::shared_ptr<GuiElement>& element, Math::Vec2f position,
                          bool onNewRow, bool forceNextToNewRow, bool isHidden)
             : element(element), position(position), onNewRow(onNewRow),
               forceNextToNewRow(forceNextToNewRow), isHidden(isHidden)
@@ -343,7 +385,9 @@ namespace Anwill {
 
     class GuiContainer {
     public:
-        GuiContainer();
+        std::shared_ptr<GuiStyling::Container> m_Style;
+
+        GuiContainer(const std::shared_ptr<GuiStyling::Container>& style);
 
         /**
          * Get the current element that is being hovered by the mouse cursor, if any.
@@ -380,17 +424,22 @@ namespace Anwill {
         // TODO: This is volatile because?
         volatile bool m_HideElements;
 
-        void RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight,
-                                     const Timestamp& delta);
+        Math::Vec2f GetNextElementSize(const Math::Vec2f& posDelta, const Math::Vec2f& oldMaxSize);
+        Math::Vec2f GetNextElementPos(const Math::Vec2f& elementPosition, float elementWidth,
+                                      unsigned int elementGridDepth, float newRowXPos, bool onNewRow);
+        void RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight, const Timestamp& delta);
     };
 
-    class GuiDropdown : public GuiTextButton, public GuiContainer {
+    class GuiDropdown : public GuiElement, public GuiContainer {
         /*
          * Inherited behavior from GuiTextButton:
          * - Dropdown toggle is a button, but with maximum allowed width and an arrow icon
          */
     public:
-        GuiDropdown(const std::string& text, unsigned int textSize);
+        std::shared_ptr<GuiStyling::Dropdown> m_Style;
+
+        GuiDropdown(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
+                    unsigned int textSize, const std::shared_ptr<GuiStyling::Dropdown>& style = nullptr);
 
         std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                     const Math::Vec2f& mousePos) const override;
@@ -399,12 +448,18 @@ namespace Anwill {
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
+
+    protected:
+        GuiText m_Text;
+        GuiButton m_Button;
     };
 
     typedef unsigned int GuiWindowID;
 
     class GuiWindow : public GuiContainer {
     public:
+        GuiStyling::Window m_WindowStyle;
+
         GuiWindow(const std::string& title, GuiWindowID id,
                   const Math::Vec2f& position, const Math::Vec2f& size);
 
