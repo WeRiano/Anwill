@@ -6,14 +6,11 @@ namespace Anwill {
     float GuiStyling::Window::headerSize,
     GuiStyling::Text::baselineOffset, GuiStyling::TextButton::textPadding, GuiStyling::Checkbox::iconMargin,
     GuiStyling::Window::borderSize, GuiStyling::Tooltip::borderSize, GuiStyling::Tooltip::offset,
-    GuiStyling::Checkbox::textMargin, GuiStyling::Text::cursorHeight;
+    GuiStyling::Checkbox::textMargin, GuiStyling::Text::cursorHeight, GuiStyling::Slider::markerWidth;
 
     unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS;
 
-    Math::Vec2f GuiStyling::iconSize, GuiStyling::Window::titlePos, GuiStyling::Tooltip::windowMargin,
-    GuiStyling::Slider::markerSize;
-
-    Math::Vec3f GuiStyling::iconColor;
+    Math::Vec2f GuiStyling::Tooltip::windowMargin;
 
     std::unique_ptr<Font> GuiStyling::Text::font;
 
@@ -31,20 +28,9 @@ namespace Anwill {
 
     void GuiStyling::InitGlobalStyling()
     {
-        // Icon
-        iconColor = {1.0f, 1.0f, 1.0f};
-
-        // Window
-        /*Window::elementIndent = 5.0f;
-        Window::elementHeight = 30.0f;
-        Window::elementVerticalMargin = 5.0f;
-        Window::elementHorizontalMargin = 6.0f;
-        Window::cutoffPadding = 4.0f;*/
+        // --- Window ---
         Window::borderSize = 8.0f;
-        Window::headerSize = Window::elementHeight;
-        iconSize = { Window::elementHeight, Window::elementHeight };
-        Window::titlePos = { Window::borderSize + iconSize.X,
-                             Window::elementHeight / 2.0f - Window::headerSize / 2.0f };
+        Window::headerSize = 30.0f;
         ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", Window::borderSize);
         ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", Window::headerSize);
 
@@ -59,7 +45,7 @@ namespace Anwill {
         Text::baselineOffset = -(float) Text::fontSize * 0.45f;
         TextButton::textPadding = 5.0f; // X distance from button edge to text
         Text::cursorVertexArray = VertexArray::Create();
-        Text::cursorHeight = Window::elementHeight - 5.0f;
+        //Text::cursorHeight = Window::elementHeight - 5.0f;
         Text::cursorShowTimeIntervalMS = 750;
 
         float unitVerticalLineVertices[] = {
@@ -80,7 +66,8 @@ namespace Anwill {
         // --- Dropdown --
 
         // --- Slider ---
-        Slider::markerSize = {13.0f, Window::elementHeight - 1.5f * 2.0f};
+        //Slider::markerSize = {13.0f, Window::elementHeight - 1.5f * 2.0f};
+        Slider::markerWidth = 13.0f;
 
         // Custom objects
             // Mesh

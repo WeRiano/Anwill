@@ -7,7 +7,7 @@
 #include "gfx/Shader.h"
 #include "gfx/Font.h"
 
-#define AW_GUI_WINDOW_ROW_HEIGHT 30.0f
+//#define AW_GUI_DEFAULT_WINDOW_ELEMENT_HEIGHT 30.0f
 
 namespace Anwill {
 
@@ -20,8 +20,6 @@ namespace Anwill {
     {
     public:
         // --- Styling of shared elements (icons, scrollbar, etc.) ---
-        static Math::Vec2f iconSize;
-        static Math::Vec3f iconColor;
         static Mesh rectMesh, triangleMesh, checkmarkMesh;
         static std::shared_ptr<Shader> primitiveShader, circleShader;
 
@@ -97,9 +95,13 @@ namespace Anwill {
 
         struct Slider : public Text, public Button {
         public:
-            static Math::Vec2f markerSize;
+            static float markerWidth;
 
             Math::Vec3f markerColor = {0.30f, 0.38f, 1.0f};
+
+            static inline Math::Vec2f GetMarkerSize(float rowHeight) {
+                return {markerWidth, rowHeight - 3.0f};
+            }
         };
 
         struct InputText : public Button, public Text {
@@ -116,29 +118,41 @@ namespace Anwill {
         // Used to prevent creation of duplicate members
         struct Container {
         public:
-            // Indent is the initial horizontal spacing, margin is the space between elements.
-            float elementIndent, elementHeight;
+            /// Initial horizontal spacing
+            float elementIndent;
+            float elementHeight;
+            /// Space between neighbouring elements
             float elementVerticalMargin, elementHorizontalMargin;
+            /// Additional empty window space (scissor box padding)
             float edgeCutoffPadding;
             float scrollbarWidth; // TODO: Nested struct for scrollbar settings
+            Math::Vec3f iconColor;
 
             inline Math::Vec2f GetFirstElementPos() const {
                 return {elementIndent, -(elementIndent + elementHeight)};
+            }
+
+            inline float GetRowHeight() const {
+                return elementHeight + elementVerticalMargin;
+            }
+
+            inline Math::Vec2f GetIconSize() const {
+                return {elementHeight, elementHeight};
             }
 
         protected:
             Container(float elementIndent, float elementHeight, float elementVerticalMargin,
                       float elementHorizontalMargin, float edgeCutoffPadding)
                 : elementIndent(elementIndent), elementHeight(elementHeight),
-                  elementVerticalMargin(elementVerticalMargin), elementHorizontalMargin(elementHorizontalMargin),
-                  edgeCutoffPadding(edgeCutoffPadding)
+                  elementVerticalMargin(elementVerticalMargin),
+                  elementHorizontalMargin(elementHorizontalMargin), edgeCutoffPadding(edgeCutoffPadding),
+                  scrollbarWidth(5.0f), iconColor(1.0f, 1.0f, 1.0f)
             {}
         };
 
         struct Dropdown : public Container, public Text, public Button {
         public:
-            //static float elementIndent;
-            //static Math::Vec2f elementStartPos;
+
             Dropdown()
                 : Container(10.0f, 30.0f, 5.0f, 6.0f,
                             4.0f)
@@ -147,19 +161,18 @@ namespace Anwill {
 
         struct Window : public Container {
         public:
-            /*static float elementIndent;
-            static float elementHeight;
-            static float elementVerticalMargin, elementHorizontalMargin;
-            static float cutoffPadding;*/
+            static float borderSize, headerSize;
+            static std::shared_ptr<Shader> shader;
 
             Window()
                 : Container(5.0f, 30.0f, 5.0f, 6.0f,
                             4.0f)
             {}
 
-            static float borderSize, headerSize;
-            static Math::Vec2f titlePos;
-            static std::shared_ptr<Shader> shader;
+            inline Math::Vec2f GetTitlePos() {
+                return {borderSize + GetIconSize().X,
+                        elementHeight / 2.0f - headerSize / 2.0f};
+            }
         };
 
         static void InitGlobalStyling();

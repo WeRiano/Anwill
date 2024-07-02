@@ -261,10 +261,11 @@ namespace Anwill {
                                                                static_cast<float>(m_Max));
             markerXPosDelta = Math::Clamp(markerXPosDelta, m_MarkerXOffset, GetWidth() - m_MarkerXOffset);
             Math::Vec2f markerPos = {markerXPosDelta - m_MarkerXOffset,
-                                     -(m_Button.GetHeight() - GuiStyling::Slider::markerSize.Y) * 0.5f + 1.0f};
+                                     -(m_Button.GetHeight() -
+                 GuiStyling::Slider::GetMarkerSize(m_ContainerStyle->elementHeight).Y) * 0.5f + 1.0f}; // TODO: wtf end??
 
             GuiIcon::RenderRectangle(assignedPos + markerPos,
-                                     GuiStyling::Slider::markerSize,
+                                     GuiStyling::Slider::GetMarkerSize(m_ContainerStyle->elementHeight),
                                      m_Style->markerColor);
 
             // Render text
@@ -286,7 +287,7 @@ namespace Anwill {
         }
 
     protected:
-        const float m_MarkerXOffset = GuiStyling::Slider::markerSize.X * 0.5f;
+        const float m_MarkerXOffset = GuiStyling::Slider::markerWidth * 0.5f; // TODO
 
         T m_Min, m_Max;
         T& m_Source;
@@ -458,8 +459,6 @@ namespace Anwill {
 
     class GuiWindow : public GuiContainer {
     public:
-        GuiStyling::Window m_WindowStyle;
-
         GuiWindow(const std::string& title, GuiWindowID id,
                   const Math::Vec2f& position, const Math::Vec2f& size);
 
