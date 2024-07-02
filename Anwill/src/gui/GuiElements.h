@@ -191,7 +191,9 @@ namespace Anwill {
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
+        bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
+        unsigned int GetGridDepth() const override;
 
     protected:
         GuiText m_Text;
@@ -388,7 +390,8 @@ namespace Anwill {
     public:
         std::shared_ptr<GuiStyling::Container> m_Style;
 
-        GuiContainer(const std::shared_ptr<GuiStyling::Container>& style);
+        GuiContainer(const std::shared_ptr<GuiStyling::Container>& style, bool showElements,
+                     unsigned int gridDepth = 0);
 
         /**
          * Get the current element that is being hovered by the mouse cursor, if any.
@@ -400,13 +403,20 @@ namespace Anwill {
                                                             const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta);
-        bool IsHidingElements() const;
-        void ScrollUp();
-        void ScrollDown();
+        void RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight, const Timestamp& delta);
+        bool IsShowingElements() const;
+        void ToggleElementsVisibility();
+        /**
+         * Scroll the container. A negative delta value will scroll down and vice-versa.
+         */
+        void Scroll(float delta);
+        void AdjustScrollOnResize(const Math::Vec2f& resizeDelta);
+        unsigned int GetGridDepth() const;
 
         template <class E, typename... Args>
-        std::shared_ptr<E> AddElement(bool onNewRow, bool forceNextToNewRow, Args&&... args) {
-            m_ContainerElements.emplace_back(std::make_shared<E>(std::forward<Args>(args)...),
+        std::shared_ptr<E> AddElement(bool onNewRow, bool forceNextToNewRow, Args&&... args)
+        {
+            m_ContainerElements.emplace_back(std::make_shared<E>(m_Style, std::forward<Args>(args)...),
                     Math::Vec2f(), onNewRow, forceNextToNewRow, false);
             if(m_ContainerElements.empty() || (onNewRow || m_ContainerElements.back().forceNextToNewRow))
             {
@@ -416,22 +426,19 @@ namespace Anwill {
         }
 
     protected:
-        static constexpr float s_ScrollSpeed = 10.0f;
+        std::vector<ContainerElement> m_ContainerElements;
         GuiButton m_Scrollbar;
         Math::Vec2f m_ScrollOffset, m_HiddenSize;
         bool m_CanScroll;
         unsigned int m_GridDepth;
-        std::vector<ContainerElement> m_ContainerElements;
-        // TODO: This is volatile because?
-        volatile bool m_HideElements;
+        volatile bool m_ShowElements; // TODO: Why volatile?
 
         Math::Vec2f GetNextElementSize(const Math::Vec2f& posDelta, const Math::Vec2f& oldMaxSize);
         Math::Vec2f GetNextElementPos(const Math::Vec2f& elementPosition, float elementWidth,
                                       unsigned int elementGridDepth, float newRowXPos, bool onNewRow);
-        void RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight, const Timestamp& delta);
     };
 
-    class GuiDropdown : public GuiElement, public GuiContainer {
+    class GuiDropdown : public GuiElement {
         /*
          * Inherited behavior from GuiTextButton:
          * - Dropdown toggle is a button, but with maximum allowed width and an arrow icon
@@ -443,7 +450,7 @@ namespace Anwill {
                     unsigned int textSize, const std::shared_ptr<GuiStyling::Dropdown>& style = nullptr);
 
         std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
-                                                    const Math::Vec2f& mousePos) const override;
+                                                    const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
         bool IsHovering(const Math::Vec2f& mousePos) const override;
@@ -451,30 +458,43 @@ namespace Anwill {
         unsigned int GetGridDepth() const override;
 
     protected:
+        GuiContainer m_Container;
         GuiText m_Text;
         GuiButton m_Button;
     };
 
     typedef unsigned int GuiWindowID;
 
-    class GuiWindow : public GuiContainer {
+    class GuiWindow {
     public:
+        std::shared_ptr<GuiStyling::Window> m_Style;
+
         GuiWindow(const std::string& title, GuiWindowID id,
                   const Math::Vec2f& position, const Math::Vec2f& size);
 
         std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
-                                                    const Math::Vec2f& mousePos) const override;
+                                                    const Math::Vec2f& mousePos) const;
         void Render(bool isSelected, const Timestamp& delta);
         bool IsHoveringHeader(const Math::Vec2f& mousePos);
         bool IsHoveringResize(const Math::Vec2f& mousePos);
         bool IsHoveringWindow(const Math::Vec2f& mousePos);
         bool IsHoveringMinimize(const Math::Vec2f& mousePos);
+        bool IsShowingElements() const;
         void Move(const Math::Vec2f& delta, const Math::Vec2f& minPos, const Math::Vec2f& maxPos);
         void Resize(const Math::Vec2f& delta, const Math::Vec2f& minSize, const Math::Vec2f& maxSize);
+        void ScrollUp();
+        void ScrollDown();
         Math::Vec2f GetPos() const;
         GuiWindowID GetID() const;
 
+        template <class E, typename... Args>
+        std::shared_ptr<E> AddElement(Args&&... args)
+        {
+            return m_Container.AddElement<E>(std::forward<Args>(args)...);
+        }
+
     private:
+        GuiContainer m_Container;
         Math::Vec2f m_Pos, m_Size, m_LastShowSize;
         GuiWindowID m_ID;
         GuiText m_Title;

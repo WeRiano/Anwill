@@ -305,7 +305,7 @@ namespace Anwill {
         bool lastIterHoveringHeader = s_State.hoveringWindowHeader;
         for (int i = 0; i < s_Windows.size(); i++)
         {
-            if(!s_Windows[i]->IsHidingElements() && s_Windows[i]->IsHoveringResize(s_State.mousePos)) {
+            if(s_Windows[i]->IsShowingElements() && s_Windows[i]->IsHoveringResize(s_State.mousePos)) {
                 if(!lastIterHoveringDiagonalScaling) {
                     SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
                     s_State.hoveringDiagonalScaling = true;

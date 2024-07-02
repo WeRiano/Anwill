@@ -146,7 +146,7 @@ namespace Anwill {
                 : elementIndent(elementIndent), elementHeight(elementHeight),
                   elementVerticalMargin(elementVerticalMargin),
                   elementHorizontalMargin(elementHorizontalMargin), edgeCutoffPadding(edgeCutoffPadding),
-                  scrollbarWidth(5.0f), iconColor(1.0f, 1.0f, 1.0f)
+                  scrollbarWidth(10.0f), iconColor(1.0f, 1.0f, 1.0f)
             {}
         };
 

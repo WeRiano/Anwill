@@ -530,9 +530,19 @@ namespace Anwill {
                    m_Style->checkmarkColor);
     }
 
+    bool GuiCheckbox::IsHovering(const Math::Vec2f& mousePos) const
+    {
+        return m_Button.IsHovering(mousePos);
+    }
+
     float GuiCheckbox::GetWidth() const
     {
         return m_Button.GetWidth() + GuiStyling::Checkbox::textMargin + m_Text.GetWidth();
+    }
+
+    unsigned int GuiCheckbox::GetGridDepth() const
+    {
+        return 1;
     }
 
     #pragma endregion
@@ -960,17 +970,19 @@ namespace Anwill {
 
     #pragma region Container
 
-    GuiContainer::GuiContainer(const std::shared_ptr<GuiStyling::Container>& style)
-            : m_Style(style), m_Scrollbar(style, {10.0f, 10.0f}, [](){}),
-              m_ScrollOffset(), m_CanScroll(false), m_GridDepth(0), m_ContainerElements(), m_HideElements(true)
+    GuiContainer::GuiContainer(const std::shared_ptr<GuiStyling::Container>& style, bool showElements,
+                               unsigned int gridDepth)
+            : m_Style(style), m_ContainerElements(),
+              m_Scrollbar(style, {m_Style->scrollbarWidth, 10.0f}, [](){}), m_ScrollOffset(),
+              m_HiddenSize(), m_CanScroll(false), m_GridDepth(gridDepth), m_ShowElements(showElements)
     {
-        m_Scrollbar.m_Style->buttonColor = {0.3f, 0.3f, 0.3f};
+        m_Scrollbar.m_Style->buttonColor = {0.3f, 0.3f, 0.3f}; // TODO: Move
     }
 
     std::shared_ptr<GuiElement> GuiContainer::GetHoverElement(Math::Vec2f& hoverElementPos,
                                                               const Math::Vec2f& mousePos) const
     {
-        if(m_HideElements) { return nullptr; }
+        if(!m_ShowElements) { return nullptr; }
         for(unsigned int i = 0; i < m_ContainerElements.size(); i++) {
             auto& containerElement = m_ContainerElements[i];
             if (containerElement.element->IsHovering(mousePos - containerElement.position)) {
@@ -1036,28 +1048,63 @@ namespace Anwill {
         Renderer::EndScissor();
     }
 
-    bool GuiContainer::IsHidingElements() const
+    void GuiContainer::RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight,
+                                               const Timestamp& delta)
     {
-        return m_HideElements;
+        float contentHeight = (float)m_GridDepth * m_Style->GetRowHeight();
+        // How much of the window is hidden due to content overflow
+        float hiddenHeight = Math::Max(contentHeight - visibleHeight, 0.0f);
+        m_HiddenSize.Y = hiddenHeight;
+        if(hiddenHeight <= 0.0f) {
+            // Can only scroll if there is some hidden content
+            m_CanScroll = false;
+            return;
+        }
+
+        m_CanScroll = true;
+        float scrollbarHeight = (visibleHeight * visibleHeight) / contentHeight;
+        float emptyHeight = (visibleHeight - scrollbarHeight);
+        // This coefficient represents how "far" the user has scrolled into hidden territory (and will be on [0, 1])
+        float scrollDistNorm = m_ScrollOffset.Y / m_HiddenSize.Y;
+        Math::Vec2f scrollbarPosOffset = Math::Vec2f(0.0f, emptyHeight * scrollDistNorm);
+        m_Scrollbar.SetHeight(scrollbarHeight);
+        // TODO: Max size unused
+        m_Scrollbar.Render(assignedPos - scrollbarPosOffset, {9999.9f, 9999.9f},
+                           delta);
     }
 
-    void GuiContainer::ScrollUp()
+    bool GuiContainer::IsShowingElements() const
     {
+        return m_ShowElements;
+    }
+
+    void GuiContainer::ToggleElementsVisibility()
+    {
+        m_ShowElements = !m_ShowElements;
+    }
+
+    void GuiContainer::Scroll(float delta)
+    {
+        // TODO: Horizontal scrolling
         if(!m_CanScroll)
         {
             return;
         }
-        m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - s_ScrollSpeed, 0.0f);
+        // TODO: Adjust for cutoff padding
+        m_ScrollOffset.Y = Math::Clamp(m_ScrollOffset.Y + delta, 0.0f, m_HiddenSize.Y);
     }
 
-    void GuiContainer::ScrollDown()
+    void GuiContainer::AdjustScrollOnResize(const Math::Vec2f& resizeDelta)
     {
-        if(!m_CanScroll)
-        {
-            return;
+        // TODO: Horizontal scrolling
+        if(m_ScrollOffset.Y >= 0.0f && m_HiddenSize.Y != 0.0f && m_HiddenSize.Y <= m_ScrollOffset.Y) {
+            m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - resizeDelta.Y, 0.0f);
         }
-        // TODO: Has to include the cutoff distance here.
-        m_ScrollOffset.Y = Math::Min(m_ScrollOffset.Y + s_ScrollSpeed, m_HiddenSize.Y);
+    }
+
+    unsigned int GuiContainer::GetGridDepth() const
+    {
+        return m_GridDepth;
     }
 
     /**
@@ -1088,31 +1135,6 @@ namespace Anwill {
         }
     }
 
-    void GuiContainer::RenderVerticalScrollbar(const Math::Vec2f& assignedPos, float visibleHeight,
-                                               const Timestamp& delta)
-    {
-        float contentHeight = (float)m_GridDepth * m_Style->GetRowHeight();
-        // How much of the window is hidden due to content overflow
-        float hiddenHeight = Math::Max(contentHeight - visibleHeight, 0.0f);
-        m_HiddenSize.Y = hiddenHeight;
-        if(hiddenHeight <= 0.0f) {
-        // Can only scroll if there is some hidden content
-            m_CanScroll = false;
-            return;
-        }
-
-        m_CanScroll = true;
-        float scrollbarHeight = (visibleHeight * visibleHeight) / contentHeight;
-        float emptyHeight = (visibleHeight - scrollbarHeight);
-        // This coefficient represents how "far" the user has scrolled into hidden territory (and will be on [0, 1])
-        float scrollDistNorm = m_ScrollOffset.Y / m_HiddenSize.Y;
-        Math::Vec2f scrollbarPosOffset = Math::Vec2f(0.0f, emptyHeight * scrollDistNorm);
-        m_Scrollbar.SetHeight(scrollbarHeight);
-        // TODO: Max size unused
-        m_Scrollbar.Render(assignedPos - scrollbarPosOffset, {9999.9f, 9999.9f},
-                           delta);
-    }
-
     #pragma endregion
 
     #pragma region Dropdown
@@ -1120,22 +1142,18 @@ namespace Anwill {
     GuiDropdown::GuiDropdown(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
                              unsigned int textSize, const std::shared_ptr<GuiStyling::Dropdown>& style)
             : GuiElement(containerStyle),
-              GuiContainer(style == nullptr ? std::make_shared<GuiStyling::Dropdown>() : style),
-              m_Style(std::dynamic_pointer_cast<GuiStyling::Dropdown>(GuiContainer::m_Style)),
+              m_Style(style == nullptr ? std::make_shared<GuiStyling::Dropdown>() : style),
+              m_Container(style, false, 1),
               m_Text(containerStyle, text, textSize, style),
               m_Button(containerStyle, {0.0f, containerStyle->elementHeight}, [this](){
-                  m_HideElements = !m_HideElements;
+                  m_Container.ToggleElementsVisibility();
               }, style)
-    {
-        m_GridDepth++;
-        m_Style = nullptr;
-    }
+    {}
 
     std::shared_ptr<GuiElement> GuiDropdown::GetHoverElement(Math::Vec2f& hoverElementPos,
                                                              const Math::Vec2f& mousePos) const
     {
-        return GuiContainer::GetHoverElement(hoverElementPos,
-                                             mousePos - m_Style->GetFirstElementPos());
+        return m_Container.GetHoverElement(hoverElementPos, mousePos - m_Style->GetFirstElementPos());
     }
 
     void GuiDropdown::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
@@ -1147,7 +1165,7 @@ namespace Anwill {
         m_Button.Render(assignedPos, assignedMaxSize, delta);
 
         // Render arrow icon
-        if(m_HideElements) {
+        if(m_Container.IsShowingElements()) {
             GuiIcon::RenderRightArrow(assignedPos,
                                       m_Style->GetIconSize() * 0.5f,
                                       m_Style->iconColor);
@@ -1161,8 +1179,8 @@ namespace Anwill {
         m_Text.Render(assignedPos + Math::Vec2f(m_Style->GetIconSize().X, 0.0f),
                       assignedMaxSize - Math::Vec2f(m_Style->GetIconSize().X, 0.0f), delta);
 
-        if(m_HideElements) { return; }
-        GuiContainer::Render(assignedPos + Math::Vec2f(m_Style->elementIndent, -m_Style->GetRowHeight()),
+        if(m_Container.IsShowingElements()) { return; }
+        m_Container.Render(assignedPos + Math::Vec2f(m_Style->elementIndent, -m_Style->GetRowHeight()),
                              assignedMaxSize, delta);
     }
 
@@ -1178,30 +1196,29 @@ namespace Anwill {
 
     unsigned int GuiDropdown::GetGridDepth() const
     {
-        return m_HideElements ? 1 : m_GridDepth;
+        return m_Container.IsShowingElements() ? 1 : m_Container.GetGridDepth();
     }
 
     #pragma endregion
 
     #pragma region Window
 
-    GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position, const Math::Vec2f& size)
-            : GuiContainer(std::make_shared<GuiStyling::Window>()),
+    GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position,
+                         const Math::Vec2f& size)
+            : m_Style(std::make_shared<GuiStyling::Window>()), m_Container(m_Style, true, 0),
               m_Pos(position), m_Size(size), m_LastShowSize(), m_ID(id), m_Title(m_Style, title, 14),
               m_MinimizeButton(std::make_shared<GuiButton>(m_Style, m_Style->GetIconSize(),
-                                                           [this]() {
-                                                               m_HideElements = !m_HideElements;
-                                                               if(m_HideElements) {
-                                                                   m_LastShowSize = m_Size;
-                                                                   m_Size = {m_Size.X,
-                                                                             GuiStyling::Window::headerSize};
-                                                               } else {
-                                                                   m_Size = m_LastShowSize;
-                                                               }
-                                                           }))
-    {
-        m_HideElements = false;
-    }
+                   [this]() {
+                   m_Container.ToggleElementsVisibility();
+                   if(m_Container.IsShowingElements()) {
+                       m_LastShowSize = m_Size;
+                       m_Size = {m_Size.X,
+                                 GuiStyling::Window::headerSize};
+                   } else {
+                       m_Size = m_LastShowSize;
+                   }
+              }))
+    {}
 
     std::shared_ptr<GuiElement> GuiWindow::GetHoverElement(Math::Vec2f& hoverElementPos,
                                                            const Math::Vec2f& mousePos) const
@@ -1212,9 +1229,8 @@ namespace Anwill {
         if(m_MinimizeButton->IsHovering(mousePos - m_Pos)) {
             return m_MinimizeButton;
         }
-        Math::Vec2f firstElementPos = m_WindowStyle.GetFirstElementPos();
-        auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos,
-                                                  mousePos - m_Pos - firstElementPos);
+        Math::Vec2f firstElementPos = m_Style->GetFirstElementPos();
+        auto hoverElement = m_Container.GetHoverElement(hoverElementPos, mousePos - m_Pos - firstElementPos);
         hoverElementPos = m_Pos + firstElementPos;
         return hoverElement;
     }
@@ -1234,38 +1250,40 @@ namespace Anwill {
         // Render title
         auto style = std::dynamic_pointer_cast<GuiStyling::Window>(m_Style);
         m_Title.Render(m_Pos + std::dynamic_pointer_cast<GuiStyling::Window>(m_Style)->GetTitlePos(),
-                       m_Size - GuiStyling::Window::titlePos - Math::Vec2f(m_Style->edgeCutoffPadding,
+                       m_Size - m_Style->GetFirstElementPos() - Math::Vec2f(m_Style->edgeCutoffPadding,
                                                                            m_Style->edgeCutoffPadding),
                                                                            delta);
         // Render minimize button
         m_MinimizeButton->Render(m_Pos, m_Size, delta);
-        if(m_HideElements) {
-            GuiIcon::RenderRightArrow(m_Pos,
-                                      m_Style->GetIconSize() * 0.5f,
-                                      m_Style->iconColor);
-        } else {
+        if(m_Container.IsShowingElements()) {
             GuiIcon::RenderDownArrow(m_Pos, m_Style->GetIconSize() * 0.5f, m_Style->iconColor);
 
             // Render elements inside window
-            GuiContainer::Render(m_Pos + m_Style->GetFirstElementPos(),
-                                 m_Size - m_Style->GetFirstElementPos().NegateY()
-                                 - Math::Vec2f(m_Style->edgeCutoffPadding, m_Style->edgeCutoffPadding),
-                                 delta);
+            m_Container.Render(m_Pos + m_Style->GetFirstElementPos(),
+                               m_Size - m_Style->GetFirstElementPos().NegateY()
+                               - Math::Vec2f(m_Style->edgeCutoffPadding, m_Style->edgeCutoffPadding),
+                               delta);
 
             // Render scrollbar
-            Math::Vec2f scrollBarPos = {m_Pos.X + m_Size.X - m_Scrollbar.GetWidth() - 3.0f,
+            Math::Vec2f scrollBarPos = {m_Pos.X + m_Size.X - m_Style->scrollbarWidth - 3.0f,
                                         m_Pos.Y + -GuiStyling::Window::headerSize - 4.0f};
-            RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize, delta);
+            m_Container.RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize,
+                                                delta);
+        } else {
+            GuiIcon::RenderRightArrow(m_Pos,
+                                      m_Style->GetIconSize() * 0.5f,
+                                      m_Style->iconColor);
         }
         Renderer::EndScissor();
     }
 
     bool GuiWindow::IsHoveringHeader(const Math::Vec2f& mousePos)
     {
-        return Math::Algo::IsPointInsideRectangle({m_Pos.X + GuiStyling::Window::titlePos.X, m_Pos.Y},
+        auto titlePos = m_Style->GetTitlePos();
+        return Math::Algo::IsPointInsideRectangle({m_Pos.X + titlePos.X, m_Pos.Y},
                                                   {m_Pos.X + m_Size.X, m_Pos.Y},
                                                   {m_Pos.X + m_Size.X, m_Pos.Y - GuiStyling::Window::headerSize},
-                                                  {m_Pos.X + GuiStyling::Window::titlePos.X, m_Pos.Y - GuiStyling::Window::headerSize},
+                                                  {m_Pos.X + titlePos.X, m_Pos.Y - GuiStyling::Window::headerSize},
                                                   mousePos);
     }
 
@@ -1293,6 +1311,11 @@ namespace Anwill {
                                                   mousePos);
     }
 
+    bool GuiWindow::IsShowingElements() const
+    {
+        return m_Container.IsShowingElements();
+    }
+
     void GuiWindow::Move(const Math::Vec2f& delta, const Math::Vec2f& minPos, const Math::Vec2f& maxPos)
     {
         if(!(m_Pos.Y + delta.Y > maxPos.Y ||
@@ -1311,9 +1334,17 @@ namespace Anwill {
         newSize.Clamp(minSize, maxSize);
         m_Size = newSize;
 
-        if(m_ScrollOffset.Y >= 0.0f && m_HiddenSize.Y != 0.0f && m_HiddenSize.Y <= m_ScrollOffset.Y) {
-            m_ScrollOffset.Y = Math::Max(m_ScrollOffset.Y - delta.Y, 0.0f);
-        }
+        m_Container.AdjustScrollOnResize(delta);
+    }
+
+    void GuiWindow::ScrollUp()
+    {
+        m_Container.Scroll(10.0f);
+    }
+
+    void GuiWindow::ScrollDown()
+    {
+        m_Container.Scroll(-10.0f);
     }
 
     Math::Vec2f GuiWindow::GetPos() const
