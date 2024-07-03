@@ -1,8 +1,8 @@
+add_subdirectory(containers)
+add_subdirectory(elements)
+add_subdirectory(styles)
+
 add_library(Gui STATIC
-        GuiStyling.cpp Gui.cpp GuiElements.cpp GuiLayer.cpp
-        )
-
-target_include_directories(Gui PUBLIC
-        )
-
+        Gui.cpp GuiLayer.cpp
+)
 target_link_libraries(Gui PUBLIC Core Events Utils)

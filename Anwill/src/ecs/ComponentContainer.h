@@ -7,7 +7,7 @@
 
 namespace Anwill {
 
-    // This only exist so we don't have to define <C> when we define the outer map
+    // This only exist so that we don't have to define <C> when we define the outer map
     class IContainer {
     public:
         // We need this virtual base function since we need a delete function that is not

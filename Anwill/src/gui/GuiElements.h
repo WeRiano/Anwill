@@ -5,7 +5,7 @@
 #include <iostream>
 #include <stack>
 
-#include "gui/GuiStyling.h"
+#include "gui/styles/GuiStyling.h"
 #include "gfx/Mesh.h"
 #include "gfx/Font.h"
 #include "gfx/Renderer2D.h"

@@ -6,6 +6,21 @@
 #include <vector>
 #include <utility>
 
+#include "elements/GuiButton.h"
+#include "elements/GuiCheckbox.h"
+#include "elements/GuiDropdown.h"
+#include "elements/GuiElement.h"
+#include "elements/GuiIcon.h"
+#include "elements/GuiImage.h"
+#include "elements/GuiInputText.h"
+#include "elements/GuiRadioButton.h"
+#include "elements/GuiSlider.h"
+#include "elements/GuiText.h"
+#include "elements/GuiTextbutton.h"
+#include "elements/GuiTooltip.h"
+
+#include "containers/GuiWindow.h"
+
 #include "events/Event.h"
 #include "events/KeyEvents.h"
 #include "math/Mat4f.h"
@@ -13,7 +28,6 @@
 #include "gfx/Font.h"
 #include "gfx/Mesh.h"
 #include "gfx/Renderer2D.h"
-#include "gui/GuiElements.h"
 
 #undef CreateWindow // MICROSOFT WOOOOOOOOOOOOOOO
 
