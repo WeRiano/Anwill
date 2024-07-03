@@ -8,12 +8,14 @@ namespace Anwill {
 
     GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position,
                          const Math::Vec2f& size)
-        : m_Style(std::make_shared<GuiStyling::Window>()), m_Container(m_Style, true, 0),
-          m_Pos(position), m_Size(size), m_LastShowSize(), m_ID(id), m_Title(m_Style, title, 14),
+        : GuiContainer(std::make_shared<GuiStyling::Window>(), true, 0),
+          m_Style(std::static_pointer_cast<GuiStyling::Window>(GuiContainer::m_Style)),
+          m_Pos(position), m_Size(size), m_LastShowSize(), m_ID(id),
+          m_Title(m_Style, title, 14),
           m_MinimizeButton(std::make_shared<GuiButton>(m_Style, m_Style->GetIconSize(),
                                                        [this]() {
-                                                           m_Container.ToggleElementsVisibility();
-                                                           if(m_Container.IsShowingElements()) {
+                                                           ToggleElementsVisibility();
+                                                           if(IsShowingElements()) {
                                                                m_LastShowSize = m_Size;
                                                                m_Size = {m_Size.X,
                                                                          GuiStyling::Window::headerSize};
@@ -33,7 +35,7 @@ namespace Anwill {
             return m_MinimizeButton;
         }
         Math::Vec2f firstElementPos = m_Style->GetFirstElementPos();
-        auto hoverElement = m_Container.GetHoverElement(hoverElementPos, mousePos - m_Pos - firstElementPos);
+        auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos, mousePos - m_Pos - firstElementPos);
         hoverElementPos = m_Pos + firstElementPos;
         return hoverElement;
     }
@@ -58,20 +60,20 @@ namespace Anwill {
                        delta);
         // Render minimize button
         m_MinimizeButton->Render(m_Pos, m_Size, delta);
-        if(m_Container.IsShowingElements()) {
+        if(IsShowingElements()) {
             GuiIcon::RenderDownArrow(m_Pos, m_Style->GetIconSize() * 0.5f, m_Style->iconColor);
 
             // Render elements inside window
-            m_Container.Render(m_Pos + m_Style->GetFirstElementPos(),
-                               m_Size - m_Style->GetFirstElementPos().NegateY()
-                               - Math::Vec2f(m_Style->edgeCutoffPadding, m_Style->edgeCutoffPadding),
-                               delta);
+            GuiContainer::Render(m_Pos + m_Style->GetFirstElementPos(),
+                                 m_Size - m_Style->GetFirstElementPos().NegateY()
+                                 - Math::Vec2f(m_Style->edgeCutoffPadding, m_Style->edgeCutoffPadding),
+                                 delta);
 
             // Render scrollbar
             Math::Vec2f scrollBarPos = {m_Pos.X + m_Size.X - m_Style->scrollbarWidth - 3.0f,
                                         m_Pos.Y + -GuiStyling::Window::headerSize - 4.0f};
-            m_Container.RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize,
-                                                delta);
+            GuiContainer::RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize,
+                                                  delta);
         } else {
             GuiIcon::RenderRightArrow(m_Pos,
                                       m_Style->GetIconSize() * 0.5f,
@@ -114,11 +116,6 @@ namespace Anwill {
                                                   mousePos);
     }
 
-    bool GuiWindow::IsShowingElements() const
-    {
-        return m_Container.IsShowingElements();
-    }
-
     void GuiWindow::Move(const Math::Vec2f& delta, const Math::Vec2f& minPos, const Math::Vec2f& maxPos)
     {
         if(!(m_Pos.Y + delta.Y > maxPos.Y ||
@@ -137,17 +134,17 @@ namespace Anwill {
         newSize.Clamp(minSize, maxSize);
         m_Size = newSize;
 
-        m_Container.AdjustScrollOnResize(delta);
+        GuiContainer::AdjustScrollOnResize(delta);
     }
 
     void GuiWindow::ScrollUp()
     {
-        m_Container.Scroll(10.0f);
+        GuiContainer::Scroll(10.0f);
     }
 
     void GuiWindow::ScrollDown()
     {
-        m_Container.Scroll(-10.0f);
+        GuiContainer::Scroll(-10.0f);
     }
 
     Math::Vec2f GuiWindow::GetPos() const

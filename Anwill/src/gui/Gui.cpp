@@ -67,6 +67,7 @@ namespace Anwill {
         }
         if(s_State.pressElement != nullptr)
         {
+            auto t = s_State.pressElement;
             s_State.pressElement->OnPress(s_State.mousePos - s_State.pressElementPos);
         }
     }
@@ -409,6 +410,7 @@ namespace Anwill {
         s_State.scalingHorizontally = false;
         s_State.scalingVertically = false;
         if(s_State.pressElement != nullptr) {
+            auto t = s_State.pressElement;
             s_State.pressElement->Release();
             s_State.pressElement = nullptr;
         }

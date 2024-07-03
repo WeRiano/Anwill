@@ -27,7 +27,7 @@ namespace Anwill {
         virtual void StopHovering();
         virtual void StartPressing();
         virtual void OnPress(const Math::Vec2f& mousePos);
-        virtual void Release(); // StopPressing()
+        virtual void Release();
         virtual void Select();
         virtual void Deselect();
         virtual void OnKeyPress(const KeyCode& keyCode);
@@ -41,6 +41,7 @@ namespace Anwill {
     protected:
         bool m_IsHovered, m_IsPressed, m_IsSelected;
         std::unique_ptr<GuiTooltip> m_Tooltip;
-        std::shared_ptr<GuiStyling::Container> m_ContainerStyle;
+        // Style of whatever container is hosting this element
+        std::shared_ptr<GuiStyling::Container> m_HostContainerStyle;
     };
 }

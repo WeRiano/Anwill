@@ -56,10 +56,10 @@ namespace Anwill {
             markerXPosDelta = Math::Clamp(markerXPosDelta, m_MarkerXOffset, GetWidth() - m_MarkerXOffset);
             Math::Vec2f markerPos = {markerXPosDelta - m_MarkerXOffset,
                                      -(m_Button.GetHeight() -
-                                       GuiStyling::Slider::GetMarkerSize(m_ContainerStyle->elementHeight).Y) * 0.5f + 1.0f}; // TODO: wtf end??
+                                       GuiStyling::Slider::GetMarkerSize(m_HostContainerStyle->elementHeight).Y) * 0.5f + 1.0f}; // TODO: wtf end??
 
             GuiIcon::RenderRectangle(assignedPos + markerPos,
-                                     GuiStyling::Slider::GetMarkerSize(m_ContainerStyle->elementHeight),
+                                     GuiStyling::Slider::GetMarkerSize(m_HostContainerStyle->elementHeight),
                                      m_Style->markerColor);
 
             // Render text

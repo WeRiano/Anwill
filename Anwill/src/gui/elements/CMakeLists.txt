@@ -11,5 +11,5 @@ add_library(GuiElements STATIC
         GuiTextButton.cpp
         GuiTooltip.cpp
 )
-target_include_directories(GuiElements PUBLIC Core Events Utils Containers GuiStyle)
-target_link_libraries(GuiElements PUBLIC Core Events Utils)
+#target_include_directories(GuiElements PUBLIC Core Events Utils Graphics GuiContainers GuiStyles)
+target_link_libraries(GuiElements PUBLIC Core)

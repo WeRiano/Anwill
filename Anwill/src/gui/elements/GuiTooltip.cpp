@@ -1,7 +1,7 @@
 #include "GuiTooltip.h"
 #include "gui/styles/GuiStyling.h"
 #include "utils/Profiler.h"
-#include "gfx/Renderer2D.cpp"
+#include "gfx/Renderer2D.h"
 
 namespace Anwill {
 

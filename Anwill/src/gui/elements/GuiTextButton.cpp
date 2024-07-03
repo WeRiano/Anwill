@@ -34,21 +34,6 @@ namespace Anwill {
                       delta);
     }
 
-    void GuiTextButton::RenderText(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                                   const Timestamp& delta)
-    {
-        Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
-        m_Text.Render(assignedPos + padding,
-                      assignedMaxSize - padding,
-                      delta);
-    }
-
-    void GuiTextButton::RenderButton(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                                     const Timestamp& delta)
-    {
-        m_Button.Render(assignedPos, assignedMaxSize, delta);
-    }
-
     void GuiTextButton::SetText(const std::string& text) {
         m_Text.Set(text);
         m_Button.SetWidth(m_Text.GetWidth() + GuiStyling::TextButton::textPadding * 2.0f);
@@ -59,11 +44,6 @@ namespace Anwill {
         return m_Button.IsHovering(mousePos);
     }
 
-    Math::Vec2f GuiTextButton::GetSize() const
-    {
-        return m_Button.GetSize();
-    }
-
     float GuiTextButton::GetWidth() const
     {
         return m_Button.GetWidth();
@@ -71,6 +51,21 @@ namespace Anwill {
 
     unsigned int GuiTextButton::GetGridDepth() const
     {
-        return m_Button.GetGridDepth(); // 1
+        return 1;
+    }
+
+    Math::Vec2f GuiTextButton::GetSize() const
+    {
+        return m_Button.GetSize();
+    }
+
+    void GuiTextButton::SetCallback(const std::function<void()>& callback)
+    {
+        m_Button.SetCallback(callback);
+    }
+
+    void GuiTextButton::Release()
+    {
+        m_Button.Release();
     }
 }

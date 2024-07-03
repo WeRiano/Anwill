@@ -13,15 +13,12 @@ namespace Anwill {
         m_Scrollbar.m_Style->buttonColor = {0.3f, 0.3f, 0.3f}; // TODO: Move
     }
 
-    std::shared_ptr<GuiElement> GuiContainer::GetHoverElement(
-        Math::Vec2f& hoverElementPos,
-        const Math::Vec2f& mousePos) const
+    std::shared_ptr<GuiElement> GuiContainer::GetHoverElement(Math::Vec2f& hoverElementPos,
+                                                              const Math::Vec2f& mousePos) const
     {
-        if (!m_ShowElements)
-        { return nullptr; }
-        for (unsigned int i = 0; i < m_ContainerElements.size(); i++)
+        if (!m_ShowElements) { return nullptr; }
+        for (const auto& containerElement : m_ContainerElements)
         {
-            auto& containerElement = m_ContainerElements[i];
             if (containerElement.element->IsHovering(mousePos - containerElement.position))
             {
                 hoverElementPos = containerElement.position;
@@ -51,6 +48,7 @@ namespace Anwill {
                               const Timestamp& delta)
     {
         // TODO: Cleanup, big function
+        if(!m_ShowElements) { return; }
         Renderer::PushScissor({assignedPos.X, assignedPos.Y - assignedMaxSize.Y}, assignedMaxSize);
         Math::Vec2f elementPos = m_ScrollOffset;
         float newRowXPos = elementPos.X;

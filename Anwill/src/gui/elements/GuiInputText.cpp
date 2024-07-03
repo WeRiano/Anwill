@@ -12,7 +12,7 @@ namespace Anwill {
                                const std::string& startText, unsigned int textSize, float pixelWidth,
                                const std::shared_ptr<GuiStyling::InputText>& style)
         : GuiElement(containerStyle),
-          m_Style(style),
+          m_Style(style == nullptr ? std::make_shared<GuiStyling::InputText>() : style),
           m_Text(containerStyle, startText, textSize, style),
           m_Button(containerStyle, {pixelWidth, containerStyle->elementHeight}, [](){}, style),
           m_RenderLeftIndex(0), m_RenderRightIndex((int) startText.length()),
@@ -32,7 +32,7 @@ namespace Anwill {
         // Render button
         m_Button.Render(assignedPos, assignedMaxSize, delta);
 
-        Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f, -m_ContainerStyle->elementHeight * 0.5f};
+        Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f, -m_HostContainerStyle->elementHeight * 0.5f};
         if(m_IsSelected) {
             RenderSelected(assignedPos, offset);
             RenderText(assignedPos, assignedMaxSize, delta);
@@ -106,7 +106,7 @@ namespace Anwill {
             selectedStartXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
             // Get the width of the text box
             float selectedTextWidth = m_Text.GetWidth(leftIndex, rightIndex - leftIndex);
-            Math::Vec2f size = {selectedTextWidth, m_ContainerStyle->elementHeight - 2.0f};
+            Math::Vec2f size = {selectedTextWidth, m_HostContainerStyle->elementHeight - 2.0f};
             Math::Mat4f transform = Math::Mat4f::Scale({}, size);
             transform = Math::Mat4f::Translate(transform,
                                                {assignedPos + Math::Vec2f(selectedStartXPos, 0.0f) +

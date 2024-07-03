@@ -28,13 +28,16 @@ namespace Anwill {
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
-        void RenderText(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize, const Timestamp& delta);
-        void RenderButton(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize, const Timestamp& delta);
         void SetText(const std::string& text);
         bool IsHovering(const Math::Vec2f& mousePos) const override;
-        Math::Vec2f GetSize() const;
         float GetWidth() const override;
         unsigned int GetGridDepth() const override;
+
+        void Release() override;
+
+        Math::Vec2f GetSize() const;
+
+        void SetCallback(const std::function<void()>& callback);
 
     protected:
         GuiText m_Text;

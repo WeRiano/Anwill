@@ -1,9 +1,10 @@
 #include "GuiElement.h"
+#include "core/Log.h"
 
 namespace Anwill {
 
     GuiElement::GuiElement(const std::shared_ptr<GuiStyling::Container>& containerStyle)
-        : m_IsHovered(false), m_IsPressed(false), m_IsSelected(false), m_ContainerStyle(containerStyle)
+        : m_IsHovered(false), m_IsPressed(false), m_IsSelected(false), m_HostContainerStyle(containerStyle)
     {}
 
     void GuiElement::StartHovering()
@@ -25,10 +26,13 @@ namespace Anwill {
     }
 
     void GuiElement::OnPress(const Math::Vec2f& mousePos)
-    {}
+    {
+        AW_DEBUG("Pressing!");
+    }
 
     void GuiElement::Release()
     {
+        AW_DEBUG("Releasing!");
         m_IsPressed = false;
     }
 

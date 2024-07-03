@@ -7,18 +7,20 @@ namespace Anwill {
     GuiDropdown::GuiDropdown(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
                              unsigned int textSize, const std::shared_ptr<GuiStyling::Dropdown>& style)
         : GuiElement(containerStyle),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::Dropdown>() : style),
-          m_Container(style, false, 1),
+          GuiContainer(style == nullptr ? std::make_shared<GuiStyling::Dropdown>() : style,
+                       false, 1),
+          m_Style(std::static_pointer_cast<GuiStyling::Dropdown>(GuiContainer::m_Style)),
           m_Text(containerStyle, text, textSize, style),
           m_Button(containerStyle, {0.0f, containerStyle->elementHeight}, [this](){
-              m_Container.ToggleElementsVisibility();
+              ToggleElementsVisibility();
           }, style)
-    {}
+    {
+    }
 
     std::shared_ptr<GuiElement> GuiDropdown::GetHoverElement(Math::Vec2f& hoverElementPos,
                                                              const Math::Vec2f& mousePos) const
     {
-        return m_Container.GetHoverElement(hoverElementPos, mousePos - m_Style->GetFirstElementPos());
+        return GuiContainer::GetHoverElement(hoverElementPos, mousePos - m_Style->GetFirstElementPos());
     }
 
     void GuiDropdown::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
@@ -30,22 +32,21 @@ namespace Anwill {
         m_Button.Render(assignedPos, assignedMaxSize, delta);
 
         // Render arrow icon
-        if(m_Container.IsShowingElements()) {
-            GuiIcon::RenderRightArrow(assignedPos,
-                                      m_Style->GetIconSize() * 0.5f,
-                                      m_Style->iconColor);
-        } else {
+        if(IsShowingElements()) {
             GuiIcon::RenderDownArrow(assignedPos,
                                      m_Style->GetIconSize() * 0.5f,
                                      m_Style->iconColor);
+        } else {
+            GuiIcon::RenderRightArrow(assignedPos,
+                                      m_Style->GetIconSize() * 0.5f,
+                                      m_Style->iconColor);
         }
 
         // Render text slightly to the right compared to a regular text button
         m_Text.Render(assignedPos + Math::Vec2f(m_Style->GetIconSize().X, 0.0f),
                       assignedMaxSize - Math::Vec2f(m_Style->GetIconSize().X, 0.0f), delta);
 
-        if(m_Container.IsShowingElements()) { return; }
-        m_Container.Render(assignedPos + Math::Vec2f(m_Style->elementIndent, -m_Style->GetRowHeight()),
+        GuiContainer::Render(assignedPos + Math::Vec2f(m_Style->elementIndent, -m_Style->GetRowHeight()),
                            assignedMaxSize, delta);
     }
 
@@ -61,6 +62,11 @@ namespace Anwill {
 
     unsigned int GuiDropdown::GetGridDepth() const
     {
-        return m_Container.IsShowingElements() ? 1 : m_Container.GetGridDepth();
+        return IsShowingElements() ? GuiContainer::GetGridDepth() : 1;
+    }
+
+    void GuiDropdown::OnPress(const Math::Vec2f& mousePos)
+    {
+        m_Button.OnPress(mousePos);
     }
 }

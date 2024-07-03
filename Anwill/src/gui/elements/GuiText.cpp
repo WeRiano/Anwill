@@ -8,7 +8,7 @@ namespace Anwill {
                      unsigned int textSize, const std::shared_ptr<GuiStyling::Text>& style)
         : GuiElement(containerStyle),
           m_Style(style == nullptr ? std::make_shared<GuiStyling::Text>() : style),
-          m_TextPos(1.0f, -m_ContainerStyle->elementHeight / 2.0f + GuiStyling::Text::baselineOffset),
+          m_TextPos(1.0f, -m_HostContainerStyle->elementHeight / 2.0f + GuiStyling::Text::baselineOffset),
           m_Text(text),
           m_TextScale(GuiStyling::Text::font->GetScaleValue(textSize)),
           m_TextWidth((float) GuiStyling::Text::font->GetTextWidth(text) * m_TextScale)
