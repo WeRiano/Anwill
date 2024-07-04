@@ -6,7 +6,7 @@
 
 namespace Anwill {
 
-    class GuiButton : public GuiElement {
+    class GuiButton : public virtual GuiElement {
     public:
         std::shared_ptr<GuiStyling::Button> m_Style;
 

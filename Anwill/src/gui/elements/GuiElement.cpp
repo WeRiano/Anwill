@@ -27,12 +27,12 @@ namespace Anwill {
 
     void GuiElement::OnPress(const Math::Vec2f& mousePos)
     {
-        AW_DEBUG("Pressing!");
+        //AW_DEBUG("Pressing!");
     }
 
     void GuiElement::Release()
     {
-        AW_DEBUG("Releasing!");
+        //AW_DEBUG("Releasing!");
         m_IsPressed = false;
     }
 

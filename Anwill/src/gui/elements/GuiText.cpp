@@ -36,23 +36,24 @@ namespace Anwill {
     }
 
     bool GuiText::IsHovering(const Math::Vec2f& mousePos) const {
+        // TODO
         return false;
     }
 
     float GuiText::GetWidth() const
     {
-        return m_TextWidth;
+        return m_TextPos.X + m_TextWidth;
     }
 
     float GuiText::GetWidth(unsigned char c) const
     {
-        return m_TextWidth + GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
+        return GetWidth() + GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
     }
 
     float GuiText::GetWidth(unsigned int startIndex, unsigned int size) const
     {
         std::string substr = m_Text.substr(startIndex, size);
-        return (float)GuiStyling::Text::font->GetTextWidth(substr) * m_TextScale;
+        return m_TextPos.X + (float)GuiStyling::Text::font->GetTextWidth(substr) * m_TextScale;
     }
 
     unsigned int GuiText::GetGridDepth() const
@@ -103,13 +104,14 @@ namespace Anwill {
         return removedSubstr;
     }
 
-    void GuiText::TruncateCharacter()
+    unsigned char GuiText::TruncateCharacter()
     {
         if(!m_Text.empty())
         {
-            unsigned char c = m_Text.back();
+            unsigned char result = m_Text.back();
             m_Text.pop_back();
-            m_TextWidth -= GuiStyling::Text::font->GetGlyphWidth(c) * m_TextScale;
+            m_TextWidth -= GuiStyling::Text::font->GetGlyphWidth(result) * m_TextScale;
+            return result;
         }
     }
 

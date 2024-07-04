@@ -23,14 +23,24 @@ namespace Anwill {
                                                assignedPos + Math::Vec2f(m_ButtonSize.X / 2.0f,
                                                                          -m_ButtonSize.Y / 2.0f));
 
-        // Render button
+        // Get shape of button from possible selections
         auto shader = GuiStyling::Button::shaders[(std::size_t) m_Style->buttonShape];
         shader->Bind();
         shader->SetUniform1i(m_IsHovered, "u_Hovering");
         shader->SetUniform1i(m_IsPressed, "u_Pressing");
-        shader->SetUniformVec3f(m_Style->buttonColor, "u_Color");
-        shader->SetUniformVec3f(m_Style->buttonHoverColor, "u_HoverColor");
-        shader->SetUniformVec3f(m_Style->buttonPressColor, "u_PressColor");
+        if(m_IsHovered)
+        {
+            shader->SetUniformVec3f(m_Style->buttonHoverColor, "u_HoverColor");
+        }
+        if(m_IsPressed)
+        {
+            shader->SetUniformVec3f(m_Style->buttonPressColor, "u_PressColor");
+        }
+        if(!(m_IsHovered || m_IsPressed))
+        {
+            shader->SetUniformVec3f(m_Style->buttonColor, "u_Color");
+        }
+        shader->Unbind();
         Renderer2D::SubmitMesh(shader, GuiStyling::rectMesh, thisTransform);
     }
 

@@ -62,7 +62,7 @@ namespace Anwill {
             {
                 m_GridDepth += m_ContainerElements.back().element->GetGridDepth();
             }
-            return std::static_pointer_cast<E>(m_ContainerElements.back().element);
+            return std::dynamic_pointer_cast<E>(m_ContainerElements.back().element);
         }
 
     protected:

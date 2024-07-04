@@ -7,7 +7,7 @@
 
 namespace Anwill {
 
-    class GuiText : public GuiElement {
+    class GuiText : public virtual GuiElement {
     public:
         std::shared_ptr<GuiStyling::Text> m_Style;
 
@@ -32,16 +32,18 @@ namespace Anwill {
         std::string RemoveCharacters(unsigned int startCharacterIndex, unsigned int endCharacterIndex);
         /**
          * @brief Remove the rightmost char from the string.
+         * @return The removed char.
          */
-        void TruncateCharacter();
+        unsigned char TruncateCharacter();
         /**
          * @brief Remove the leftmost char from the string.
-         * @return The popped char.
+         * @return The removed char.
          */
         unsigned char PopCharacter();
         std::string ToString() const;
 
     protected:
+        // TODO: Is this necessary? Should it be owned by derived types instead?
         Math::Vec2f m_TextPos;
         std::string m_Text;
         float m_TextScale, m_TextWidth; // Calculate TextScale each iteration? Cheap.

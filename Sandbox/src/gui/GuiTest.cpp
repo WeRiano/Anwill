@@ -37,7 +37,6 @@ GuiTest::GuiTest(const unsigned int ups)
     m_SliderTestText = Anwill::Gui::Text("Oh wow, the FloatSlider has a value of " + std::to_string(m_FloatSliderValue));
 
     button->SetCallback([this, text, dd1Text](){
-        m_Counter++;
         text->Set("You have clicked the button " + std::to_string(m_Counter) + " times.");
         dd1Text->Set("You have clicked the button " + std::to_string(m_Counter) + " times.");
     });

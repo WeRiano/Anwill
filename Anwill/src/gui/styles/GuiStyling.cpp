@@ -41,7 +41,7 @@ namespace Anwill {
         ShaderMacros::SetMacro("AW_GUI_TOOLTIP_BORDER_SIZE", Tooltip::borderSize);
 
         // --- Text ---
-        Text::fontSize = 13;
+        Text::fontSize = 13; // TODO: Attempt to change this and see if baselineOffset sticks
         Text::baselineOffset = -(float) Text::fontSize * 0.45f;
         TextButton::textPadding = 5.0f; // X distance from button edge to text
         Text::cursorVertexArray = VertexArray::Create();

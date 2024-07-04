@@ -36,8 +36,7 @@ namespace Anwill {
         struct Text {
         public:
             static unsigned int fontSize;
-            // We render text in the middle of the assigned space, but the baseline should not be in the middle,
-            // it should be slightly below
+            // The amount of space from the 'middle' (baseline) where the text should be rendered
             static float baselineOffset;
             static std::unique_ptr<Font> font;
             static std::shared_ptr<Shader> shader;

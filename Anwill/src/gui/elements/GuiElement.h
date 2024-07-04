@@ -6,6 +6,12 @@
 #include "math/Vec2f.h"
 #include "core/KeyCodes.h"
 
+/// Use the given style of type StyleType if it exists (this will most likely include an upcast),
+/// otherwise create a new instance of it
+#define AW_GUI_MAKE_STYLE(style, StyleType) style == nullptr ? std::make_shared<StyleType>() : style
+/// Downcast the style to a derived StyleType.
+#define AW_GUI_CAST_STYLE(style, StyleType) std::static_pointer_cast<StyleType>(style)
+
 namespace Anwill {
 
     class GuiElement
@@ -19,6 +25,10 @@ namespace Anwill {
          * @brief Check if the mouse cursor is hovering the element
          */
         virtual bool IsHovering(const Math::Vec2f& mousePos) const = 0;
+        /**
+         * The amount of horizontal space the element occupies starting from its assigned position.
+         * This includes any internal padding and/or margins.
+         */
         virtual float GetWidth() const = 0;
         virtual unsigned int GetGridDepth() const = 0;
 

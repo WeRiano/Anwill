@@ -7,65 +7,52 @@ namespace Anwill {
                                  const std::string& text, unsigned int textSize, const std::function<void()>& callback,
                                  const std::shared_ptr<GuiStyling::TextButton>& style)
         : GuiElement(containerStyle),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::TextButton>() : style),
-          m_Text(containerStyle, text, textSize, style),
-          m_Button(containerStyle, {m_Text.GetWidth() + GuiStyling::TextButton::textPadding * 2.0f,
-                                    containerStyle->elementHeight}, callback, style)
+          GuiText(containerStyle, text, textSize, AW_GUI_MAKE_STYLE(style, GuiStyling::TextButton)),
+          GuiButton(containerStyle, {GuiText::GetWidth() + GuiStyling::TextButton::textPadding * 2.0f,
+                                     containerStyle->elementHeight}, callback,
+                    AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton)),
+          m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton))
     {}
 
     GuiTextButton::GuiTextButton(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
                                  unsigned int textSize, unsigned int pixelWidth, const std::function<void()>& callback,
                                  const std::shared_ptr<GuiStyling::TextButton>& style)
         : GuiElement(containerStyle),
-          m_Text(containerStyle, text, textSize, style),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::TextButton>() : style),
-          m_Button(containerStyle, {static_cast<float>(pixelWidth),containerStyle->elementHeight}, callback)
+          GuiText(containerStyle, text, textSize, AW_GUI_MAKE_STYLE(style, GuiStyling::TextButton)),
+          GuiButton(containerStyle, {(float) pixelWidth,containerStyle->elementHeight}, callback,
+                    AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton)),
+          m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton))
     {}
 
     void GuiTextButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                                const Timestamp& delta)
     {
         AW_PROFILE_FUNC();
-        m_Button.Render(assignedPos, assignedMaxSize, delta);
+        GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
         Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
-        m_Text.Render(assignedPos + padding,
+        GuiText::Render(assignedPos + padding,
                       assignedMaxSize - padding,
                       delta);
     }
 
-    void GuiTextButton::SetText(const std::string& text) {
-        m_Text.Set(text);
-        m_Button.SetWidth(m_Text.GetWidth() + GuiStyling::TextButton::textPadding * 2.0f);
-    }
-
     bool GuiTextButton::IsHovering(const Math::Vec2f& mousePos) const
     {
-        return m_Button.IsHovering(mousePos);
+        return GuiButton::IsHovering(mousePos);
     }
 
     float GuiTextButton::GetWidth() const
     {
-        return m_Button.GetWidth();
+        return (m_TextPos.X + GuiText::GetWidth() > GuiButton::GetWidth()) ? GuiText::GetWidth() : GuiButton::GetWidth();
     }
 
     unsigned int GuiTextButton::GetGridDepth() const
     {
-        return 1;
+        return GuiText::GetGridDepth();
     }
 
-    Math::Vec2f GuiTextButton::GetSize() const
-    {
-        return m_Button.GetSize();
-    }
-
-    void GuiTextButton::SetCallback(const std::function<void()>& callback)
-    {
-        m_Button.SetCallback(callback);
-    }
-
-    void GuiTextButton::Release()
-    {
-        m_Button.Release();
+    void GuiTextButton::SetText(const std::string& text) {
+        GuiText::Set(text);
+        GuiButton::SetWidth(GuiText::GetWidth() + GuiStyling::TextButton::textPadding * 2.0f);
     }
 }
