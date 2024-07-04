@@ -10,19 +10,19 @@
 
 namespace Anwill {
 
+    /**
+     * A button which contains text.
+     */
     class GuiTextButton : public GuiText, public GuiButton {
     public:
         std::shared_ptr<GuiStyling::TextButton> m_Style;
 
+        // TODO: Client should be able to make a button without text and perhaps choose its size.
+        /**
+         * Create a text button with a dynamic width that adjusts to fit the width of its text content.
+         */
         GuiTextButton(const std::shared_ptr<GuiStyling::Container>& containerStyle,
                       const std::string& text,
-                      unsigned int textSize,
-                      const std::function<void()>& callback,
-                      const std::shared_ptr<GuiStyling::TextButton>& style = nullptr);
-        GuiTextButton(const std::shared_ptr<GuiStyling::Container>& containerStyle,
-                      const std::string& text,
-                      unsigned int textSize,
-                      unsigned int pixelWidth,
                       const std::function<void()>& callback,
                       const std::shared_ptr<GuiStyling::TextButton>& style = nullptr);
 
@@ -33,9 +33,5 @@ namespace Anwill {
                     const Timestamp& delta) override;
 
         void SetText(const std::string& text);
-
-    protected:
-        //GuiText m_Text;
-        //GuiButton m_Button;
     };
 }

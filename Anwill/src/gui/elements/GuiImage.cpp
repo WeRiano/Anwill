@@ -12,7 +12,7 @@ namespace Anwill {
           m_Texture(Texture::Create(fileName))
     {
         if(m_Texture->GetHeight() > maxRows * containerStyle->GetRowHeight()) {
-            m_ScaleFactor = maxRows * containerStyle->GetRowHeight() / m_Texture->GetHeight();
+            m_ScaleFactor = (maxRows) * containerStyle->GetRowHeight() / m_Texture->GetHeight();
         } else {
             m_ScaleFactor = 1.0f;
         }

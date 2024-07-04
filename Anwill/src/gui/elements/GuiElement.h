@@ -9,6 +9,7 @@
 /// Use the given style of type StyleType if it exists (this will most likely include an upcast),
 /// otherwise create a new instance of it
 #define AW_GUI_MAKE_STYLE(style, StyleType) style == nullptr ? std::make_shared<StyleType>() : style
+
 /// Downcast the style to a derived StyleType.
 #define AW_GUI_CAST_STYLE(style, StyleType) std::static_pointer_cast<StyleType>(style)
 
@@ -27,16 +28,36 @@ namespace Anwill {
         virtual bool IsHovering(const Math::Vec2f& mousePos) const = 0;
         /**
          * The amount of horizontal space the element occupies starting from its assigned position.
-         * This includes any internal padding and/or margins.
+         * This includes any internal indentation, padding and/or margins.
          */
         virtual float GetWidth() const = 0;
+        /**
+         * @return The number of rows the element occupies in the containers grid.
+         */
         virtual unsigned int GetGridDepth() const = 0;
-
+        /**
+         * Invoked only once when the element becomes hovered.
+         */
         virtual void StartHovering();
-        virtual void OnHover(const Math::Vec2f& mousePos);
+        /**
+         * Invoked only once when the element stops being hovered.
+         */
         virtual void StopHovering();
+        /**
+         * Invoked when the element is being hovered, which may be repeated.
+         */
+        virtual void OnHover(const Math::Vec2f& mousePos);
+        /**
+         * Invoked only once when the element becomes pressed.
+         */
         virtual void StartPressing();
+        /**
+         * Invoked when the element is being pressed, which may be repeated.
+         */
         virtual void OnPress(const Math::Vec2f& mousePos);
+        /**
+         * Invoked only once when the element stops being pressed.
+         */
         virtual void Release();
         virtual void Select();
         virtual void Deselect();

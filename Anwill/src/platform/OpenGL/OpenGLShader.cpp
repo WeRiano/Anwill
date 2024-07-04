@@ -75,7 +75,7 @@ namespace Anwill {
         glUniform2fv(location, 1, temp);
     }
 
-    void OpenGLShader::SetUniformVec3f(const Math::Vec3f &vec3f, const std::string &name)
+    void OpenGLShader::SetUniformVec3f(const Math::Vec3f& vec3f, const std::string& name)
     {
         float temp[3] = {
                 vec3f.X, vec3f.Y, vec3f.Z

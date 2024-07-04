@@ -4,22 +4,12 @@
 namespace Anwill {
 
     GuiTextButton::GuiTextButton(const std::shared_ptr<GuiStyling::Container>& containerStyle,
-                                 const std::string& text, unsigned int textSize, const std::function<void()>& callback,
+                                 const std::string& text, const std::function<void()>& callback,
                                  const std::shared_ptr<GuiStyling::TextButton>& style)
         : GuiElement(containerStyle),
-          GuiText(containerStyle, text, textSize, AW_GUI_MAKE_STYLE(style, GuiStyling::TextButton)),
+          GuiText(containerStyle, text, AW_GUI_MAKE_STYLE(style, GuiStyling::TextButton)),
           GuiButton(containerStyle, {GuiText::GetWidth() + GuiStyling::TextButton::textPadding * 2.0f,
                                      containerStyle->elementHeight}, callback,
-                    AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton)),
-          m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton))
-    {}
-
-    GuiTextButton::GuiTextButton(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
-                                 unsigned int textSize, unsigned int pixelWidth, const std::function<void()>& callback,
-                                 const std::shared_ptr<GuiStyling::TextButton>& style)
-        : GuiElement(containerStyle),
-          GuiText(containerStyle, text, textSize, AW_GUI_MAKE_STYLE(style, GuiStyling::TextButton)),
-          GuiButton(containerStyle, {(float) pixelWidth,containerStyle->elementHeight}, callback,
                     AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton)),
           m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton))
     {}

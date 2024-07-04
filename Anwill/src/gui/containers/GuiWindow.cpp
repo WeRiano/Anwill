@@ -11,7 +11,7 @@ namespace Anwill {
         : GuiContainer(std::make_shared<GuiStyling::Window>(), true, 0),
           m_Style(std::static_pointer_cast<GuiStyling::Window>(GuiContainer::m_Style)),
           m_Pos(position), m_Size(size), m_LastShowSize(), m_ID(id),
-          m_Title(m_Style, title, 14),
+          m_Title(m_Style, title),
           m_MinimizeButton(std::make_shared<GuiButton>(m_Style, m_Style->GetIconSize(),
                                                        [this]() {
                                                            ToggleElementsVisibility();
@@ -23,7 +23,9 @@ namespace Anwill {
                                                                m_Size = m_LastShowSize;
                                                            }
                                                        }))
-    {}
+    {
+        m_Title.m_Style->fontSize = m_Style->titleFontSize;
+    }
 
     std::shared_ptr<GuiElement> GuiWindow::GetHoverElement(Math::Vec2f& hoverElementPos,
                                                            const Math::Vec2f& mousePos) const
@@ -35,7 +37,8 @@ namespace Anwill {
             return m_MinimizeButton;
         }
         Math::Vec2f firstElementPos = m_Style->GetFirstElementPos();
-        auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos, mousePos - m_Pos - firstElementPos);
+        auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos,
+                                                          mousePos - m_Pos);
         hoverElementPos = m_Pos + firstElementPos;
         return hoverElement;
     }
@@ -139,12 +142,12 @@ namespace Anwill {
 
     void GuiWindow::ScrollUp()
     {
-        GuiContainer::Scroll(10.0f);
+        GuiContainer::Scroll(-10.0f);
     }
 
     void GuiWindow::ScrollDown()
     {
-        GuiContainer::Scroll(-10.0f);
+        GuiContainer::Scroll(10.0f);
     }
 
     Math::Vec2f GuiWindow::GetPos() const

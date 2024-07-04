@@ -3,20 +3,19 @@
 #include <memory>
 
 #include "GuiElement.h"
-#include "GuiText.h"
-#include "GuiButton.h"
+#include "GuiTextButton.h"
 #include "gui/styles/GuiStyling.h"
 #include "math/Vec2f.h"
 #include "core/Timestamp.h"
 
 namespace Anwill {
 
-    class GuiCheckbox : public GuiElement  {
+    class GuiCheckbox : public GuiButton, public GuiText  {
     public:
         std::shared_ptr<GuiStyling::Checkbox> m_Style;
 
         GuiCheckbox(const std::shared_ptr<GuiStyling::Container>& containerStyle, bool checked, const std::string& text,
-                    unsigned int textSize, const std::function<void(bool)>& callback,
+                    const std::function<void(bool)>& callback,
                     const std::shared_ptr<GuiStyling::Checkbox>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
@@ -26,8 +25,6 @@ namespace Anwill {
         unsigned int GetGridDepth() const override;
 
     protected:
-        GuiText m_Text;
-        GuiButton m_Button;
         bool m_Checked;
     };
 }

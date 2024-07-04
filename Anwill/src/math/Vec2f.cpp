@@ -37,6 +37,12 @@ namespace Anwill::Math {
         Y += other.Y;
     }
 
+    void Vec2f::operator-=(const Vec2f& other)
+    {
+        X -= other.X;
+        Y -= other.Y;
+    }
+
     void Vec2f::operator*=(const float other)
     {
         X *= other;

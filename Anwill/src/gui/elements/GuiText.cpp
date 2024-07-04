@@ -5,12 +5,12 @@
 namespace Anwill {
 
     GuiText::GuiText(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
-                     unsigned int textSize, const std::shared_ptr<GuiStyling::Text>& style)
+                     const std::shared_ptr<GuiStyling::Text>& style)
         : GuiElement(containerStyle),
           m_Style(style == nullptr ? std::make_shared<GuiStyling::Text>() : style),
           m_TextPos(1.0f, -m_HostContainerStyle->elementHeight / 2.0f + GuiStyling::Text::baselineOffset),
           m_Text(text),
-          m_TextScale(GuiStyling::Text::font->GetScaleValue(textSize)),
+          m_TextScale(GuiStyling::Text::font->GetScaleValue(m_Style->fontSize)),
           m_TextWidth((float) GuiStyling::Text::font->GetTextWidth(text) * m_TextScale)
     {}
 

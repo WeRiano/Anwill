@@ -69,7 +69,7 @@ namespace Anwill {
             static float textPadding; // X distance from button edge to text
         };
 
-        struct Checkbox : public Text, public Button {
+        struct Checkbox : public Text, public Button /* public Text, public Button */ {
         public:
             enum class CheckmarkType : short {
                 Tick = 0,
@@ -103,7 +103,7 @@ namespace Anwill {
             }
         };
 
-        struct InputText : public Button, public Text {
+        struct InputText : public Text, public Button {
         public:
 
             Math::Vec3f selectedTextHighlightColor = {0.30f, 0.38f, 1.0f};
@@ -149,7 +149,7 @@ namespace Anwill {
             {}
         };
 
-        struct Dropdown : public Container, public Text, public Button {
+        struct Dropdown : public TextButton, public Container {
         public:
 
             Dropdown()
@@ -161,6 +161,7 @@ namespace Anwill {
         struct Window : public Container {
         public:
             static float borderSize, headerSize;
+            static unsigned int titleFontSize;
             static std::shared_ptr<Shader> shader;
 
             Window()

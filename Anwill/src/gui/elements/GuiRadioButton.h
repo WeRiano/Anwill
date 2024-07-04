@@ -11,13 +11,12 @@
 
 namespace Anwill {
 
-    class GuiRadioButton : public GuiElement {
+    class GuiRadioButton : public GuiButton, public GuiText {
     public:
         std::shared_ptr<GuiStyling::RadioButton> m_Style;
 
         GuiRadioButton(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
-                       unsigned int textSize, int& reference, const int onSelectValue,
-                       const std::function<void()>& callback,
+                       int& reference, int onSelectValue, const std::function<void()>& callback,
                        const std::shared_ptr<GuiStyling::RadioButton>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
@@ -27,8 +26,6 @@ namespace Anwill {
         unsigned int GetGridDepth() const override;
 
     protected:
-        GuiText m_Text;
-        GuiButton m_Button;
         int& m_Reference;
         const int m_OnSelectValue;
     };

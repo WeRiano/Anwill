@@ -9,12 +9,13 @@
 namespace Anwill {
 
     GuiInputText::GuiInputText(const std::shared_ptr<GuiStyling::Container>& containerStyle,
-                               const std::string& startText, unsigned int textSize, float pixelWidth,
+                               const std::string& startText, float pixelWidth,
                                const std::shared_ptr<GuiStyling::InputText>& style)
         : GuiElement(containerStyle),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::InputText>() : style),
-          m_Text(containerStyle, startText, textSize, style),
-          m_Button(containerStyle, {pixelWidth, containerStyle->elementHeight}, [](){}, style),
+          GuiText(containerStyle, startText, AW_GUI_MAKE_STYLE(style, GuiStyling::InputText)),
+          GuiButton(containerStyle, {pixelWidth, containerStyle->elementHeight}, [](){},
+                    AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::InputText)),
+          m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::InputText)),
           m_RenderLeftIndex(0), m_RenderRightIndex((int) startText.length()),
           m_SelectLeftIndex(0), m_SelectRightIndex(0),
           m_TimeCountMS(0), m_CursorIndex(0), m_ShowCursor(false)
@@ -30,7 +31,7 @@ namespace Anwill {
         CalcCursorTimeInterval(delta);
 
         // Render button
-        m_Button.Render(assignedPos, assignedMaxSize, delta);
+        GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
         Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f, -m_HostContainerStyle->elementHeight * 0.5f};
         if(m_IsSelected) {
@@ -48,12 +49,12 @@ namespace Anwill {
 
     bool GuiInputText::IsHovering(const Math::Vec2f& mousePos) const
     {
-        return m_Button.IsHovering(mousePos);
+        return GuiButton::IsHovering(mousePos);
     }
 
     float GuiInputText::GetWidth() const
     {
-        return m_Button.GetWidth();
+        return GuiButton::GetWidth();
     }
 
     unsigned int GuiInputText::GetGridDepth() const
@@ -77,7 +78,7 @@ namespace Anwill {
 
     void GuiInputText::OnKeyChar(unsigned char c)
     {
-        m_Text.AddCharacter(c, m_CursorIndex);
+        GuiText::AddCharacter(c, m_CursorIndex);
         m_CursorIndex++;
         m_RenderRightIndex++;
         if(m_SelectLeftIndex < m_SelectRightIndex)
@@ -101,11 +102,11 @@ namespace Anwill {
             int leftIndex = Math::Max(m_RenderLeftIndex, m_SelectLeftIndex);
             int rightIndex = Math::Min(m_RenderRightIndex, m_SelectRightIndex);
             // Get the text box start position (at left index)
-            float selectedStartXPos = m_Text.GetWidth(0, leftIndex);
+            float selectedStartXPos = GuiText::GetWidth(0, leftIndex);
             // Adjust the start position if there is overflow from the left (render index is larger than 0)
-            selectedStartXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
+            selectedStartXPos -= GuiText::GetWidth(0, m_RenderLeftIndex);
             // Get the width of the text box
-            float selectedTextWidth = m_Text.GetWidth(leftIndex, rightIndex - leftIndex);
+            float selectedTextWidth = GuiText::GetWidth(leftIndex, rightIndex - leftIndex);
             Math::Vec2f size = {selectedTextWidth, m_HostContainerStyle->elementHeight - 2.0f};
             Math::Mat4f transform = Math::Mat4f::Scale({}, size);
             transform = Math::Mat4f::Translate(transform,
@@ -122,7 +123,7 @@ namespace Anwill {
     {
         Math::Vec2f padding = Math::Vec2f(GuiStyling::TextButton::textPadding, 0.0f);
         int renderStrLength = m_RenderRightIndex - m_RenderLeftIndex;
-        m_Text.Render(assignedPos + padding,assignedMaxSize - padding,
+        GuiText::Render(assignedPos + padding,assignedMaxSize - padding,
                       delta, m_RenderLeftIndex, renderStrLength);
     }
 
@@ -130,8 +131,8 @@ namespace Anwill {
     {
         // Render cursor
         Math::Mat4f transform = Math::Mat4f::Scale({}, {1.0f, GuiStyling::Text::cursorHeight, 0.0f});
-        float cursorXPos = m_Text.GetWidth(0, m_CursorIndex);
-        cursorXPos -= m_Text.GetWidth(0, m_RenderLeftIndex);
+        float cursorXPos = GuiText::GetWidth(0, m_CursorIndex);
+        cursorXPos -= GuiText::GetWidth(0, m_RenderLeftIndex);
         transform = Math::Mat4f::Translate(transform, assignedPos
                                                       + Math::Vec2f(cursorXPos, 0.0f) + offset);
         GuiStyling::primitiveShader->Bind();
@@ -200,7 +201,7 @@ namespace Anwill {
                 m_RenderLeftIndex--;
                 left = true;
             }
-            if (m_RenderRightIndex < m_Text.ToString().length()
+            if (m_RenderRightIndex < GuiText::ToString().length()
                 && !IsTextWiderThanBox(m_RenderLeftIndex, m_RenderRightIndex + 1))
             {
                 m_RenderRightIndex++;
@@ -212,7 +213,7 @@ namespace Anwill {
     void GuiInputText::RemoveSelectedCharacters()
     {
         /// 1. Remove selected substring from text
-        m_Text.RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
+        GuiText::RemoveCharacters(m_SelectLeftIndex, m_SelectRightIndex);
 
         /// 2. Set cursor index to
         m_CursorIndex = m_SelectLeftIndex;
@@ -224,7 +225,7 @@ namespace Anwill {
 
     void GuiInputText::RemoveCharacterAtCursor()
     {
-        if(m_Text.RemoveCharacter(m_CursorIndex - 1) == -1)
+        if(GuiText::RemoveCharacter(m_CursorIndex - 1) == -1)
             return;
         m_CursorIndex--;
         m_RenderRightIndex = Math::Max(--m_RenderRightIndex, 0);
@@ -239,18 +240,18 @@ namespace Anwill {
     void GuiInputText::SelectAll()
     {
         m_SelectLeftIndex = 0;
-        m_SelectRightIndex = (int) m_Text.ToString().length();
+        m_SelectRightIndex = (int) GuiText::ToString().length();
     }
 
     void GuiInputText::MoveRight()
     {
         // Move the cursor to the right
-        m_CursorIndex = Math::Min(++m_CursorIndex, (int) m_Text.ToString().length());
+        m_CursorIndex = Math::Min(++m_CursorIndex, (int) GuiText::ToString().length());
         if(Input::IsKeyPressed(KeyCode::LeftShift) || Input::IsKeyPressed(KeyCode::RightShift)) {
             // If we are selecting ...
             if(m_CursorIndex > m_SelectRightIndex) {
                 // ... expand to the right
-                m_SelectRightIndex = Math::Min(++m_SelectRightIndex, (int) m_Text.ToString().length());
+                m_SelectRightIndex = Math::Min(++m_SelectRightIndex, (int) GuiText::ToString().length());
             } else if(m_CursorIndex < m_SelectRightIndex) {
                 // ... or collapse to the right
                 m_SelectLeftIndex++;
@@ -260,7 +261,7 @@ namespace Anwill {
             // Not selecting text, so we reset any previous selection
             ResetSelect();
         }
-        if(m_CursorIndex > m_RenderRightIndex && m_RenderRightIndex < m_Text.ToString().length())
+        if(m_CursorIndex > m_RenderRightIndex && m_RenderRightIndex < GuiText::ToString().length())
         {
             // Horizontal scrolling of text in case of overflow
             m_RenderRightIndex++;
@@ -305,21 +306,21 @@ namespace Anwill {
     bool GuiInputText::IsTextWiderThanBox() const
     {
         int size = m_RenderRightIndex - m_RenderLeftIndex;
-        return m_Text.GetWidth(m_RenderLeftIndex, size) >
-               (m_Button.GetWidth() - GuiStyling::TextButton::textPadding * 2.0f);
+        return GuiText::GetWidth(m_RenderLeftIndex, size) >
+               (GuiButton::GetWidth() - GuiStyling::TextButton::textPadding * 2.0f);
     }
 
     bool GuiInputText::IsTextWiderThanBox(int leftIndex, int rightIndex) const
     {
-        if(m_Text.ToString().empty())
+        if(GuiText::ToString().empty())
         {
             return false;
         }
         leftIndex = Math::Max(leftIndex, 0);
-        rightIndex = Math::Min(rightIndex, (int) m_Text.ToString().length());
+        rightIndex = Math::Min(rightIndex, (int) GuiText::ToString().length());
         int size = rightIndex - leftIndex;
-        return m_Text.GetWidth(leftIndex, size) >
-               (m_Button.GetWidth() - GuiStyling::TextButton::textPadding * 2.0f);
+        return GuiText::GetWidth(leftIndex, size) >
+               (GuiButton::GetWidth() - GuiStyling::TextButton::textPadding * 2.0f);
     }
 
     void GuiInputText::CalcCursorTimeInterval(const Timestamp& delta)
@@ -338,7 +339,7 @@ namespace Anwill {
         AW_INFO("Cursor: {0}", m_CursorIndex);
         AW_INFO("Render: {0}, {1}", m_RenderLeftIndex, m_RenderRightIndex);
         AW_INFO("Select: {0}, {1}", m_SelectLeftIndex, m_SelectRightIndex);
-        AW_INFO("Text size: {0}", m_Text.ToString().length());
+        AW_INFO("Text size: {0}", GuiText::ToString().length());
         AW_INFO("-------------------------");
     }
 }

@@ -5,48 +5,51 @@
 namespace Anwill {
 
     GuiCheckbox::GuiCheckbox(const std::shared_ptr<GuiStyling::Container>& containerStyle, bool checked,
-                             const std::string& text, unsigned int textSize, const std::function<void(bool)>& callback,
+                             const std::string& text, const std::function<void(bool)>& callback,
                              const std::shared_ptr<GuiStyling::Checkbox>& style)
         : GuiElement(containerStyle),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::Checkbox>() : style),
-          m_Text(containerStyle, text, textSize, style),
-          m_Button(containerStyle, {containerStyle->elementHeight, containerStyle->elementHeight},
-                   [this, callback](){
-                       m_Checked = !m_Checked;
-                       callback(m_Checked);
-                   }, style),
+          GuiButton(containerStyle, {containerStyle->elementHeight, containerStyle->elementHeight},
+                    [this, callback]() {
+              m_Checked = !m_Checked;
+              callback(m_Checked);
+          }, AW_GUI_MAKE_STYLE(style, GuiStyling::Checkbox)),
+          GuiText(containerStyle, text, AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::Checkbox)),
+          m_Style(AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::Checkbox)),
           m_Checked(checked)
-    {}
+    {
+        m_TextPos.X = GuiButton::GetWidth() + GuiStyling::Checkbox::textMargin;
+    }
 
     void GuiCheckbox::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                              const Timestamp& delta)
     {
         AW_PROFILE_FUNC();
         // Render text
-        Math::Vec2f textPosDelta = {m_Button.GetWidth() + GuiStyling::Checkbox::textMargin, 0.0f};
-        m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta,
+        //Math::Vec2f textPosDelta = {GuiButton::GetWidth() + GuiStyling::Checkbox::textMargin, 0.0f};
+        GuiText::Render(assignedPos, assignedMaxSize,
                       delta);
 
         // Render button
-        m_Button.Render(assignedPos, assignedMaxSize, delta);
+        GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
         // Render checkmark if it checked
         if(!m_Checked) { return; }
-        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 1.0f};
+        Math::Vec2f checkmarkMargin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin};
         GuiIcon::RenderIconFunctionType renderFunc = GuiIcon::renderIconFunctions[(size_t) m_Style->checkmarkType];
-        renderFunc(assignedPos + Math::Vec2f(margin.X, -margin.Y),
-                   m_Button.GetSize() - margin * 2.0f,
+        renderFunc(assignedPos + Math::Vec2f(checkmarkMargin.X, -checkmarkMargin.Y),
+                   GuiButton::GetSize() - checkmarkMargin * 2.0f,
                    m_Style->checkmarkColor);
     }
 
     bool GuiCheckbox::IsHovering(const Math::Vec2f& mousePos) const
     {
-        return m_Button.IsHovering(mousePos);
+        // TODO: Should hovering the text count as hovering the checkbox?
+        return GuiButton::IsHovering(mousePos);
     }
 
     float GuiCheckbox::GetWidth() const
     {
-        return m_Button.GetWidth() + GuiStyling::Checkbox::textMargin + m_Text.GetWidth();
+        return GuiText::GetWidth();
     }
 
     unsigned int GuiCheckbox::GetGridDepth() const

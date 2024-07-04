@@ -3,8 +3,7 @@
 #include <memory>
 
 #include "GuiElement.h"
-#include "GuiText.h"
-#include "GuiButton.h"
+#include "GuiTextButton.h"
 #include "gui/containers/GuiContainer.h"
 #include "gui/styles/GuiStyling.h"
 #include "gfx/Texture.h"
@@ -13,25 +12,15 @@
 
 namespace Anwill {
 
-    class GuiDropdown : public GuiElement, public GuiContainer {
+    class GuiDropdown : public GuiTextButton, public GuiContainer {
     public:
         std::shared_ptr<GuiStyling::Dropdown> m_Style;
 
         GuiDropdown(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
-                    unsigned int textSize, const std::shared_ptr<GuiStyling::Dropdown>& style = nullptr);
+                    const std::shared_ptr<GuiStyling::Dropdown>& style = nullptr);
 
-        std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
-                                                    const Math::Vec2f& mousePos) const override;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
-        bool IsHovering(const Math::Vec2f& mousePos) const override;
-        float GetWidth() const override;
         unsigned int GetGridDepth() const override;
-        void OnPress(const Math::Vec2f& mousePos) override;
-
-    protected:
-        //GuiContainer m_Container;
-        GuiText m_Text;
-        GuiButton m_Button;
     };
 }

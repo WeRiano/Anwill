@@ -5,51 +5,52 @@
 namespace Anwill {
 
     GuiRadioButton::GuiRadioButton(const std::shared_ptr<GuiStyling::Container>& containerStyle,
-                                   const std::string& text, unsigned int textSize, int& reference,
-                                   const int onSelectValue, const std::function<void()>& callback,
+                                   const std::string& text, int& reference, const int onSelectValue,
+                                   const std::function<void()>& callback,
                                    const std::shared_ptr<GuiStyling::RadioButton>& style)
         : GuiElement(containerStyle),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::RadioButton>() : style),
-          m_Text(containerStyle, text, textSize),
-          m_Button(containerStyle, {containerStyle->elementHeight, containerStyle->elementHeight},
-                   [this, callback](){
-                       if(m_Reference != m_OnSelectValue) {
-                           callback();
-                           m_Reference = m_OnSelectValue;
-                       }
-                   }),
+          GuiButton(containerStyle, {containerStyle->elementHeight, containerStyle->elementHeight},
+                    [this, callback](){
+                        if(m_Reference != m_OnSelectValue) {
+                            callback();
+                            m_Reference = m_OnSelectValue;
+                        }
+                    }, AW_GUI_MAKE_STYLE(style, GuiStyling::RadioButton)),
+          GuiText(containerStyle, text, AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::RadioButton)),
+          m_Style(AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::RadioButton)),
           m_Reference(reference),
           m_OnSelectValue(onSelectValue)
     {
-        m_Button.m_Style->buttonShape = GuiStyling::Button::Shape::Ellipse;
+        GuiButton::m_Style->buttonShape = GuiStyling::Button::Shape::Ellipse;
+        m_TextPos.X = GuiButton::GetWidth() + GuiStyling::Checkbox::textMargin;
     }
 
     void GuiRadioButton::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                                 const Timestamp& delta)
     {
         AW_PROFILE_FUNC();
-        Math::Vec2f textPosDelta = {m_Button.GetWidth() + GuiStyling::Checkbox::textMargin, 0.0f};
-        m_Text.Render(assignedPos + textPosDelta, assignedMaxSize - textPosDelta, delta);
+        GuiText::Render(assignedPos, assignedMaxSize, delta);
 
         // Render button
-        m_Button.Render(assignedPos, assignedMaxSize, delta);
+        GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
         // Render checkmark if radiobutton is selected
         if(m_Reference != m_OnSelectValue) { return; }
-        Math::Vec2f margin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 1.0f};
-        GuiIcon::RenderEllipse(assignedPos + Math::Vec2f(margin.X, -margin.Y),
-                               m_Button.GetSize() - margin * 2.0f,
+        Math::Vec2f checkmarkMargin = {GuiStyling::Checkbox::iconMargin, GuiStyling::Checkbox::iconMargin * 1.0f};
+        GuiIcon::RenderEllipse(assignedPos + Math::Vec2f(checkmarkMargin.X, -checkmarkMargin.Y),
+                               GuiButton::GetSize() - checkmarkMargin * 2.0f,
                                m_Style->checkmarkColor);
     }
 
     bool GuiRadioButton::IsHovering(const Math::Vec2f& mousePos) const
     {
-        return m_Button.IsHovering(mousePos);
+        // TODO: Should hovering the text count as hovering the radio button?
+        return GuiButton::IsHovering(mousePos);
     }
 
     float GuiRadioButton::GetWidth() const
     {
-        return m_Button.GetWidth() + GuiStyling::Checkbox::textMargin + m_Text.GetWidth();
+        return GuiText::GetWidth();
     }
 
     unsigned int GuiRadioButton::GetGridDepth() const

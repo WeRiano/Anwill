@@ -11,13 +11,12 @@
 
 namespace Anwill {
 
-    class GuiInputText : public GuiElement {
+    class GuiInputText : public GuiText, public GuiButton {
     public:
         std::shared_ptr<GuiStyling::InputText> m_Style;
 
         GuiInputText(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& startText,
-                     unsigned int textSize, float pixelWidth,
-                     const std::shared_ptr<GuiStyling::InputText>& style = nullptr);
+                     float pixelWidth, const std::shared_ptr<GuiStyling::InputText>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
@@ -50,8 +49,8 @@ namespace Anwill {
         void DebugIndices() const;
 
         /// Underlying text and button
-        GuiText m_Text;
-        GuiButton m_Button;
+        //GuiText m_Text;
+        //GuiButton m_Button;
         /// Indicates what part of the string to render
         /// The left index is equal to the number of characters that are hidden due to overflow
         int m_RenderLeftIndex, m_RenderRightIndex;

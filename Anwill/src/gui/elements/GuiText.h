@@ -12,7 +12,7 @@ namespace Anwill {
         std::shared_ptr<GuiStyling::Text> m_Style;
 
         GuiText(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
-                unsigned int textSize, const std::shared_ptr<GuiStyling::Text>& style = nullptr);
+                const std::shared_ptr<GuiStyling::Text>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;

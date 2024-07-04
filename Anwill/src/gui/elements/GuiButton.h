@@ -10,6 +10,8 @@ namespace Anwill {
     public:
         std::shared_ptr<GuiStyling::Button> m_Style;
 
+        // TODO: Size parameter should be swapped out to width only.
+        //  Hardcode height = containerStyle->elementHeight.
         GuiButton(const std::shared_ptr<GuiStyling::Container>& containerStyle, const Math::Vec2f& size,
                   const std::function<void()>& callback, const std::shared_ptr<GuiStyling::Button>& style = nullptr);
 

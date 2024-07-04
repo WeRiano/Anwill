@@ -16,23 +16,23 @@ namespace Anwill {
     std::shared_ptr<GuiElement> GuiContainer::GetHoverElement(Math::Vec2f& hoverElementPos,
                                                               const Math::Vec2f& mousePos) const
     {
+        auto adjustedMousePos = mousePos - m_Style->GetFirstElementPos();
         if (!m_ShowElements) { return nullptr; }
         for (const auto& containerElement : m_ContainerElements)
         {
-            if (containerElement.element->IsHovering(mousePos - containerElement.position))
+            if (containerElement.element->IsHovering( adjustedMousePos - containerElement.position))
             {
                 hoverElementPos = containerElement.position;
                 return containerElement.element;
             }
-            if (dynamic_cast<GuiContainer *>(containerElement.element.get()) != nullptr)
+            if (dynamic_cast<GuiContainer*>(containerElement.element.get()) != nullptr)
             {
                 // If element is a container we need to check with those elements
                 auto container =
                     std::dynamic_pointer_cast<GuiContainer>(containerElement.element);
                 Math::Vec2f elementPosInsideContainer = {};
                 auto maybeResult = container->GetHoverElement(
-                    elementPosInsideContainer,
-                    mousePos - containerElement.position);
+                    elementPosInsideContainer, adjustedMousePos - containerElement.position);
                 if (maybeResult != nullptr)
                 {
                     // If we found an element we return it, otherwise we continue
@@ -75,7 +75,6 @@ namespace Anwill {
                 m_ContainerElements[i].isHidden = true;
             } else
             {
-
                 m_ContainerElements[i].isHidden = false;
                 containerElement.element->Render(assignedPos + elementPos,
                                                  GetNextElementSize(elementPos, assignedMaxSize),
@@ -167,7 +166,8 @@ namespace Anwill {
         {
             return {
                 newRowXPos,
-                elementPosition.Y - ((float) elementGridDepth * m_Style->elementHeight)
+                elementPosition.Y - ((float) elementGridDepth *
+                                        (m_Style->elementHeight + m_Style->elementVerticalMargin))
             };
         } else
         {

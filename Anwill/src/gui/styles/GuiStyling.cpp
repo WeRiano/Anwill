@@ -8,7 +8,8 @@ namespace Anwill {
     GuiStyling::Window::borderSize, GuiStyling::Tooltip::borderSize, GuiStyling::Tooltip::offset,
     GuiStyling::Checkbox::textMargin, GuiStyling::Text::cursorHeight, GuiStyling::Slider::markerWidth;
 
-    unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS;
+    unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS,
+    GuiStyling::Window::titleFontSize;
 
     Math::Vec2f GuiStyling::Tooltip::windowMargin;
 
@@ -31,6 +32,7 @@ namespace Anwill {
         // --- Window ---
         Window::borderSize = 8.0f;
         Window::headerSize = 30.0f;
+        Window::titleFontSize = 14;
         ShaderMacros::SetMacro("AW_GUI_WINDOW_BORDER_SIZE", Window::borderSize);
         ShaderMacros::SetMacro("AW_GUI_WINDOW_HEADER_SIZE", Window::headerSize);
 

@@ -18,6 +18,7 @@ namespace Anwill::Math {
         Vec2f operator+(const Vec2f& other) const;
         Vec2f operator-(const Vec2f& other) const;
         void operator+=(const Vec2f& other);
+        void operator-=(const Vec2f& other);
         void operator*=(float other);
         /**
          * Greater than and less than (or equals) operators return true if and only if the condition
