@@ -35,9 +35,8 @@ namespace Anwill {
                                       m_Style->iconColor);
         }
         // Render dropdown elements
-        GuiContainer::Render(assignedPos + Math::Vec2f(m_Style->elementIndent,
-                                                       -m_Style->GetRowHeight()),
-                           assignedMaxSize, delta);
+        GuiContainer::Render(assignedPos + m_Style->GetFirstElementPos(),
+                             assignedMaxSize - m_Style->GetFirstElementPos().NegateY(), delta);
     }
 
     unsigned int GuiDropdown::GetGridDepth() const

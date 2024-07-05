@@ -19,23 +19,32 @@ void GuiTest::InitDemoWindow()
     auto edd = Anwill::Gui::Dropdown("Elements");
 
     // --- Text ---
-    Anwill::Gui::Text("This is some demo text.", edd);
-    Anwill::Gui::Text("This is some additional demo text on the same row.", edd, false);
+    /*
+    Anwill::Gui::Text("This is some demo text.");
+    Anwill::Gui::Text("This is some additional demo text on the same row.", false);
+    */
 
     // --- Button ---
-    auto b1 = Anwill::Gui::Button("This is a button. Click me!", edd);
+    auto b1 = Anwill::Gui::Button("This is a button. Click me!", [](){});
     unsigned int* b1Count = new unsigned int;
     *b1Count = 0;
     b1->SetCallback([b1, b1Count](){
         (*b1Count)++;
-        b1->SetText("You have clicked the button " + std::to_string(*b1Count) + " times");
+        b1->SetText("You have clicked the button " + std::to_string(*b1Count) + " times!");
     });
+
+    // --- Checkbox ---
+    Anwill::Gui::Checkbox(true, "<- This is a checkbox. Click me!", [](bool){});
+    Anwill::Gui::Checkbox(true, "<- This checkbox has a different checkmark.", [](bool){});
 
     // --- Slider ---
     float* s1Val = new float;
     *s1Val = 10.0f;
-    Anwill::Gui::Slider(0.0f, 42.0f, *s1Val, edd);
+    Anwill::Gui::Slider(0.0f, 42.0f, *s1Val, true, edd);
     int* s2Val = new int;
     *s2Val = 50;
-    Anwill::Gui::Slider(-100, 100, *s2Val, edd);
+    Anwill::Gui::Slider(-100, 100, *s2Val, true, edd);
+
+    // --- Extra debug stuff --- // TODO: Remove
+    Anwill::Gui::Button("Test button that is somewhat wide", [](){}, true, demoWindow);
 }

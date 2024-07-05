@@ -128,7 +128,7 @@ namespace Anwill {
             Math::Vec3f iconColor;
 
             inline Math::Vec2f GetFirstElementPos() const {
-                return {elementIndent, -(elementIndent + elementHeight)};
+                return {elementIndent, -GetRowHeight()};
             }
 
             inline float GetRowHeight() const {

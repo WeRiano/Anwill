@@ -10,8 +10,7 @@ namespace Anwill {
     public:
         std::shared_ptr<GuiStyling::Window> m_Style;
 
-        GuiWindow(const std::string& title, GuiWindowID id,
-                  const Math::Vec2f& position, const Math::Vec2f& size);
+        GuiWindow(const std::string& title, const Math::Vec2f& position, const Math::Vec2f& size);
 
         std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                     const Math::Vec2f& mousePos) const override;
@@ -25,13 +24,13 @@ namespace Anwill {
         void ScrollUp();
         void ScrollDown();
         Math::Vec2f GetPos() const;
-        GuiWindowID GetID() const;
 
     private:
-        //GuiContainer m_Container;
         Math::Vec2f m_Pos, m_Size, m_LastShowSize;
-        GuiWindowID m_ID;
         GuiText m_Title;
         std::shared_ptr<GuiButton> m_MinimizeButton;
+
+        void RenderBackground(bool isSelected);
+        void RenderTitle(const Timestamp& delta);
     };
 }

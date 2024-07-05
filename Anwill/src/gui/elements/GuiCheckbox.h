@@ -14,7 +14,9 @@ namespace Anwill {
     public:
         std::shared_ptr<GuiStyling::Checkbox> m_Style;
 
-        GuiCheckbox(const std::shared_ptr<GuiStyling::Container>& containerStyle, bool checked, const std::string& text,
+        GuiCheckbox(const std::shared_ptr<GuiStyling::Container>& containerStyle,
+                    bool checked,
+                    const std::string& text,
                     const std::function<void(bool)>& callback,
                     const std::shared_ptr<GuiStyling::Checkbox>& style = nullptr);
 

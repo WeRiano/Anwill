@@ -6,21 +6,19 @@
 
 namespace Anwill {
 
-    GuiWindow::GuiWindow(const std::string& title, GuiWindowID id, const Math::Vec2f& position,
-                         const Math::Vec2f& size)
+    GuiWindow::GuiWindow(const std::string& title, const Math::Vec2f& position, const Math::Vec2f& size)
         : GuiContainer(std::make_shared<GuiStyling::Window>(), true, 0),
           m_Style(std::static_pointer_cast<GuiStyling::Window>(GuiContainer::m_Style)),
-          m_Pos(position), m_Size(size), m_LastShowSize(), m_ID(id),
+          m_Pos(position), m_Size(size), m_LastShowSize(),
           m_Title(m_Style, title),
           m_MinimizeButton(std::make_shared<GuiButton>(m_Style, m_Style->GetIconSize(),
                                                        [this]() {
                                                            ToggleElementsVisibility();
                                                            if(IsShowingElements()) {
-                                                               m_LastShowSize = m_Size;
-                                                               m_Size = {m_Size.X,
-                                                                         GuiStyling::Window::headerSize};
-                                                           } else {
                                                                m_Size = m_LastShowSize;
+                                                           } else {
+                                                               m_LastShowSize = m_Size;
+                                                               m_Size.Y = m_Style->headerSize;
                                                            }
                                                        }))
     {
@@ -45,28 +43,19 @@ namespace Anwill {
 
     void GuiWindow::Render(bool isSelected, const Timestamp& delta)
     {
-        // TODO: Cleanup, big function
         Renderer::PushScissor({m_Pos.X, m_Pos.Y - m_Size.Y}, m_Size);
         // Render window
-        GuiStyling::Window::shader->Bind();
-        GuiStyling::Window::shader->SetUniform1i(isSelected, "u_Selected");
-        auto transform = Math::Mat4f::Translate(Math::Mat4f::Identity(),
-                                                m_Pos + Math::Vec2f(m_Size.X / 2.0f, -m_Size.Y / 2.0f));
-        transform = Math::Mat4f::Scale(transform, m_Size);
-        Renderer2D::SubmitMesh(GuiStyling::Window::shader, GuiStyling::rectMesh, transform);
-
+        RenderBackground(isSelected);
         // Render title
-        auto style = std::dynamic_pointer_cast<GuiStyling::Window>(m_Style);
-        m_Title.Render(m_Pos + std::dynamic_pointer_cast<GuiStyling::Window>(m_Style)->GetTitlePos(),
-                       m_Size - m_Style->GetFirstElementPos() - Math::Vec2f(m_Style->edgeCutoffPadding,
-                                                                            m_Style->edgeCutoffPadding),
-                       delta);
+        RenderTitle(delta);
         // Render minimize button
         m_MinimizeButton->Render(m_Pos, m_Size, delta);
+
         if(IsShowingElements()) {
+            // Render icon
             GuiIcon::RenderDownArrow(m_Pos, m_Style->GetIconSize() * 0.5f, m_Style->iconColor);
 
-            // Render elements inside window
+            // Render contained elements
             GuiContainer::Render(m_Pos + m_Style->GetFirstElementPos(),
                                  m_Size - m_Style->GetFirstElementPos().NegateY()
                                  - Math::Vec2f(m_Style->edgeCutoffPadding, m_Style->edgeCutoffPadding),
@@ -78,6 +67,7 @@ namespace Anwill {
             GuiContainer::RenderVerticalScrollbar(scrollBarPos, m_Size.Y - GuiStyling::Window::headerSize,
                                                   delta);
         } else {
+            // Render icon
             GuiIcon::RenderRightArrow(m_Pos,
                                       m_Style->GetIconSize() * 0.5f,
                                       m_Style->iconColor);
@@ -155,8 +145,22 @@ namespace Anwill {
         return m_Pos;
     }
 
-    GuiWindowID GuiWindow::GetID() const
+    void GuiWindow::RenderBackground(bool isSelected)
     {
-        return m_ID;
+        GuiStyling::Window::shader->Bind();
+        GuiStyling::Window::shader->SetUniform1i(isSelected, "u_Selected");
+        auto transform = Math::Mat4f::Translate(Math::Mat4f::Identity(),
+                                                m_Pos + Math::Vec2f(m_Size.X / 2.0f, -m_Size.Y / 2.0f));
+        transform = Math::Mat4f::Scale(transform, m_Size);
+        Renderer2D::SubmitMesh(GuiStyling::Window::shader, GuiStyling::rectMesh, transform);
+    }
+
+    void GuiWindow::RenderTitle(const Timestamp& delta)
+    {
+        auto style = std::dynamic_pointer_cast<GuiStyling::Window>(m_Style);
+        m_Title.Render(m_Pos + std::dynamic_pointer_cast<GuiStyling::Window>(m_Style)->GetTitlePos(),
+                       m_Size - m_Style->GetFirstElementPos() - Math::Vec2f(m_Style->edgeCutoffPadding,
+                                                                            m_Style->edgeCutoffPadding),
+                       delta);
     }
 }

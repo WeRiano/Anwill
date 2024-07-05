@@ -31,91 +31,67 @@
 
 #undef CreateWindow // MICROSOFT WOOOOOOOOOOOOOOO
 
+#define AW_GUI_MAX_NUM_WINDOWS 5
+
 namespace Anwill {
 
     class Gui
     {
     public:
+        // Client functions (API)
+        static std::shared_ptr<GuiWindow> CreateWindow(const std::string& title);
+
+        static std::shared_ptr<GuiDropdown> Dropdown(const std::string& title,
+                                                     const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiText> Text(const std::string& text,
+                                             bool onNewRow = true,
+                                             const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiTextButton> Button(const std::string& text,
+                                                     const std::function<void()>& callback,
+                                                     bool onNewRow = true,
+                                                     const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially, const std::string& text,
+                                                     const std::function<void(bool)>& callback,
+                                                     bool onNewRow = true,
+                                                     const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiSlider<float>> Slider(float min,
+                                                 float max,
+                                                 float& sliderValue,
+                                                 bool onNewRow = true,
+                                                 const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiSlider<int>> Slider(int min,
+                                                      int max,
+                                                      int& sliderValue,
+                                                      bool onNewRow = true,
+                                                      const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,
+                                                           int onSelectValue,
+                                                           const std::function<void()>& callback,
+                                                           bool onNewRow = true,
+                                                   const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiInputText> TextInput(const std::string& startText,
+                                                       float pixelWidth,
+                                                       bool onNewRow = true,
+                                                   const std::shared_ptr<GuiContainer>& container = nullptr);
+
+        static std::shared_ptr<GuiImage> Image(const std::string& filePath, unsigned int maxRows,
+                                               const std::shared_ptr<GuiContainer>& container = nullptr);
+
         static void Init(const WindowSettings& ws);
         static void Render(const Timestamp& delta);
         static void Update();
 
-        // Client functions (API)
-        static GuiWindowID CreateWindow(const std::string& title);
-
-        static std::shared_ptr<GuiText> Text(const std::string& text,
-                                             bool onNewRow = true,
-                                             GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiText> Text(const std::string& text,
-                                             const std::shared_ptr<GuiContainer>& container,
-                                             bool onNewRow = true);
-
-        static std::shared_ptr<GuiTextButton> Button(const std::string& text,
-                                                     const std::function<void n()>& callback = [](){},
-                                                     bool onNewRow = true, GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiTextButton> Button(const std::string& text,
-                                                     const std::shared_ptr<GuiContainer>& container,
-                                                     const std::function<void()>& callback = [](){},
-                                                     bool onNewRow = true);
-
-        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially, const std::string& text,
-                                                     const std::function<void(bool)>& callback,
-                                                     bool onNewRow = true, GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially, const std::string& text,
-                                                     const std::shared_ptr<GuiContainer>& container,
-                                                     const std::function<void(bool)>& callback,
-                                                     bool onNewRow = true);
-
-        static std::shared_ptr<GuiSlider<float>> Slider(float min,
-                                                 float max,
-                                                 float& sliderValue,
-                                                 GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiSlider<float>> Slider(float min,
-                                                 float max,
-                                                 float& sliderValue,
-                                                 const std::shared_ptr<GuiContainer>& container);
-        static std::shared_ptr<GuiSlider<int>> Slider(int min,
-                                                 int max,
-                                                 int& sliderValue,
-                                                 GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiSlider<int>> Slider(int min,
-                                                 int max,
-                                                 int& sliderValue,
-                                                 const std::shared_ptr<GuiContainer>& container);
-
-        static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,
-                                                           int onSelectValue,
-                                                           const std::function<void()>& callback = [](){},
-                                                           bool onNewRow = true,
-                                                           GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,
-                                                           int onSelectValue,
-                                                           const std::shared_ptr<GuiContainer>& container,
-                                                           bool onNewRow = true,
-                                                           const std::function<void()>& callback = [](){});
-
-        static std::shared_ptr<GuiInputText> TextInput(const std::string& defaultText,
-                                                         float pixelWidth,
-                                                         bool onNewRow = true,
-                                                         GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiInputText> TextInput(const std::string& defaultText,
-                                                         float pixelWidth,
-                                                         const std::shared_ptr<GuiContainer>& container,
-                                                         bool onNewRow = true);
-
-        static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text, GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiDropdown> Dropdown(const std::string& text,
-                                                     const std::shared_ptr<GuiContainer>& container);
-
-        static std::shared_ptr<GuiImage> Image(const std::string& filePath, unsigned int maxRows = 0,
-                                               GuiWindowID windowID = 0);
-        static std::shared_ptr<GuiImage> Image(const std::string& filePath, unsigned int maxRows,
-                                               const std::shared_ptr<GuiContainer>& container);
-
     private:
         static std::unique_ptr<OrthographicCamera> s_Camera;
         static std::shared_ptr<GuiContainer> s_LastContainer;
-        static GuiWindowID s_LastWindowID;
+        //static GuiWindowID s_LastWindowID;
         static std::vector<std::shared_ptr<GuiWindow>> s_Windows;
         // API remembers last used container
 
@@ -156,15 +132,19 @@ namespace Anwill {
         static void SetPressState();
         static void SetSelectState();
         static void ResetPressState();
-        static int GetWindowIndex(GuiWindowID id);
+        //static int GetWindowIndex(GuiWindowID id);
 
         template <class E, typename... Args>
-        static std::shared_ptr<E> AddElementToWindow(GuiWindowID windowID, Args&&... args) {
-            int windowIndex = GetWindowIndex(windowID);
-            if(windowIndex == -1) {
+        static std::shared_ptr<E> AddElementToContainer(const std::shared_ptr<GuiContainer>& container,
+                                                        Args&&... args)
+        {
+            if(container == nullptr && s_LastContainer == nullptr)
+            {
+                AW_ERROR("Create a window before adding elements.");
                 return nullptr;
             }
-            return s_Windows[windowIndex]->AddElement<E>(std::forward<Args>(args)...);
+            s_LastContainer = (container != nullptr) ? container : s_LastContainer;
+            return s_LastContainer->AddElement<E>(std::forward<Args>(args)...);
         }
     };
 }
