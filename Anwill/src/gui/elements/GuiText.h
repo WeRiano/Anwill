@@ -16,15 +16,23 @@ namespace Anwill {
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;
-        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                    const Timestamp& delta, int startIndex, int endIndex);
         bool IsHovering(const Math::Vec2f& mousePos) const override;
         float GetWidth() const override;
         float GetWidth(unsigned char c) const;
         float GetWidth(unsigned int startIndex, unsigned int size) const;
         unsigned int GetGridDepth() const override;
 
-        void Set(const std::string& text);
+        void SetText(const std::string& text);
+        std::string ToString() const;
+
+    protected:
+        // TODO: Is this necessary? Should it be owned by derived types instead?
+        Math::Vec2f m_TextPos;
+        std::string m_Text;
+        float m_TextScale, m_TextWidth; // Calculate TextScale each iteration? Cheap.
+
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& delta, int startIndex, int endIndex);
         void AddCharacter(unsigned char c, unsigned int index);
         void PrependCharacter(unsigned char c);
         void AppendCharacter(unsigned char c);
@@ -40,12 +48,5 @@ namespace Anwill {
          * @return The removed char.
          */
         unsigned char PopCharacter();
-        std::string ToString() const;
-
-    protected:
-        // TODO: Is this necessary? Should it be owned by derived types instead?
-        Math::Vec2f m_TextPos;
-        std::string m_Text;
-        float m_TextScale, m_TextWidth; // Calculate TextScale each iteration? Cheap.
     };
 }

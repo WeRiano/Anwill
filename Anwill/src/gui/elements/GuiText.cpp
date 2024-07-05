@@ -20,21 +20,6 @@ namespace Anwill {
         Render(assignedPos, assignedMaxSize, delta, 0, (int) m_Text.length());
     }
 
-    void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
-                         const Timestamp& delta, int startIndex, int length)
-    {
-        AW_PROFILE_FUNC();
-        auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
-                                                {m_TextScale, m_TextScale, 1.0f});
-        thisTransform = Math::Mat4f::Translate(thisTransform, m_TextPos + assignedPos);
-
-        // Render
-        std::string renderStr = m_Text.substr(startIndex, length);
-        GuiStyling::Text::shader->Bind();
-        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, renderStr,
-                               thisTransform);
-    }
-
     bool GuiText::IsHovering(const Math::Vec2f& mousePos) const {
         // TODO
         return false;
@@ -61,9 +46,29 @@ namespace Anwill {
         return 1;
     }
 
-    void GuiText::Set(const std::string& text) {
+    void GuiText::SetText(const std::string& text) {
         m_Text = text;
         m_TextWidth = (float) GuiStyling::Text::font->GetTextWidth(text) * m_TextScale;
+    }
+
+    std::string GuiText::ToString() const
+    {
+        return m_Text;
+    }
+
+    void GuiText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                         const Timestamp& delta, int startIndex, int length)
+    {
+        AW_PROFILE_FUNC();
+        auto thisTransform = Math::Mat4f::Scale(Math::Mat4f::Identity(),
+                                                {m_TextScale, m_TextScale, 1.0f});
+        thisTransform = Math::Mat4f::Translate(thisTransform, m_TextPos + assignedPos);
+
+        // Render
+        std::string renderStr = m_Text.substr(startIndex, length);
+        GuiStyling::Text::shader->Bind();
+        Renderer2D::SubmitText(GuiStyling::Text::shader, *GuiStyling::Text::font, renderStr,
+                               thisTransform);
     }
 
     void GuiText::AddCharacter(unsigned char c, unsigned int index)
@@ -113,6 +118,7 @@ namespace Anwill {
             m_TextWidth -= GuiStyling::Text::font->GetGlyphWidth(result) * m_TextScale;
             return result;
         }
+        return 0;
     }
 
     unsigned char GuiText::PopCharacter()
@@ -125,10 +131,5 @@ namespace Anwill {
             return result;
         }
         return 0;
-    }
-
-    std::string GuiText::ToString() const
-    {
-        return m_Text;
     }
 }

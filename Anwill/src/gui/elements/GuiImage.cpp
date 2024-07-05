@@ -8,15 +8,18 @@ namespace Anwill {
     GuiImage::GuiImage(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& fileName,
                        unsigned int maxRows, const std::shared_ptr<GuiStyling::Image>& style)
         : GuiElement(containerStyle),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::Image>() : style),
+          m_Style(AW_GUI_MAKE_STYLE(style, GuiStyling::Image)),
           m_Texture(Texture::Create(fileName))
     {
-        if(m_Texture->GetHeight() > maxRows * containerStyle->GetRowHeight()) {
-            m_ScaleFactor = (maxRows) * containerStyle->GetRowHeight() / m_Texture->GetHeight();
+        float totVerticalSpace = maxRows * containerStyle->GetRowHeight() - containerStyle->elementVerticalMargin;
+        if(m_Texture->GetHeight() > totVerticalSpace) {
+            m_ScaleFactor = totVerticalSpace / m_Texture->GetHeight();
+            m_GridDepth = maxRows;
         } else {
             m_ScaleFactor = 1.0f;
+            m_GridDepth = std::ceil((totVerticalSpace + containerStyle->elementVerticalMargin) /
+                    containerStyle->GetRowHeight());
         }
-        m_GridDepth = std::ceil(m_Texture->GetHeight() * m_ScaleFactor / containerStyle->GetRowHeight());
     }
 
     void GuiImage::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,

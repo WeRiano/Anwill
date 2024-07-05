@@ -9,7 +9,7 @@ namespace Anwill {
                          const Math::Vec2f& size, const std::function<void()>& callback,
                          const std::shared_ptr<GuiStyling::Button>& style)
         : GuiElement(containerStyle),
-          m_Style(style == nullptr ? std::make_shared<GuiStyling::Button>() : style),
+          m_Style(AW_GUI_MAKE_STYLE(style, GuiStyling::Button)),
           m_ButtonSize(size),
           m_Callback(callback)
     {}
@@ -58,16 +58,6 @@ namespace Anwill {
         return m_ButtonSize.X;
     }
 
-    float GuiButton::GetHeight() const
-    {
-        return m_ButtonSize.Y;
-    }
-
-    Math::Vec2f GuiButton::GetSize() const
-    {
-        return m_ButtonSize;
-    }
-
     unsigned int GuiButton::GetGridDepth() const
     {
         return 1;
@@ -91,5 +81,15 @@ namespace Anwill {
     void GuiButton::SetHeight(float height)
     {
         m_ButtonSize = {m_ButtonSize.X, height};
+    }
+
+    float GuiButton::GetHeight() const
+    {
+        return m_ButtonSize.Y;
+    }
+
+    Math::Vec2f GuiButton::GetSize() const
+    {
+        return m_ButtonSize;
     }
 }

@@ -15,9 +15,10 @@ namespace Anwill {
             std::string line;
             while(std::getline(file, line))
             {
-                std::cout << line << '\n';
-                result += line;
+                //std::cout << line << '\n';
+                result += line + "\n";
             }
+            result.erase(result.length() - 1, 2);
             file.close();
         } else {
             AW_ERROR("Could not load the following file: {0}", filepath);

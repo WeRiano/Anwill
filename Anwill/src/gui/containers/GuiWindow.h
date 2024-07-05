@@ -4,7 +4,7 @@
 
 namespace Anwill {
 
-    typedef unsigned int GuiWindowID;
+    //typedef unsigned int GuiWindowID;
 
     class GuiWindow : public GuiContainer {
     public:

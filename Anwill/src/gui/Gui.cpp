@@ -418,7 +418,7 @@ namespace Anwill {
     int Gui::GetWindowIndex(GuiWindowID id)
     {
         if(s_Windows.empty()) {
-            AW_ERROR("There are no active windows.");
+            AW_ERROR("There are no active windows. Please create a window before adding elements.");
             return -1;
         }
         if(id == 0) {

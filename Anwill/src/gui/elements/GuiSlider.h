@@ -29,12 +29,12 @@ namespace Anwill {
             if(std::is_same<T, float>::value)
             {
                 m_OnPressSet = [](float f) { return f; };
-                m_SetValueText = [this](){ GuiText::Set(Math::RoundToString(m_Source, 2)); };
+                m_SetValueText = [this](){ GuiText::SetText(Math::RoundToString(m_Source, 2)); };
             }
             else if(std::is_same<T, int>::value)
             {
                 m_OnPressSet = [](float f){ return std::round(f); };
-                m_SetValueText = [this](){ GuiText::Set(std::to_string(m_Source)); };
+                m_SetValueText = [this](){ GuiText::SetText(std::to_string(m_Source)); };
             } else {
                 // TODO: Double, long, etc
                 AW_FATAL("GuiSlider template type not supported");

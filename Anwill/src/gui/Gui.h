@@ -51,7 +51,7 @@ namespace Anwill {
                                              bool onNewRow = true);
 
         static std::shared_ptr<GuiTextButton> Button(const std::string& text,
-                                                     const std::function<void()>& callback = [](){},
+                                                     const std::function<void n()>& callback = [](){},
                                                      bool onNewRow = true, GuiWindowID windowID = 0);
         static std::shared_ptr<GuiTextButton> Button(const std::string& text,
                                                      const std::shared_ptr<GuiContainer>& container,
@@ -114,8 +114,10 @@ namespace Anwill {
 
     private:
         static std::unique_ptr<OrthographicCamera> s_Camera;
+        static std::shared_ptr<GuiContainer> s_LastContainer;
         static GuiWindowID s_LastWindowID;
         static std::vector<std::shared_ptr<GuiWindow>> s_Windows;
+        // API remembers last used container
 
         struct State {
         public:

@@ -42,7 +42,7 @@ namespace Anwill {
     }
 
     void GuiTextButton::SetText(const std::string& text) {
-        GuiText::Set(text);
+        GuiText::SetText(text);
         GuiButton::SetWidth(GuiText::GetWidth() + GuiStyling::TextButton::textPadding * 2.0f);
     }
 }
