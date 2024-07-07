@@ -8,16 +8,17 @@
 #include "gui/styles/GuiStyling.h"
 #include "math/Vec2f.h"
 #include "core/Timestamp.h"
+#include "core/Core.h"
 
 namespace Anwill {
 
     class GuiRadioButton : public GuiButton, public GuiText {
     public:
-        std::shared_ptr<GuiStyling::RadioButton> m_Style;
+        Shared<GuiStyling::RadioButton> m_Style;
 
-        GuiRadioButton(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
+        GuiRadioButton(const Shared<GuiStyling::Container>& containerStyle, const std::string& text,
                        int& reference, int onSelectValue, const std::function<void()>& callback,
-                       const std::shared_ptr<GuiStyling::RadioButton>& style = nullptr);
+                       const Shared<GuiStyling::RadioButton>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;

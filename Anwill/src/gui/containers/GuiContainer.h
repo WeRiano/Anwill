@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "core/Core.h"
 #include "gui/elements/GuiElement.h"
 #include "gui/elements/GuiText.h"
 #include "gui/elements/GuiButton.h"
@@ -14,12 +15,12 @@ namespace Anwill {
 
     struct ContainerElement {
     public:
-        std::shared_ptr<GuiElement> element;
+        Shared<GuiElement> element;
         Math::Vec2f position;
         bool onNewRow, forceNextToNewRow;
         bool isHidden;
 
-        ContainerElement(const std::shared_ptr<GuiElement>& element, Math::Vec2f position,
+        ContainerElement(const Shared<GuiElement>& element, Math::Vec2f position,
                          bool onNewRow, bool forceNextToNewRow, bool isHidden)
             : element(element), position(position), onNewRow(onNewRow),
               forceNextToNewRow(forceNextToNewRow), isHidden(isHidden)
@@ -28,9 +29,9 @@ namespace Anwill {
 
     class GuiContainer {
     public:
-        std::shared_ptr<GuiStyling::Container> m_Style;
+        Shared<GuiStyling::Container> m_Style;
 
-        GuiContainer(const std::shared_ptr<GuiStyling::Container>& style, bool showElements,
+        GuiContainer(const Shared<GuiStyling::Container>& style, bool showElements,
                      unsigned int gridDepth = 0);
 
         /**
@@ -39,7 +40,7 @@ namespace Anwill {
          * @param mousePos Position of the mouse cursor.
          * @return The element currently being hovered or a nullptr if there isn't one.
          */
-        virtual std::shared_ptr<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
+        virtual Shared<GuiElement> GetHoverElement(Math::Vec2f& hoverElementPos,
                                                             const Math::Vec2f& mousePos) const;
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta);
@@ -54,7 +55,7 @@ namespace Anwill {
         unsigned int GetGridDepth() const;
 
         template <class E, typename... Args>
-        std::shared_ptr<E> AddElement(bool onNewRow, bool forceNextToNewRow, Args&&... args)
+        Shared<E> AddElement(bool onNewRow, bool forceNextToNewRow, Args&&... args)
         {
             m_ContainerElements.emplace_back(std::make_shared<E>(m_Style, std::forward<Args>(args)...),
                                              Math::Vec2f(), onNewRow, forceNextToNewRow, false);

@@ -4,16 +4,16 @@
 
 namespace Anwill {
 
-    GuiRadioButton::GuiRadioButton(const std::shared_ptr<GuiStyling::Container>& containerStyle,
+    GuiRadioButton::GuiRadioButton(const Shared<GuiStyling::Container>& containerStyle,
                                    const std::string& text, int& reference, const int onSelectValue,
                                    const std::function<void()>& callback,
-                                   const std::shared_ptr<GuiStyling::RadioButton>& style)
+                                   const Shared<GuiStyling::RadioButton>& style)
         : GuiElement(containerStyle),
           GuiButton(containerStyle, {containerStyle->elementHeight, containerStyle->elementHeight},
                     [this, callback](){
                         if(m_Reference != m_OnSelectValue) {
-                            callback();
                             m_Reference = m_OnSelectValue;
+                            callback();
                         }
                     }, AW_GUI_MAKE_STYLE(style, GuiStyling::RadioButton)),
           GuiText(containerStyle, text, AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::RadioButton)),

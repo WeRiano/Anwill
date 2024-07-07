@@ -4,8 +4,6 @@
 
 namespace Anwill {
 
-    //typedef unsigned int GuiWindowID;
-
     class GuiWindow : public GuiContainer {
     public:
         std::shared_ptr<GuiStyling::Window> m_Style;

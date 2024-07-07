@@ -7,8 +7,6 @@
 #include "gfx/Shader.h"
 #include "gfx/Font.h"
 
-//#define AW_GUI_DEFAULT_WINDOW_ELEMENT_HEIGHT 30.0f
-
 namespace Anwill {
 
     /**

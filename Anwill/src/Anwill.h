@@ -1,4 +1,5 @@
 // Core
+#include "core/Core.h"
 #include "core/Log.h"
 #include "core/App.h"
 #include "core/Layer.h"

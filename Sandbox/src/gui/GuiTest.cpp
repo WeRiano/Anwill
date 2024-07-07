@@ -19,10 +19,8 @@ void GuiTest::InitDemoWindow()
     auto edd = Anwill::Gui::Dropdown("Elements");
 
     // --- Text ---
-    /*
     Anwill::Gui::Text("This is some demo text.");
     Anwill::Gui::Text("This is some additional demo text on the same row.", false);
-    */
 
     // --- Button ---
     auto b1 = Anwill::Gui::Button("This is a button. Click me!", [](){});
@@ -44,6 +42,17 @@ void GuiTest::InitDemoWindow()
     int* s2Val = new int;
     *s2Val = 50;
     Anwill::Gui::Slider(-100, 100, *s2Val, true, edd);
+
+    // --- Radio button ---
+    int* e = new int;
+    *e = 0;
+    auto r1t = Anwill::Gui::Text("Radio button value is: " + std::to_string(*e));
+    std::function<void()> r1f = [r1t, e](){
+        //r1t->SetText("Radio button value is: " + std::to_string(*e));
+    };
+    Anwill::Gui::RadioButton("Radio 1", *e, 1, r1f);
+    Anwill::Gui::RadioButton("Radio 2", *e, 2, r1f, false);
+    Anwill::Gui::RadioButton("Radio 3", *e, 3, r1f, false);
 
     // --- Extra debug stuff --- // TODO: Remove
     Anwill::Gui::Button("Test button that is somewhat wide", [](){}, true, demoWindow);
