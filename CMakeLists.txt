@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 # Anwill source
 add_subdirectory(Anwill)
 
-# Playground
-add_subdirectory(Sandbox)
-
 # TODO: Editor!
 #add_subdirectory(Editor_project)
+
+# Playground
+add_subdirectory(Sandbox)
