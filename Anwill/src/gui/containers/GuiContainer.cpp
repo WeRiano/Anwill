@@ -1,6 +1,7 @@
 #include "GuiContainer.h"
 #include "gfx/Renderer.h"
 #include "math/Math.h"
+#include "gui/elements/GuiIcon.h"
 
 namespace Anwill {
 
@@ -175,6 +176,28 @@ namespace Anwill {
                 elementPosition.X + elementWidth + m_Style->elementHorizontalMargin,
                 elementPosition.Y
             };
+        }
+    }
+
+    void GuiContainer::RenderDebugGrid(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize)
+    {
+        Math::Vec2f elementSpacePos = assignedPos;
+        Math::Vec2f elementSpaceSize = {assignedMaxSize.X, m_Style->elementHeight};
+        Math::Vec2f marginSpacePos = elementSpacePos;
+        marginSpacePos.Y -= elementSpaceSize.Y;
+        Math::Vec2f marginSpaceSize = {assignedMaxSize.X, m_Style->elementVerticalMargin};
+        unsigned int gridDepth = 1;
+        if(m_ShowElements)
+        {
+            gridDepth = GetGridDepth();
+        }
+        for(int i = 0; i < gridDepth; i++) {
+            GuiIcon::RenderRectangle(elementSpacePos, elementSpaceSize,
+                                     {1.0f, 0.1f, 0.1f});
+            GuiIcon::RenderRectangle(marginSpacePos, marginSpaceSize,
+                                     {0.01f, 0.9f, 0.85f});
+            elementSpacePos.Y -= m_Style->GetRowHeight();
+            marginSpacePos.Y -= m_Style->GetRowHeight();
         }
     }
 }

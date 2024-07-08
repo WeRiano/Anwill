@@ -2,10 +2,18 @@
 
 #include <functional>
 
+#include "core/Core.h"
 #include "math/Vec2f.h"
 #include "gfx/Mesh.h"
 #include "gfx/Shader.h"
 #include "gfx/Font.h"
+
+/// Use the given style of type StyleType if it exists (this will most likely include an upcast),
+/// otherwise create a new instance of it
+#define AW_GUI_ENSURE_STYLE(style, StyleType) style == nullptr ? Anwill::CreateShared<StyleType>() : style
+
+/// Downcast the style to a derived StyleType.
+#define AW_GUI_CAST_STYLE(style, StyleType) std::static_pointer_cast<StyleType>(style)
 
 namespace Anwill {
 

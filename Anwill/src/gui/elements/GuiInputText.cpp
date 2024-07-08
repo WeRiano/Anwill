@@ -12,7 +12,7 @@ namespace Anwill {
                                const std::string& startText, float pixelWidth,
                                const std::shared_ptr<GuiStyling::InputText>& style)
         : GuiElement(containerStyle),
-          GuiText(containerStyle, startText, AW_GUI_MAKE_STYLE(style, GuiStyling::InputText)),
+          GuiText(containerStyle, startText, AW_GUI_ENSURE_STYLE(style, GuiStyling::InputText)),
           GuiButton(containerStyle, {pixelWidth, containerStyle->elementHeight}, [](){},
                     AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::InputText)),
           m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::InputText)),

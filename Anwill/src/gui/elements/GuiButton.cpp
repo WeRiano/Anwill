@@ -9,7 +9,7 @@ namespace Anwill {
                          const Math::Vec2f& size, const std::function<void()>& callback,
                          const std::shared_ptr<GuiStyling::Button>& style)
         : GuiElement(containerStyle),
-          m_Style(AW_GUI_MAKE_STYLE(style, GuiStyling::Button)),
+          m_Style(AW_GUI_ENSURE_STYLE(style, GuiStyling::Button)),
           m_ButtonSize(size),
           m_Callback(callback)
     {}

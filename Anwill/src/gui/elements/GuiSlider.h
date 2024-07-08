@@ -21,7 +21,7 @@ namespace Anwill {
         GuiSlider(const std::shared_ptr<GuiStyling::Container>& containerStyle, T min, T max, T& source,
                   const std::shared_ptr<GuiStyling::Slider>& style = nullptr)
             : GuiElement(containerStyle), m_Min(min), m_Max(max), m_Source(source),
-              GuiText(containerStyle, "", AW_GUI_MAKE_STYLE(style, GuiStyling::Slider)),
+              GuiText(containerStyle, "", AW_GUI_ENSURE_STYLE(style, GuiStyling::Slider)),
               GuiButton(containerStyle, {containerStyle->elementHeight * 7.0f, containerStyle->elementHeight},
                         [](){}, AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::Slider)),
               m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::Slider))

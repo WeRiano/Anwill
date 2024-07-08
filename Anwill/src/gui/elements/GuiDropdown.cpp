@@ -9,7 +9,7 @@ namespace Anwill {
         : GuiElement(containerStyle),
           GuiTextButton(containerStyle, text, [this](){
               ToggleElementsVisibility();
-          }, AW_GUI_MAKE_STYLE(style, GuiStyling::Dropdown)),
+          }, AW_GUI_ENSURE_STYLE(style, GuiStyling::Dropdown)),
           GuiContainer(AW_GUI_CAST_STYLE(GuiTextButton::m_Style, GuiStyling::Dropdown),false, 1),
           m_Style(AW_GUI_CAST_STYLE(GuiTextButton::m_Style, GuiStyling::Dropdown))
     {
@@ -20,6 +20,7 @@ namespace Anwill {
                              const Timestamp& delta)
     {
         AW_PROFILE_FUNC();
+        //RenderDebugGrid(assignedPos, assignedMaxSize);
         // Set button size to the maximum allowed width
         GuiButton::SetWidth(assignedMaxSize.X);
         // Render text button

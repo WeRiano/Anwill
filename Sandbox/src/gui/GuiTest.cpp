@@ -32,8 +32,17 @@ void GuiTest::InitDemoWindow()
     });
 
     // --- Checkbox ---
-    Anwill::Gui::Checkbox(true, "<- This is a checkbox. Click me!", [](bool){});
-    Anwill::Gui::Checkbox(true, "<- This checkbox has a different checkmark.", [](bool){});
+    Anwill::Gui::Checkbox(true, "<-- This is a checkbox. Click me!", [](bool){});
+    auto cb2 = Anwill::Gui::Checkbox(true,
+                                     "<-- This checkbox has some styling customization.",
+                                     [](bool){});
+    cb2->m_Style->buttonShape = Anwill::GuiStyling::Button::Shape::Ellipse;
+    cb2->m_Style->checkmarkType = Anwill::GuiStyling::Checkbox::CheckmarkType::Ellipse;
+    cb2->m_Style->buttonColor = {0.8, 0.175, 0.745};
+    cb2->m_Style->buttonHoverColor = {0.9, 0.3, 0.845};
+    cb2->m_Style->buttonPressColor = {0.95, 0.35, 0.9};
+    cb2->m_Style->checkmarkColor = {0.25, 1.0, 0.0};
+
 
     // --- Slider ---
     float* s1Val = new float;
@@ -47,13 +56,20 @@ void GuiTest::InitDemoWindow()
     int* e = new int;
     *e = 0;
     auto r1t = Anwill::Gui::Text("Radio button value is: " + std::to_string(*e));
+
     std::function<void()> r1f = [r1t, e](){
-        //r1t->SetText("Radio button value is: " + std::to_string(*e));
+        r1t->SetText("Radio button value is: " + std::to_string(*e));
     };
     Anwill::Gui::RadioButton("Radio 1", *e, 1, r1f);
     Anwill::Gui::RadioButton("Radio 2", *e, 2, r1f, false);
     Anwill::Gui::RadioButton("Radio 3", *e, 3, r1f, false);
 
+    // --- Input fields ---
+    Anwill::Gui::TextInput("Select this field and type something.", 200);
+
+    // --- Image ---
+    Anwill::Gui::Image("Sandbox/assets/textures/anwill.jpg", 0);
+
     // --- Extra debug stuff --- // TODO: Remove
-    Anwill::Gui::Button("Test button that is somewhat wide", [](){}, true, demoWindow);
+    Anwill::Gui::Button("Test button that is somewhat wide", [](){}, true);
 }

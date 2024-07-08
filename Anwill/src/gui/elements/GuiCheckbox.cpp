@@ -12,7 +12,7 @@ namespace Anwill {
                     [this, callback]() {
               m_Checked = !m_Checked;
               callback(m_Checked);
-          }, AW_GUI_MAKE_STYLE(style, GuiStyling::Checkbox)),
+          }, AW_GUI_ENSURE_STYLE(style, GuiStyling::Checkbox)),
           GuiText(containerStyle, text, AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::Checkbox)),
           m_Style(AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::Checkbox)),
           m_Checked(checked)

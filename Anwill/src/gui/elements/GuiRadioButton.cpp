@@ -15,7 +15,7 @@ namespace Anwill {
                             m_Reference = m_OnSelectValue;
                             callback();
                         }
-                    }, AW_GUI_MAKE_STYLE(style, GuiStyling::RadioButton)),
+                    }, AW_GUI_ENSURE_STYLE(style, GuiStyling::RadioButton)),
           GuiText(containerStyle, text, AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::RadioButton)),
           m_Style(AW_GUI_CAST_STYLE(GuiButton::m_Style, GuiStyling::RadioButton)),
           m_Reference(reference),

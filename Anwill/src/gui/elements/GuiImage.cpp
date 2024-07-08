@@ -8,17 +8,26 @@ namespace Anwill {
     GuiImage::GuiImage(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& fileName,
                        unsigned int maxRows, const std::shared_ptr<GuiStyling::Image>& style)
         : GuiElement(containerStyle),
-          m_Style(AW_GUI_MAKE_STYLE(style, GuiStyling::Image)),
+          m_Style(AW_GUI_ENSURE_STYLE(style, GuiStyling::Image)),
           m_Texture(Texture::Create(fileName))
     {
         float totVerticalSpace = maxRows * containerStyle->GetRowHeight() - containerStyle->elementVerticalMargin;
-        if(m_Texture->GetHeight() > totVerticalSpace) {
-            m_ScaleFactor = totVerticalSpace / m_Texture->GetHeight();
+        if(maxRows > 0 && m_Texture->GetHeight() > totVerticalSpace)
+        {
+            // Image is constrained to a specific number of rows set by user.
             m_GridDepth = maxRows;
+            m_ScaleFactor = totVerticalSpace / m_Texture->GetHeight();
+        } else if(m_Texture->GetHeight() < containerStyle->elementHeight) {
+            // Image size is unconstrained and fits on a singular row.
+            m_GridDepth = 1;
+            m_ScaleFactor = containerStyle->elementHeight / m_Texture->GetHeight();
         } else {
-            m_ScaleFactor = 1.0f;
-            m_GridDepth = std::ceil((totVerticalSpace + containerStyle->elementVerticalMargin) /
-                    containerStyle->GetRowHeight());
+            // Image is unconstrained and fits on n>1 rows. Find n.
+            int imageHeightMinusFirstRow = m_Texture->GetHeight() - containerStyle->elementHeight;
+            float rows = 1.0f + (imageHeightMinusFirstRow / containerStyle->GetRowHeight());
+            m_GridDepth = std::floor( rows);
+            totVerticalSpace = m_GridDepth * containerStyle->GetRowHeight() - containerStyle->elementVerticalMargin;
+            m_ScaleFactor = totVerticalSpace / m_Texture->GetHeight();
         }
     }
 

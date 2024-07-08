@@ -77,5 +77,6 @@ namespace Anwill {
         Math::Vec2f GetNextElementSize(const Math::Vec2f& posDelta, const Math::Vec2f& oldMaxSize);
         Math::Vec2f GetNextElementPos(const Math::Vec2f& elementPosition, float elementWidth,
                                       unsigned int elementGridDepth, float newRowXPos, bool onNewRow);
+        void RenderDebugGrid(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize);
     };
 }

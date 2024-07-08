@@ -7,7 +7,7 @@ namespace Anwill {
                                  const std::string& text, const std::function<void()>& callback,
                                  const std::shared_ptr<GuiStyling::TextButton>& style)
         : GuiElement(containerStyle),
-          GuiText(containerStyle, text, AW_GUI_MAKE_STYLE(style, GuiStyling::TextButton)),
+          GuiText(containerStyle, text, AW_GUI_ENSURE_STYLE(style, GuiStyling::TextButton)),
           GuiButton(containerStyle, {GuiText::GetWidth() + GuiStyling::TextButton::textPadding * 2.0f,
                                      containerStyle->elementHeight}, callback,
                     AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::TextButton)),
