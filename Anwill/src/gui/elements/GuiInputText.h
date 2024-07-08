@@ -48,9 +48,6 @@ namespace Anwill {
         void CalcCursorTimeInterval(const Timestamp& delta);
         void DebugIndices() const;
 
-        /// Underlying text and button
-        //GuiText m_Text;
-        //GuiButton m_Button;
         /// Indicates what part of the string to render
         /// The left index is equal to the number of characters that are hidden due to overflow
         int m_RenderLeftIndex, m_RenderRightIndex;

@@ -210,6 +210,7 @@ namespace Anwill {
     {
         auto e = static_cast<KeyPressEvent&>(*event);
         if(s_State.selectElement != nullptr)
+            auto t = s_State.selectElement;
             s_State.selectElement->OnKeyPress(e.GetKeyCode());
     }
 
@@ -348,6 +349,7 @@ namespace Anwill {
             }
             s_State.selectElement = s_State.hoverElement;
             if(s_State.selectElement != nullptr) {
+                auto t = s_State.selectElement;
                 s_State.selectElement->Select();
             }
         }

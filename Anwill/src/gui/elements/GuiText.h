@@ -4,15 +4,16 @@
 #include "gui/styles/GuiStyling.h"
 #include "math/Vec2f.h"
 #include "core/Timestamp.h"
+#include "core/Core.h"
 
 namespace Anwill {
 
     class GuiText : public virtual GuiElement {
     public:
-        std::shared_ptr<GuiStyling::Text> m_Style;
+        Shared<GuiStyling::Text> m_Style;
 
-        GuiText(const std::shared_ptr<GuiStyling::Container>& containerStyle, const std::string& text,
-                const std::shared_ptr<GuiStyling::Text>& style = nullptr);
+        GuiText(const Shared<GuiStyling::Container>& containerStyle, const std::string& text,
+                const Shared<GuiStyling::Text>& style = nullptr);
 
         void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                     const Timestamp& delta) override;

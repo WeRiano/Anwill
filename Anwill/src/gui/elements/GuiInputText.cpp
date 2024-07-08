@@ -22,6 +22,11 @@ namespace Anwill {
     {
         m_Style->buttonHoverColor = m_Style->buttonColor;
         m_Style->buttonPressColor = m_Style->buttonColor;
+
+        while(IsTextWiderThanBox())
+        {
+            m_RenderRightIndex--;
+        }
     }
 
     void GuiInputText::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
@@ -33,7 +38,8 @@ namespace Anwill {
         // Render button
         GuiButton::Render(assignedPos, assignedMaxSize, delta);
 
-        Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f, -m_HostContainerStyle->elementHeight * 0.5f};
+        Math::Vec2f offset = {GuiStyling::TextButton::textPadding + 2.0f,
+                              -m_HostContainerStyle->elementHeight * 0.5f};
         if(m_IsSelected) {
             RenderSelected(assignedPos, offset);
             RenderText(assignedPos, assignedMaxSize, delta);
@@ -107,14 +113,16 @@ namespace Anwill {
             selectedStartXPos -= GuiText::GetWidth(0, m_RenderLeftIndex);
             // Get the width of the text box
             float selectedTextWidth = GuiText::GetWidth(leftIndex, rightIndex - leftIndex);
-            Math::Vec2f size = {selectedTextWidth, m_HostContainerStyle->elementHeight - 2.0f};
+            Math::Vec2f size = {selectedTextWidth, m_HostContainerStyle->elementHeight - 4.0f};
             Math::Mat4f transform = Math::Mat4f::Scale({}, size);
             transform = Math::Mat4f::Translate(transform,
                                                {assignedPos + Math::Vec2f(selectedStartXPos, 0.0f) +
                                                 Math::Vec2f(size.X * 0.5f, 0.0f)
                                                 + offset});
+            GuiStyling::primitiveShader->Bind();
             GuiStyling::primitiveShader->SetUniformVec3f(m_Style->selectedTextHighlightColor,"u_Color");
             Renderer2D::SubmitMesh(GuiStyling::primitiveShader, GuiStyling::rectMesh, transform);
+            GuiStyling::primitiveShader->Unbind();
         }
     }
 
@@ -130,14 +138,15 @@ namespace Anwill {
     void GuiInputText::RenderCursor(const Math::Vec2f& assignedPos, const Math::Vec2f& offset)
     {
         // Render cursor
-        Math::Mat4f transform = Math::Mat4f::Scale({}, {1.0f, GuiStyling::Text::cursorHeight, 0.0f});
+        Math::Mat4f transform = Math::Mat4f::Scale({},
+           {1.0f, m_Style->GetCursorHeight(m_HostContainerStyle->elementHeight), 0.0f});
         float cursorXPos = GuiText::GetWidth(0, m_CursorIndex);
         cursorXPos -= GuiText::GetWidth(0, m_RenderLeftIndex);
         transform = Math::Mat4f::Translate(transform, assignedPos
                                                       + Math::Vec2f(cursorXPos, 0.0f) + offset);
         GuiStyling::primitiveShader->Bind();
         GuiStyling::primitiveShader->SetUniformVec3f({1.0f, 1.0f, 1.0f}, "u_Color");
-        Renderer2D::SubmitLines(GuiStyling::primitiveShader, GuiStyling::Text::cursorVertexArray,
+        Renderer2D::SubmitLines(GuiStyling::primitiveShader, GuiStyling::InputText::cursorVertexArray,
                                 transform, 1);
     }
 
@@ -153,7 +162,6 @@ namespace Anwill {
             case KeyCode::A:
                 if(Input::IsKeyPressed(KeyCode::LeftControl) || Input::IsKeyPressed(KeyCode::RightControl))
                     SelectAll();
-                break;
                 break;
             case KeyCode::Right:
                 MoveRight();
@@ -326,10 +334,10 @@ namespace Anwill {
     void GuiInputText::CalcCursorTimeInterval(const Timestamp& delta)
     {
         m_TimeCountMS += delta.GetMilliseconds();
-        if(m_TimeCountMS > GuiStyling::Text::cursorShowTimeIntervalMS)
+        if(m_TimeCountMS > GuiStyling::InputText::cursorShowTimeIntervalMS)
         {
             m_ShowCursor = !m_ShowCursor;
-            m_TimeCountMS -= GuiStyling::Text::cursorShowTimeIntervalMS;
+            m_TimeCountMS -= GuiStyling::InputText::cursorShowTimeIntervalMS;
         }
     }
 

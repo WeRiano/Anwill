@@ -6,9 +6,9 @@ namespace Anwill {
     float GuiStyling::Window::headerSize,
     GuiStyling::Text::baselineOffset, GuiStyling::TextButton::textPadding, GuiStyling::Checkbox::iconMargin,
     GuiStyling::Window::borderSize, GuiStyling::Tooltip::borderSize, GuiStyling::Tooltip::offset,
-    GuiStyling::Checkbox::textMargin, GuiStyling::Text::cursorHeight, GuiStyling::Slider::markerWidth;
+    GuiStyling::Checkbox::textMargin, GuiStyling::Slider::markerWidth;
 
-    unsigned int GuiStyling::Text::fontSize, GuiStyling::Text::cursorShowTimeIntervalMS,
+    unsigned int GuiStyling::Text::fontSize, GuiStyling::InputText::cursorShowTimeIntervalMS,
     GuiStyling::Window::titleFontSize;
 
     Math::Vec2f GuiStyling::Tooltip::windowMargin;
@@ -19,9 +19,7 @@ namespace Anwill {
     GuiStyling::Window::shader,
     GuiStyling::Tooltip::shader, GuiStyling::Image::shader;
 
-    //const std::shared_ptr<Shader> GuiStyling::Window::shader;
-
-    std::shared_ptr<VertexArray> GuiStyling::Text::cursorVertexArray;
+    std::shared_ptr<VertexArray> GuiStyling::InputText::cursorVertexArray;
 
     Mesh GuiStyling::checkmarkMesh, GuiStyling::triangleMesh, GuiStyling::rectMesh;
 
@@ -46,20 +44,6 @@ namespace Anwill {
         Text::fontSize = 13; // TODO: Attempt to change this and see if baselineOffset sticks
         Text::baselineOffset = -(float) Text::fontSize * 0.45f;
         TextButton::textPadding = 5.0f; // X distance from button edge to text
-        Text::cursorVertexArray = VertexArray::Create();
-        //Text::cursorHeight = Window::elementHeight - 5.0f;
-        Text::cursorShowTimeIntervalMS = 750;
-
-        float unitVerticalLineVertices[] = {
-            0.0f, 0.5f,
-            0.0f, -0.5f
-        };
-        auto tempVB = VertexBuffer::Create(unitVerticalLineVertices, sizeof(unitVerticalLineVertices));
-        std::vector<BufferElement> elements = {
-                Anwill::BufferElement(Anwill::ShaderDataType::Float2)
-        };
-        auto bufferLayout = Anwill::BufferLayout(elements);
-        Text::cursorVertexArray->AddBuffer(*tempVB, bufferLayout);
 
         // --- Checkbox ---
         Checkbox::textMargin = 5.0f;
@@ -70,6 +54,21 @@ namespace Anwill {
         // --- Slider ---
         //Slider::markerSize = {13.0f, Window::elementHeight - 1.5f * 2.0f};
         Slider::markerWidth = 13.0f;
+
+        // --- Input ---
+        InputText::cursorShowTimeIntervalMS = 750;
+        InputText::cursorVertexArray = VertexArray::Create();
+        float unitVerticalLineVertices[] = {
+            0.0f, 0.5f,
+            0.0f, -0.5f
+        };
+        auto tempVB = VertexBuffer::Create(unitVerticalLineVertices,
+                                           sizeof(unitVerticalLineVertices));
+        std::vector<BufferElement> elements = {
+            Anwill::BufferElement(Anwill::ShaderDataType::Float2)
+        };
+        auto bufferLayout = Anwill::BufferLayout(elements);
+        InputText::cursorVertexArray->AddBuffer(*tempVB, bufferLayout);
 
         // Custom objects
             // Mesh

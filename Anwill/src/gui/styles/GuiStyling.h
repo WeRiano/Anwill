@@ -46,9 +46,6 @@ namespace Anwill {
             static float baselineOffset;
             static std::unique_ptr<Font> font;
             static std::shared_ptr<Shader> shader;
-            static std::shared_ptr<VertexArray> cursorVertexArray;
-            static float cursorHeight;
-            static unsigned int cursorShowTimeIntervalMS;
         };
 
         struct Button {
@@ -111,8 +108,13 @@ namespace Anwill {
 
         struct InputText : public Text, public Button {
         public:
+            static std::shared_ptr<VertexArray> cursorVertexArray;
+            static unsigned int cursorShowTimeIntervalMS;
 
             Math::Vec3f selectedTextHighlightColor = {0.30f, 0.38f, 1.0f};
+            static inline float GetCursorHeight(float rowHeight) {
+                return rowHeight - 8.0f;
+            }
         };
 
         struct Image {
