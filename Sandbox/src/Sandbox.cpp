@@ -3,7 +3,6 @@
 #include "Anwill.h"
 
 #include "ecs/EcsTestLayer.h"
-#include "gui/GuiTest.h"
 #include "physics/dynamics/DynamicsRender.h"
 #include "physics/dynamics/DynamicsTest.h"
 #include "physics/collision/CollisionRender.h"
@@ -20,7 +19,7 @@ class Sandbox : public Anwill::App
 {
 public:
     Sandbox(const Anwill::WindowSettings& ws)
-        : App(ws, true)
+        : App(ws)
     {
         /// Renderer tests
         //AddLayer<RendererHelloWorld>(0);
@@ -32,11 +31,8 @@ public:
         /// Physics tests
         //AddLayer<DynamicsTest>(10);
         //AddLayer<DynamicsRender>(0, ws);
-        //AddLayer<CollisionRender>(0, ws);
-        //AddLayer<CollisionTest>(30, ws);
-
-        /// GUI tests
-        AddLayer<GuiTest>(0);
+        AddLayer<CollisionRender>(0, ws);
+        AddLayer<CollisionTest>(30, ws);
 
         /// ECS tests
         //AddLayer<EcsTestLayer>(144);

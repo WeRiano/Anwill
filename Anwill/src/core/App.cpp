@@ -11,22 +11,18 @@
 #include "gfx/Renderer.h"
 #include "gfx/VertexBuffer.h"
 
-#include "gui/GuiLayer.h"
-
 #include "utils/Random.h"
 #include "utils/Profiler.h"
 
 namespace Anwill {
 
-    App::App(const WindowSettings& ws, bool enableGUI)
+    App::App(const WindowSettings& ws)
         : m_Running(true), m_Minimized(false)
     {
         SystemEventHandler::Init();
         m_Window = Window::Create(ws);
         Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
-        if(enableGUI)
-            AddLayer<GuiLayer>(0, ws);
         Ecs::Init();
         Random::Init();
 

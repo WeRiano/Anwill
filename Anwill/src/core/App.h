@@ -13,7 +13,7 @@ namespace Anwill {
     class App
     {
     public:
-        App(const WindowSettings& ws, bool enableGUI);
+        App(const WindowSettings& ws);
         ~App();
 
         void Run();
