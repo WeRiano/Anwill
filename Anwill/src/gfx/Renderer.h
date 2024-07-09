@@ -1,11 +1,8 @@
 #pragma once
 
 #include <memory>
-#include <map>
-#include <vector>
-#include <queue>
-#include <array>
 
+#include "core/Core.h"
 #include "gfx/GraphicsAPI.h"
 #include "gfx/Shader.h"
 #include "gfx/VertexArray.h"
@@ -42,6 +39,6 @@ namespace Anwill {
 
     private:
         static GraphicsAPI::API s_APIName;
-        static std::shared_ptr<GraphicsAPI> s_API;
+        static Shared<GraphicsAPI> s_API;
     };
 }

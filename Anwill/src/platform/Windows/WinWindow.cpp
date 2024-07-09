@@ -9,7 +9,7 @@
 namespace Anwill {
 
     bool WinWindow::s_Created = false;
-    std::array<int, (std::size_t) SetMouseCursorEvent::CursorType::NumberOfCursorTypes>
+    std::array<int, (std::size_t) MouseCursorTypeEvent::CursorType::NumberOfCursorTypes>
     WinWindow::s_MouseCursorGLFWIDs = {
             GLFW_ARROW_CURSOR,
             GLFW_RESIZE_EW_CURSOR,
@@ -84,6 +84,7 @@ namespace Anwill {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // TODO: Let user set opengl version (?)
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_SAMPLES, 4);
 
         m_Window = glfwCreateWindow(ws.width, ws.height, ws.title, nullptr, nullptr);
 
@@ -212,13 +213,13 @@ namespace Anwill {
             }
         });
 
-        SystemEventHandler::Subscribe<SetMouseCursorEvent>(
-                AW_BIND_THIS_MEMBER_FUNC(WinWindow::OnSetCursorEvent));
+        SystemEventHandler::Subscribe<MouseCursorTypeEvent>(
+            AW_BIND_THIS_MEMBER_FUNC(WinWindow::OnMouseCursorTypeEvent));
     }
 
-    void WinWindow::OnSetCursorEvent(const std::unique_ptr<Event>& event)
+    void WinWindow::OnMouseCursorTypeEvent(const std::unique_ptr<Event>& event)
     {
-        SetMouseCursorEvent e = static_cast<SetMouseCursorEvent&>(*event);
+        MouseCursorTypeEvent e = static_cast<MouseCursorTypeEvent&>(*event);
         auto cursor = glfwCreateStandardCursor(
                 s_MouseCursorGLFWIDs[static_cast<int>(e.GetCursorType())]);
         glfwSetCursor(m_Window, cursor);

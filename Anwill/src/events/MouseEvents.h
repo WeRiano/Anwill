@@ -42,7 +42,7 @@ namespace Anwill {
         MouseScrollCode m_MouseScrollCode;
     };
 
-    class SetMouseCursorEvent : public Event {
+    class MouseCursorTypeEvent : public Event {
     public:
         enum class CursorType : int {
             Arrow = 0,
@@ -57,7 +57,7 @@ namespace Anwill {
             NumberOfCursorTypes
         };
 
-        SetMouseCursorEvent(CursorType cursorType)
+        MouseCursorTypeEvent(CursorType cursorType)
             : m_CursorType(cursorType) {}
         inline const CursorType GetCursorType() const { return m_CursorType; }
     private:

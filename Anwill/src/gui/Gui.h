@@ -39,50 +39,50 @@ namespace Anwill {
     {
     public:
         // Client functions (API)
-        static std::shared_ptr<GuiWindow> CreateWindow(const std::string& title);
+        static Shared<GuiWindow> CreateWindow(const std::string& title);
 
-        static std::shared_ptr<GuiDropdown> Dropdown(const std::string& title,
-                                                     const std::shared_ptr<GuiContainer>& container = nullptr);
+        static Shared<GuiDropdown> Dropdown(const std::string& title,
+                                                     const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiText> Text(const std::string& text,
+        static Shared<GuiText> Text(const std::string& text,
                                              bool onNewRow = true,
-                                             const std::shared_ptr<GuiContainer>& container = nullptr);
+                                             const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiTextButton> Button(const std::string& text,
+        static Shared<GuiTextButton> Button(const std::string& text,
                                                      const std::function<void()>& callback,
                                                      bool onNewRow = true,
-                                                     const std::shared_ptr<GuiContainer>& container = nullptr);
+                                                     const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiCheckbox> Checkbox(bool checkedInitially, const std::string& text,
+        static Shared<GuiCheckbox> Checkbox(bool checkedInitially, const std::string& text,
                                                      const std::function<void(bool)>& callback,
                                                      bool onNewRow = true,
-                                                     const std::shared_ptr<GuiContainer>& container = nullptr);
+                                                     const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiSlider<float>> Slider(float min,
+        static Shared<GuiSlider<float>> Slider(float min,
                                                  float max,
                                                  float& sliderValue,
                                                  bool onNewRow = true,
-                                                 const std::shared_ptr<GuiContainer>& container = nullptr);
+                                                 const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiSlider<int>> Slider(int min,
+        static Shared<GuiSlider<int>> Slider(int min,
                                                       int max,
                                                       int& sliderValue,
                                                       bool onNewRow = true,
-                                                      const std::shared_ptr<GuiContainer>& container = nullptr);
+                                                      const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiRadioButton> RadioButton(const std::string& text, int& reference,
+        static Shared<GuiRadioButton> RadioButton(const std::string& text, int& reference,
                                                            int onSelectValue,
                                                            const std::function<void()>& callback,
                                                            bool onNewRow = true,
-                                                   const std::shared_ptr<GuiContainer>& container = nullptr);
+                                                   const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiInputText> TextInput(const std::string& startText,
+        static Shared<GuiInputText> TextInput(const std::string& startText,
                                                        float pixelWidth,
                                                        bool onNewRow = true,
-                                                   const std::shared_ptr<GuiContainer>& container = nullptr);
+                                                   const Shared<GuiContainer>& container = nullptr);
 
-        static std::shared_ptr<GuiImage> Image(const std::string& filePath, unsigned int maxRows,
-                                               const std::shared_ptr<GuiContainer>& container = nullptr);
+        static Shared<GuiImage> Image(const std::string& filePath, unsigned int maxRows,
+                                               const Shared<GuiContainer>& container = nullptr);
 
         static void Init(const WindowSettings& ws);
         static void Render(const Timestamp& delta);
@@ -90,9 +90,9 @@ namespace Anwill {
 
     private:
         static std::unique_ptr<OrthographicCamera> s_Camera;
-        static std::shared_ptr<GuiContainer> s_LastContainer;
+        static Shared<GuiContainer> s_LastContainer;
         //static GuiWindowID s_LastWindowID;
-        static std::vector<std::shared_ptr<GuiWindow>> s_Windows;
+        static std::vector<Shared<GuiWindow>> s_Windows;
         // API remembers last used container
 
         struct State {
@@ -108,7 +108,7 @@ namespace Anwill {
             bool scalingVertically = false;
 
             // Elements
-            std::shared_ptr<GuiElement> hoverElement, pressElement, selectElement;
+            Shared<GuiElement> hoverElement, pressElement, selectElement;
             Math::Vec2f hoverElementPos, pressElementPos, selectElementPos;
 
             // Misc
@@ -135,7 +135,7 @@ namespace Anwill {
         //static int GetWindowIndex(GuiWindowID id);
 
         template <class E, typename... Args>
-        static std::shared_ptr<E> AddElementToContainer(const std::shared_ptr<GuiContainer>& container,
+        static Shared<E> AddElementToContainer(const Shared<GuiContainer>& container,
                                                         Args&&... args)
         {
             if(container == nullptr && s_LastContainer == nullptr)

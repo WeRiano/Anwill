@@ -12,11 +12,11 @@
 namespace Anwill {
 
     std::unique_ptr<OrthographicCamera> Gui::s_Camera;
-    std::shared_ptr<GuiContainer> Gui::s_LastContainer;
-    std::vector<std::shared_ptr<GuiWindow>> Gui::s_Windows;
+    Shared<GuiContainer> Gui::s_LastContainer;
+    std::vector<Shared<GuiWindow>> Gui::s_Windows;
     Gui::State Gui::s_State;
 
-    std::shared_ptr<GuiWindow> Gui::CreateWindow(const std::string& title)
+    Shared<GuiWindow> Gui::CreateWindow(const std::string& title)
     {
         if(s_Windows.size() >= AW_GUI_MAX_NUM_WINDOWS) {
             return nullptr;
@@ -28,8 +28,8 @@ namespace Anwill {
         return s_Windows.back();
     }
 
-    std::shared_ptr<GuiDropdown> Gui::Dropdown(const std::string& text,
-                                               const std::shared_ptr<GuiContainer>& container)
+    Shared<GuiDropdown> Gui::Dropdown(const std::string& text,
+                                               const Shared<GuiContainer>& container)
     {
 
         auto dropdown = AddElementToContainer<GuiDropdown>(container, true, true, text);
@@ -37,67 +37,67 @@ namespace Anwill {
         return dropdown;
     }
 
-    std::shared_ptr<GuiText> Gui::Text(const std::string& text,
+    Shared<GuiText> Gui::Text(const std::string& text,
                                        bool onNewRow,
-                                       const std::shared_ptr<GuiContainer>& container)
+                                       const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiText>(container, onNewRow, false, text);
     }
 
-    std::shared_ptr<GuiTextButton> Gui::Button(const std::string& text,
+    Shared<GuiTextButton> Gui::Button(const std::string& text,
                                                const std::function<void()>& callback,
                                                bool onNewRow,
-                                               const std::shared_ptr<GuiContainer>& container)
+                                               const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiTextButton>(container, onNewRow, false, text, callback);
     }
 
-    std::shared_ptr<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::string& text,
+    Shared<GuiCheckbox> Gui::Checkbox(bool checkedInitially, const std::string& text,
                                                const std::function<void(bool)>& callback,
                                                bool onNewRow,
-                                               const std::shared_ptr<GuiContainer>& container)
+                                               const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiCheckbox>(container, onNewRow, false, checkedInitially, text, callback);
     }
 
-    std::shared_ptr<GuiSlider<float>> Gui::Slider(float min, float max, float& sliderValue,
+    Shared<GuiSlider<float>> Gui::Slider(float min, float max, float& sliderValue,
                                                   bool onNewRow,
-                                                  const std::shared_ptr<GuiContainer>& container)
+                                                  const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiSlider<float>>(container, true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiSlider<int>> Gui::Slider(int min,
+    Shared<GuiSlider<int>> Gui::Slider(int min,
                                                 int max,
                                                 int& sliderValue,
                                                 bool onNewRow,
-                                                const std::shared_ptr<GuiContainer>& container)
+                                                const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiSlider<int>>(container, true, true, min, max, sliderValue);
     }
 
-    std::shared_ptr<GuiRadioButton> Gui::RadioButton(const std::string& text,
+    Shared<GuiRadioButton> Gui::RadioButton(const std::string& text,
                                                      int& reference,
                                                      int onSelectValue,
                                                      const std::function<void()>& callback,
                                                      bool onNewRow,
-                                                     const std::shared_ptr<GuiContainer>& container)
+                                                     const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiRadioButton>(container, onNewRow, false, text,
                                                    reference, onSelectValue, callback);
     }
 
-    std::shared_ptr<GuiInputText> Gui::TextInput(const std::string& startText,
+    Shared<GuiInputText> Gui::TextInput(const std::string& startText,
                                                  float pixelWidth,
                                                  bool onNewRow,
-                                                 const std::shared_ptr<GuiContainer>& container)
+                                                 const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiInputText>(container, onNewRow, false, startText, pixelWidth);
     }
 
-    std::shared_ptr<GuiImage> Gui::Image(const std::string &filePath,
+    Shared<GuiImage> Gui::Image(const std::string &filePath,
                                          unsigned int maxRows,
-                                         const std::shared_ptr<GuiContainer> &container)
+                                         const Shared<GuiContainer> &container)
     {
         return AddElementToContainer<GuiImage>(container, true, true, filePath, maxRows);
     }
@@ -210,7 +210,6 @@ namespace Anwill {
     {
         auto e = static_cast<KeyPressEvent&>(*event);
         if(s_State.selectElement != nullptr)
-            auto t = s_State.selectElement;
             s_State.selectElement->OnKeyPress(e.GetKeyCode());
     }
 
@@ -257,7 +256,7 @@ namespace Anwill {
         {
             if(s_Windows[i]->IsShowingElements() && s_Windows[i]->IsHoveringResize(s_State.mousePos)) {
                 if(!lastIterHoveringDiagonalScaling) {
-                    SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::NegativeDiagonalResize);
+                    SystemEventHandler::Add<MouseCursorTypeEvent>(MouseCursorTypeEvent::CursorType::NegativeDiagonalResize);
                     s_State.hoveringDiagonalScaling = true;
                 }
                 s_State.hoveringWindowIndex = i;
@@ -265,18 +264,18 @@ namespace Anwill {
             }
             if(s_Windows[i]->IsHoveringHeader(s_State.mousePos)) {
                 if(!lastIterHoveringHeader) {
-                    SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::GrabbingHand);
+                    SystemEventHandler::Add<MouseCursorTypeEvent>(MouseCursorTypeEvent::CursorType::GrabbingHand);
                     s_State.hoveringWindowHeader = true;
                 }
                 s_State.hoveringWindowIndex = i;
                 return;
             }
             if(s_Windows[i]->IsHoveringWindow(mousePos)) {
-                SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
+                SystemEventHandler::Add<MouseCursorTypeEvent>(MouseCursorTypeEvent::CursorType::Arrow);
                 // Update which window we are currently hovering
                 s_State.hoveringWindowIndex = i;
                 // Remember which element we hovered last iteration
-                std::shared_ptr<GuiElement> lastIterHoverElement = s_State.hoverElement;
+                Shared<GuiElement> lastIterHoverElement = s_State.hoverElement;
                 // Update which element we are hovering right now
                 s_State.hoverElement = s_Windows[i]->GetHoverElement(s_State.hoverElementPos,
                                                                      mousePos);
@@ -299,7 +298,7 @@ namespace Anwill {
         s_State.hoveringDiagonalScaling = false;
         s_State.hoveringWindowHeader = false;
         s_State.hoveringWindowIndex = -1;
-        SystemEventHandler::Add<SetMouseCursorEvent>(SetMouseCursorEvent::CursorType::Arrow);
+        SystemEventHandler::Add<MouseCursorTypeEvent>(MouseCursorTypeEvent::CursorType::Arrow);
 
         if(s_State.hoverElement != nullptr) {
             // If we did not hit a window,

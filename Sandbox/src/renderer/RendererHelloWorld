@@ -18,4 +18,8 @@ private:
     std::shared_ptr<Anwill::Shader> m_Shader;
 
     Anwill::OrthographicCamera m_Camera;
+
+    void SetupLine();
+    void SetupRectangle();
+    void SetupTriangle();
 };

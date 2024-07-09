@@ -4,6 +4,7 @@
 #include <array>
 #include <GLFW/glfw3.h>
 
+#include "core/Core.h"
 #include "core/Window.h"
 #include "events/MouseEvents.h"
 #include "gfx/GraphicsContext.h"
@@ -24,14 +25,14 @@ namespace Anwill {
 
     private:
         void Init(const WindowSettings& ws);
-        void OnSetCursorEvent(const std::unique_ptr<Event>& event);
+        void OnMouseCursorTypeEvent(const Unique<Event>& event);
 
-        std::unique_ptr<GraphicsContext> m_gc;
+        Unique<GraphicsContext> m_gc;
         GLFWwindow* m_Window;
 
         static bool s_Created;
         static std::array<int, (std::size_t)
-        SetMouseCursorEvent::CursorType::NumberOfCursorTypes> s_MouseCursorGLFWIDs;
+        MouseCursorTypeEvent::CursorType::NumberOfCursorTypes> s_MouseCursorGLFWIDs;
     };
 
 }

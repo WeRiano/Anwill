@@ -20,10 +20,10 @@ class Sandbox : public Anwill::App
 {
 public:
     Sandbox(const Anwill::WindowSettings& ws)
-        : App(ws, true)
+        : App(ws)
     {
         /// Renderer tests
-        //AddLayer<RendererHelloWorld>(0);
+        AddLayer<RendererHelloWorld>(0);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
         //AddLayer<BatchRendererHelloWorld>(0, ws);
@@ -36,7 +36,7 @@ public:
         //AddLayer<CollisionTest>(30, ws);
 
         /// GUI tests
-        AddLayer<GuiTest>(0);
+        //AddLayer<GuiTest>(0);
 
         /// ECS tests
         //AddLayer<EcsTestLayer>(144);
