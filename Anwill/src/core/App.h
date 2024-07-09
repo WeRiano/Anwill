@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "core/Core.h"
 #include "core/Window.h"
 #include "core/LayerStack.h"
 
@@ -32,14 +33,14 @@ namespace Anwill {
 
     private:
         bool m_Running, m_Minimized;
-        std::unique_ptr<Window> m_Window;
+        Unique<Window> m_Window;
         LayerStack m_LayerStack;
 
         // Event callbacks
-        void OnWindowClose(std::unique_ptr<Event>& event);
-        void OnWindowResize(std::unique_ptr<Event>& event);
-        void OnWindowFocus(std::unique_ptr<Event>& event);
-        void OnWindowMove(std::unique_ptr<Event>& event);
+        void OnWindowClose(Unique<Event>& event);
+        void OnWindowResize(Unique<Event>& event);
+        void OnWindowFocus(Unique<Event>& event);
+        void OnWindowMove(Unique<Event>& event);
         // TODO: App Update / Render events?
     };
 

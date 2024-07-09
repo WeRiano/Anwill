@@ -1,18 +1,17 @@
 #pragma once
 
-#include <imgui.h>
-
 #include "core/Core.h"
 #include "core/Layer.h"
+#include "core/Window.h"
 
 namespace Anwill {
 
     class ImguiLayer : public Layer
     {
     public:
-        static void Init();
+        static void Init(const Window& window);
 
-        explicit ImguiLayer(unsigned int ups);
+        explicit ImguiLayer(unsigned int ups, const Window& window);
 
         void Update(const Timestamp& timestamp) override;
     };

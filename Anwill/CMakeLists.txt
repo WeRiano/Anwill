@@ -19,7 +19,7 @@ add_subdirectory(src/utils)
 add_subdirectory(vendor/glfw)
 
 add_library(Anwill INTERFACE)
-target_link_libraries(Anwill INTERFACE Core Ecs Events Graphics Math Physics Platform Utils)
+target_link_libraries(Anwill INTERFACE Core Ecs Events Graphics ImGui Math Physics Platform Utils)
 target_include_directories(Anwill INTERFACE src)
 
 # TODO: "Optimize" PUBLIC usage?? Is it really necessary everywhere? Does it even make a difference if it is everywhere?

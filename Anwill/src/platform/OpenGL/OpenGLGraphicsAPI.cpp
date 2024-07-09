@@ -47,6 +47,9 @@ namespace Anwill {
         // Scissors
         glEnable(GL_SCISSOR_TEST);
 
+        // Multisampling
+        glEnable(GL_MULTISAMPLE);
+
         // This is probably going to bite me in the ass some day
         // No idea what it is
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);

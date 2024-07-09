@@ -23,6 +23,9 @@
 #include "gfx/Texture.h"
 #include "gfx/Font.h"
 
+// GUI (imgui)
+#include "imgui/ImGuiLayer.h"
+
 // Math
 #include "math/Math.h"
 #include "math/Mat4f.h"

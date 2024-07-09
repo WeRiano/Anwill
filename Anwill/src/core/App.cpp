@@ -11,6 +11,8 @@
 #include "gfx/Renderer.h"
 #include "gfx/VertexBuffer.h"
 
+#include "imgui/ImguiLayer.h"
+
 #include "utils/Random.h"
 #include "utils/Profiler.h"
 
@@ -25,6 +27,8 @@ namespace Anwill {
         Renderer::Init();
         Ecs::Init();
         Random::Init();
+
+        AddLayer<ImguiLayer>(0, *m_Window.get());
 
         SystemEventHandler::Subscribe<WindowCloseEvent>(
                 AW_BIND_THIS_MEMBER_FUNC(App::OnWindowClose));
@@ -58,29 +62,26 @@ namespace Anwill {
 
             m_LayerStack.Update();
 
-            //Gui::Update();
-            //Gui::Render();
-
             m_Window->PostRenderUpdate();
 
             SystemEventHandler::Pop();
         }
     }
 
-    void App::OnWindowClose(std::unique_ptr<Event>& event)
+    void App::OnWindowClose(Unique<Event>& event)
     {
         m_Running = false;
     }
 
-    void App::OnWindowResize(std::unique_ptr<Event>& event)
+    void App::OnWindowResize(Unique<Event>& event)
     {
         auto e = static_cast<WindowResizeEvent&>(*event);
-        /*AW_INFO("Resized Window to width {0} and height {1}.",
-                e.GetNewWidth(), e.GetNewHeight()); */
+        AW_INFO("Resized Window to width {0} and height {1}.",
+                e.GetNewWidth(), e.GetNewHeight());
         Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());
     }
 
-    void App::OnWindowFocus(std::unique_ptr<Event>& event)
+    void App::OnWindowFocus(Unique<Event>& event)
     {
         auto e = static_cast<WindowFocusEvent&>(*event);
         m_Minimized = !e.IsInFocus();
@@ -88,9 +89,9 @@ namespace Anwill {
         else { AW_INFO("Application in focus."); }
     }
 
-    void App::OnWindowMove(std::unique_ptr<Event>& event)
+    void App::OnWindowMove(Unique<Event>& event)
     {
         WindowMoveEvent e = static_cast<WindowMoveEvent&>(*event);
-        //AW_INFO("Window moved to coordinates {0}, {1}", e.GetNewXPos(), e.GetNewYPos());
+        AW_INFO("Window moved to coordinates {0}, {1}", e.GetNewXPos(), e.GetNewYPos());
     }
 }
