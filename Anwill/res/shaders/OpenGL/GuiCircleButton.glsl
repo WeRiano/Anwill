@@ -26,8 +26,8 @@ uniform vec3 u_PressColor;
 bool IsOutsideEllipse(vec2 point, vec2 origin, vec2 radius)
 {
     return (((point.x - origin.x)*(point.x - origin.x))*((radius.y * radius.y)) +
-    ((point.y - origin.y)*(point.y - origin.y))*((radius.x * radius.x))) >=
-    ((radius.x)*(radius.x)*(radius.y)*(radius.y));
+            ((point.y - origin.y)*(point.y - origin.y))*((radius.x * radius.x))) >=
+            ((radius.x)*(radius.x)*(radius.y)*(radius.y));
 }
 
 void main()
@@ -36,17 +36,27 @@ void main()
     vec2 size = vec2( length(vec2(u_Transform[0][0], u_Transform[0][1])),
                       length(vec2(u_Transform[1][0], u_Transform[1][1])) );
     vec2 radius = vec2(size.x * 0.5f, size.y * 0.5f);
-
+    /*
     if (IsOutsideEllipse(gl_FragCoord.xy, centre, radius))
     {
         discard;
     }
+    */
+
+    vec2 diff = (gl_FragCoord.xy - centre / radius);
+    float distance = length(diff);
+    float edgeSoftness = 0.000;
+    //float alpha = 1.0 - smoothstep(1.0 - edgeSoftness, 1.0 + edgeSoftness, distance);
+    float alpha = 1.0;
+    if(distance > 1.0f) {
+        alpha = 0.0f;
+    }
 
     if(u_Pressing) {
-        color = vec4(u_PressColor, 1.0f);
+        color = vec4(u_PressColor, alpha);
     } else if(u_Hovering) {
-        color = vec4(u_HoverColor, 1.0f);
+        color = vec4(u_HoverColor, alpha);
     } else {
-        color = vec4(u_Color, 1.0f);
+        color = vec4(u_Color, alpha);
     }
 }
