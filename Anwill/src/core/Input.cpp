@@ -27,5 +27,4 @@ namespace Anwill {
             return WinInput::IsMouseButtonDown(mouseButtonCode);
         #endif
     }
-
 }

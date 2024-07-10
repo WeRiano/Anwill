@@ -7,7 +7,7 @@
 class RendererHelloWorld : public Anwill::Layer
 {
 public:
-    RendererHelloWorld(const unsigned int ups);
+    RendererHelloWorld(const unsigned int ups, const Anwill::WindowSettings& ws);
 
     virtual void Update(const Anwill::Timestamp &timestamp) override;
 
@@ -19,7 +19,13 @@ private:
 
     Anwill::OrthographicCamera m_Camera;
 
+    Anwill::Math::Vec2f m_MousePos;
+    Anwill::Mesh m_Mesh;
+
     void SetupLine();
     void SetupRectangle();
     void SetupTriangle();
+    void SetupCheckmark();
+
+    void OnMouseMove(std::unique_ptr<Anwill::Event>& event);
 };

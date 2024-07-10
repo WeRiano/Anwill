@@ -24,5 +24,10 @@ namespace Anwill {
         // positive y values means moving the camera up, and vise-versa
         void Move(float deltaX, float deltaY);
         void SetProjection(float width, float height);
+        float GetWidth() const;
+        float GetHeight() const;
+
+    private:
+        float m_Width, m_Height;
     };
 }

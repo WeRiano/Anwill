@@ -18,7 +18,8 @@ namespace Anwill {
           m_Style(AW_GUI_CAST_STYLE(GuiText::m_Style, GuiStyling::InputText)),
           m_RenderLeftIndex(0), m_RenderRightIndex((int) startText.length()),
           m_SelectLeftIndex(0), m_SelectRightIndex(0),
-          m_TimeCountMS(0), m_CursorIndex(0), m_ShowCursor(false)
+          m_TimeCountMS(GuiStyling::InputText::cursorShowTimeIntervalMS), m_CursorIndex(0),
+          m_ShowCursor(false)
     {
         m_Style->buttonHoverColor = m_Style->buttonColor;
         m_Style->buttonPressColor = m_Style->buttonColor;
@@ -33,7 +34,10 @@ namespace Anwill {
                               const Timestamp& delta)
     {
         AW_PROFILE_FUNC();
-        CalcCursorTimeInterval(delta);
+        if(m_IsSelected)
+        {
+            CalcCursorTimeInterval(delta);
+        }
 
         // Render button
         GuiButton::Render(assignedPos, assignedMaxSize, delta);

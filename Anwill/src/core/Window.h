@@ -11,6 +11,7 @@ namespace Anwill {
     {
         unsigned int width = 1280;
         unsigned int height = 720;
+        unsigned int samples = 4;
         const char* title = "Anwill Engine";
     };
 

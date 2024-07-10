@@ -8,7 +8,7 @@
 #include "physics/dynamics/DynamicsTest.h"
 #include "physics/collision/CollisionRender.h"
 #include "physics/collision/CollisionTest.h"
-#include "renderer/RendererHelloWorld"
+#include "renderer/RendererHelloWorld.h"
 #include "renderer/TextureHelloWorld.h"
 #include "renderer/FontHelloWorld.h"
 #include "renderer/BatchRendererHelloWorld.h"
@@ -23,7 +23,7 @@ public:
         : App(ws)
     {
         /// Renderer tests
-        //AddLayer<RendererHelloWorld>(0);
+        //AddLayer<RendererHelloWorld>(0, ws);
         //AddLayer<TextureHelloWorld>(0, ws);
         //AddLayer<FontHelloWorld>(0, ws);
         //AddLayer<BatchRendererHelloWorld>(0, ws);
@@ -36,7 +36,7 @@ public:
         //AddLayer<CollisionTest>(30, ws);
 
         /// GUI tests
-        AddLayer<GuiTest>(0);
+        //AddLayer<GuiTest>(0);
 
         /// ECS tests
         //AddLayer<EcsTestLayer>(144);
@@ -50,7 +50,7 @@ public:
 Anwill::App* Anwill::CreateApp()
 {
     // Define graphics API, Window Settings and more
-    WindowSettings ws{1200, 900, "Sandbox"};
+    WindowSettings ws{1200, 900, 16, "Sandbox"};
 
     // Make this more apparent. What is required exactly?
     Anwill::Renderer::SetAPI(Anwill::GraphicsAPI::API::OpenGL);

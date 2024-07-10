@@ -13,6 +13,7 @@ namespace Anwill {
     }
 
     OrthographicCamera::OrthographicCamera(float width, float height)
+        : m_Width(width), m_Height(height)
     {
         // TODO: Automatically make the orthographic camera relative to the CURRENT screensize??
         //       Probably use the event system somehow ...
@@ -31,5 +32,15 @@ namespace Anwill {
     void OrthographicCamera::SetProjection(float width, float height)
     {
         m_ProjMat = Math::Mat4f::Orthographic(0.0f, width, 0.0f, height, -1.0f, 1.0f);
+    }
+
+    float OrthographicCamera::GetWidth() const
+    {
+        return m_Width;
+    }
+
+    float OrthographicCamera::GetHeight() const
+    {
+        return m_Height;
     }
 }
