@@ -1,27 +1,16 @@
-#include <iostream>
-
 #include "Anwill.h"
+#include "EditorLayer.h"
 
-#include "ecs/EcsTestLayer.h"
-#include "gui/GuiTest.h"
-#include "physics/dynamics/DynamicsRender.h"
-#include "physics/dynamics/DynamicsTest.h"
-#include "physics/collision/CollisionRender.h"
-#include "physics/collision/CollisionTest.h"
-#include "renderer/RendererHelloWorld.h"
-#include "renderer/TextureHelloWorld.h"
-#include "renderer/FontHelloWorld.h"
-#include "renderer/BatchRendererHelloWorld.h"
-#include "renderer/SpriteAnimationTest.h"
-#include "tps/TPS.h"
-#include "tps/TPSCalcs.h"
-
-class Sandbox : public Anwill::App
+class AnwillEditor : public Anwill::App
 {
 public:
-    Sandbox(const Anwill::WindowSettings& ws)
-        : App(ws)
+    AnwillEditor(const Anwill::WindowSettings& ws)
+            : App(ws)
     {
+
+        // Editor layer
+        AddLayer<EditorLayer>(0, ws);
+
         /// Renderer tests
         //AddLayer<RendererHelloWorld>(0, ws);
         //AddLayer<TextureHelloWorld>(0, ws);
@@ -45,4 +34,21 @@ public:
         //AddLayer<TPSCalcs>(30);
         //AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
     }
+
+    static inline void CenterWindow();
+    static inline Anwill::Math::Vec2f
 };
+
+Anwill::App* Anwill::CreateApp()
+{
+    AnwillEditor::
+
+    // Define graphics API, Window Settings and more
+    WindowSettings ws{1200, 900, 16, "Editor"};
+
+    // Make this more apparent. What is required exactly?
+    Anwill::Renderer::SetAPI(Anwill::GraphicsAPI::API::OpenGL);
+    return new AnwillEditor(ws);
+}
+
+#include "EntryPoint.h" // Get the main function

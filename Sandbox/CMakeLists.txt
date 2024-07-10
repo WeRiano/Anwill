@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.19)
 project(AnwillSandbox)
 
 include_directories(src)

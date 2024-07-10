@@ -9,12 +9,34 @@
 #include "events/SystemEventHandler.h"
 #include "events/WindowEvents.h"
 
+#include "gfx/Renderer.h"
+
 namespace Anwill {
+
+    struct AppSettings
+    {
+    public:
+        AppSettings()
+        {}
+
+        inline AppSettings& CenterWindow()
+        {
+            return *this;
+        }
+
+        inline AppSettings& SetWindowResolution(unsigned int width, unsigned int height)
+        {
+
+        }
+
+    private:
+        WindowSettings windowSettings;
+    };
 
     class App
     {
     public:
-        App(const WindowSettings& ws);
+        App(const AppSettings& settings);
         ~App();
 
         void Run();

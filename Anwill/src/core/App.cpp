@@ -18,14 +18,14 @@
 
 namespace Anwill {
 
-    App::App(const WindowSettings& ws)
+    App::App(const AppSettings& settings)
         : m_Running(true), m_Minimized(false)
     {
         SystemEventHandler::Init();
-        m_Window = Window::Create(ws);
+        m_Window = Window::Create(settings.windowSettings);
         Input::Init(m_Window->GetNativeWindow());
         Renderer::Init();
-        AddLayer<GuiLayer>(0, ws);
+        AddLayer<GuiLayer>(0, settings.windowSettings);
         Ecs::Init();
         Random::Init();
 
