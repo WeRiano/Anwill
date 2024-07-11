@@ -48,7 +48,6 @@ namespace Anwill {
     void GuiContainer::Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
                               const Timestamp& delta)
     {
-        // TODO: Cleanup, big function
         if(!m_ShowElements) { return; }
         Renderer::PushScissor({assignedPos.X, assignedPos.Y - assignedMaxSize.Y}, assignedMaxSize);
         Math::Vec2f elementPos = m_ScrollOffset;

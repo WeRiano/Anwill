@@ -22,17 +22,23 @@ namespace Anwill {
             return nullptr;
         }
         s_Windows.emplace_back(std::make_shared<GuiWindow>(title,
-                                                           Math::Vec2f(0.0f, 900.0f),
+                                                           Math::Vec2f(400.0f, 600.0f),
                                                            Math::Vec2f(600.0f, 450.0f)));
         s_LastContainer = s_Windows.back();
         return s_Windows.back();
+    }
+
+    void Gui::EraseWindow(const Shared<GuiWindow>& window)
+    {
+        //for(int i = 0; i < s_Windows.size())
     }
 
     Shared<GuiDropdown> Gui::Dropdown(const std::string& text,
                                                const Shared<GuiContainer>& container)
     {
 
-        auto dropdown = AddElementToContainer<GuiDropdown>(container, true, true, text);
+        auto dropdown = AddElementToContainer<GuiDropdown>(container, true,
+                                                           true, text);
         s_LastContainer = dropdown;
         return dropdown;
     }
@@ -95,9 +101,9 @@ namespace Anwill {
         return AddElementToContainer<GuiInputText>(container, onNewRow, false, startText, pixelWidth);
     }
 
-    Shared<GuiImage> Gui::Image(const std::string &filePath,
+    Shared<GuiImage> Gui::Image(const std::string& filePath,
                                          unsigned int maxRows,
-                                         const Shared<GuiContainer> &container)
+                                         const Shared<GuiContainer>& container)
     {
         return AddElementToContainer<GuiImage>(container, true, true, filePath, maxRows);
     }
@@ -132,8 +138,8 @@ namespace Anwill {
         Renderer2D::BeginScene(*s_Camera);
         // Render from back to front and highlight the front window as selected
         for(int i = s_Windows.size() - 1; i >= 0; i--) {
-            bool isLastElement = i == 0;
-            s_Windows[i]->Render(isLastElement, delta);
+            bool isFrontElement = i == 0;
+            s_Windows[i]->Render(isFrontElement, delta);
         }
 
         if(s_State.hoverElement != nullptr)

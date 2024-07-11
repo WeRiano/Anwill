@@ -2,10 +2,19 @@
 
 #include "Anwill.h"
 
-class EditorLayer : public Anwill::Layer
-{
-public:
-    EditorLayer(unsigned int ups, const Anwill::WindowSettings& ws);
+namespace Anwill {
 
-    void Update(const Anwill::Timestamp& timestamp) override;
-};
+    class EditorLayer : public Layer
+    {
+    public:
+        EditorLayer(unsigned int ups, const Anwill::WindowSettings& ws);
+
+        void Update(const Anwill::Timestamp& timestamp) override;
+
+    private:
+        /**
+         * Spawn the window with sandbox test environments.
+         */
+        static void CreateSandboxWindow();
+    };
+}

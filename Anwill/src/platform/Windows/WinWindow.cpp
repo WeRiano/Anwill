@@ -62,6 +62,19 @@ namespace Anwill {
         return height;
     }
 
+    void WinWindow::GetDefaultWindowResolution(int& width, int& height)
+    {
+        // Set window resolution to 2/3 of monitor res
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* vidMode = glfwGetVideoMode(monitor);
+        if(vidMode != nullptr)
+        {
+            int monitorWidth = vidMode->width;
+            int monitorHeight = vidMode->height;
+            width = monitorWidth * 3 / 4;
+            height = monitorHeight * 3 / 4;
+        }
+    }
 
     void WinWindow::Init(const WindowSettings& ws)
     {
@@ -86,7 +99,9 @@ namespace Anwill {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_SAMPLES, ws.samples);
 
-        m_Window = glfwCreateWindow(ws.width, ws.height, ws.title, nullptr, nullptr);
+        AW_INFO("Pre window dimensions: {0} x {1}", ws.width, ws.height);
+
+        m_Window = glfwCreateWindow(ws.width, ws.height, ws.title, nullptr,nullptr);
 
         if (!m_Window)
         {
@@ -94,6 +109,9 @@ namespace Anwill {
             glfwTerminate();
             return;
         }
+        AW_INFO("Created window with dimensions {0} x {1}", ws.width, ws.height);
+
+        CenterWindow(ws.width, ws.height);
 
         s_Created = true;
 
@@ -215,6 +233,8 @@ namespace Anwill {
 
         SystemEventHandler::Subscribe<MouseCursorTypeEvent>(
             AW_BIND_THIS_MEMBER_FUNC(WinWindow::OnMouseCursorTypeEvent));
+
+        glfwShowWindow(m_Window);
     }
 
     void WinWindow::OnMouseCursorTypeEvent(const std::unique_ptr<Event>& event)
@@ -223,5 +243,22 @@ namespace Anwill {
         auto cursor = glfwCreateStandardCursor(
                 s_MouseCursorGLFWIDs[static_cast<int>(e.GetCursorType())]);
         glfwSetCursor(m_Window, cursor);
+    }
+
+    void WinWindow::CenterWindow(int windowWidth, int windowHeight) const
+    {
+        GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* vidMode = glfwGetVideoMode(monitor);
+        if(vidMode != nullptr)
+        {
+            int monitorXPos, monitorYPos;
+            glfwGetMonitorPos(monitor, &monitorXPos, &monitorYPos);
+
+            int monitorWidth = vidMode->width;
+            int monitorHeight = vidMode->height;
+            int x = monitorXPos + (monitorWidth - windowWidth) / 2;
+            int y = monitorYPos + (monitorHeight - windowHeight) / 2;
+            glfwSetWindowPos(m_Window, x, y);
+        }
     }
 }

@@ -16,17 +16,33 @@ namespace Anwill {
     struct AppSettings
     {
     public:
-        AppSettings()
-        {}
-
-        inline AppSettings& CenterWindow()
+        inline AppSettings& SetWindowResolution(unsigned int width, unsigned int height)
         {
+            windowSettings.width = width;
+            windowSettings.height = height;
             return *this;
         }
 
-        inline AppSettings& SetWindowResolution(unsigned int width, unsigned int height)
+        inline AppSettings& SetTitle(const std::string& title)
         {
+            windowSettings.title = title.c_str();
+            return *this;
+        }
 
+        inline AppSettings& SetGraphicsAPI(GraphicsAPI::API api)
+        {
+            Renderer::SetAPI(api);
+            return *this;
+        }
+
+        inline AppSettings& SetNumSamples(unsigned int samples)
+        {
+            windowSettings.samples = samples;
+            return *this;
+        }
+
+        inline WindowSettings GetWindowSettings() const {
+            return windowSettings;
         }
 
     private:

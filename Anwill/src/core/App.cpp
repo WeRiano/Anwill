@@ -22,11 +22,18 @@ namespace Anwill {
         : m_Running(true), m_Minimized(false)
     {
         SystemEventHandler::Init();
-        m_Window = Window::Create(settings.windowSettings);
+
+        WindowSettings windowSettings = settings.GetWindowSettings();
+        m_Window = Window::Create(windowSettings);
+
         Input::Init(m_Window->GetNativeWindow());
+
         Renderer::Init();
-        AddLayer<GuiLayer>(0, settings.windowSettings);
+
+        AddLayer<GuiLayer>(0, windowSettings);
+
         Ecs::Init();
+
         Random::Init();
 
         SystemEventHandler::Subscribe<WindowCloseEvent>(
@@ -61,9 +68,6 @@ namespace Anwill {
 
             m_LayerStack.Update();
 
-            //Gui::Update();
-            //Gui::Render();
-
             m_Window->PostRenderUpdate();
 
             SystemEventHandler::Pop();
@@ -78,8 +82,7 @@ namespace Anwill {
     void App::OnWindowResize(std::unique_ptr<Event>& event)
     {
         auto e = static_cast<WindowResizeEvent&>(*event);
-        /*AW_INFO("Resized Window to width {0} and height {1}.",
-                e.GetNewWidth(), e.GetNewHeight()); */
+        AW_INFO("Resized Window to width {0} and height {1}.", e.GetNewWidth(), e.GetNewHeight());
         Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());
     }
 

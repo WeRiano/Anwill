@@ -10,9 +10,9 @@ add_subdirectory(src/physics)
 add_subdirectory(src/renderer)
 add_subdirectory(src/tps)
 
-add_executable(Sandbox src/Sandbox.cpp)
-
-target_link_libraries(Sandbox PUBLIC
+add_library(Sandbox INTERFACE)
+target_include_directories(Sandbox INTERFACE src)
+target_link_libraries(Sandbox INTERFACE
         Anwill
         SandboxBase
         EcsSandbox

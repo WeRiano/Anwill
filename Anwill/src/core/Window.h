@@ -9,8 +9,8 @@ namespace Anwill {
 
     struct WindowSettings
     {
-        unsigned int width = 1280;
-        unsigned int height = 720;
+        unsigned int width = 1920;
+        unsigned int height = 1080;
         unsigned int samples = 4;
         const char* title = "Anwill Engine";
     };

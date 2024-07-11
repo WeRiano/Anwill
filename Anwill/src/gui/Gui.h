@@ -41,6 +41,8 @@ namespace Anwill {
         // Client functions (API)
         static Shared<GuiWindow> CreateWindow(const std::string& title);
 
+        static void EraseWindow(const Shared<GuiWindow>& window);
+
         static Shared<GuiDropdown> Dropdown(const std::string& title,
                                                      const Shared<GuiContainer>& container = nullptr);
 
