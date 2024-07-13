@@ -23,16 +23,15 @@ namespace Anwill {
     {
         auto editorWindow = Gui::CreateWindow("Editor");
 
-        Gui::Button("Ecs test", [editorWindow]() {
+        Gui::Button("Ecs test", []() {
             StartTestEnvironmentEvent event(StartTestEnvironmentEvent::Env::Ecs);
             EditorEventHandler::Add(event);
         });
 
         Gui::Dropdown("Physics");
-        Gui::Button("Collisions", [editorWindow]() {
+        Gui::Button("Collisions", []() {
             StartTestEnvironmentEvent event(StartTestEnvironmentEvent::Env::PhysicsCollision);
             EditorEventHandler::Add(event);
-            Gui::EraseWindow(editorWindow);
         });
         Gui::Button("Dynamics", []() {
             StartTestEnvironmentEvent event(StartTestEnvironmentEvent::Env::PhysicsDynamics);
