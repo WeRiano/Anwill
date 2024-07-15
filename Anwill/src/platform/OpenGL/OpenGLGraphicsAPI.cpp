@@ -51,7 +51,7 @@ namespace Anwill {
         // Multisampling
         glEnable(GL_MULTISAMPLE);
         //glEnable(GL_POLYGON_SMOOTH);
-        //glEnable(GL_LINE_SMOOTH);
+        glEnable(GL_LINE_SMOOTH);
 
         // This is probably going to bite me in the ass some day
         // No idea what it is

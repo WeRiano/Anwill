@@ -10,11 +10,5 @@ namespace Anwill {
         EditorLayer(unsigned int ups, const Anwill::WindowSettings& ws);
 
         void Update(const Anwill::Timestamp& timestamp) override;
-
-    private:
-        /**
-         * Spawn the window with sandbox test environments.
-         */
-        static void CreateSandboxWindow();
     };
 }

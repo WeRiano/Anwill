@@ -5,9 +5,9 @@ RendererHelloWorld::RendererHelloWorld(const unsigned int ups, const Anwill::Win
 {
     Anwill::Renderer::SetClearColor({1.0f, 1.0f, 1.0f});
     //SetupLine();
-    //SetupRectangle();
+    SetupRectangle();
     //SetupTriangle();
-    SetupCheckmark();
+    //SetupCheckmark();
 
     Anwill::SystemEventHandler::Subscribe<Anwill::MouseMoveEvent>(AW_BIND_THIS_MEMBER_FUNC(OnMouseMove));
 }
@@ -22,9 +22,9 @@ void RendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
     transform = Anwill::Math::Mat4f::Translate(transform, {m_Camera.GetWidth() * 0.5f,
                                                            m_Camera.GetHeight() * 0.5f,
                                                            0.0f});
-    //Anwill::Renderer2D::SubmitVertices(m_Shader, m_VA, m_IB, transform);
+    Anwill::Renderer2D::SubmitVertices(m_Shader, m_VA, m_IB, transform);
     //Anwill::Renderer2D::SubmitLines(m_Shader, m_VA, Anwill::Math::Mat4f::Identity(), 1);
-    Anwill::Renderer2D::SubmitMesh(m_Shader, m_Mesh, transform);
+    //Anwill::Renderer2D::SubmitMesh(m_Shader, m_Mesh, transform);
 
     Layer::Update(timestamp);
 }

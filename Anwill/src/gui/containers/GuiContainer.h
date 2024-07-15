@@ -66,6 +66,10 @@ namespace Anwill {
             return std::dynamic_pointer_cast<E>(m_ContainerElements.back().element);
         }
 
+        void RemoveElement(const Shared<GuiElement>& element);
+        void RemoveElements(const Shared<GuiElement>& element, unsigned int additionalElements = 0);
+        void Clear();
+
     protected:
         std::vector<ContainerElement> m_ContainerElements;
         GuiButton m_Scrollbar;
@@ -74,7 +78,14 @@ namespace Anwill {
         unsigned int m_GridDepth;
         volatile bool m_ShowElements; // TODO: Why volatile?
 
+        /**
+         * @brief Get the maximum allowed width and height of an element given its position and
+         *        the current maximum width and height.
+         */
         Math::Vec2f GetNextElementSize(const Math::Vec2f& posDelta, const Math::Vec2f& oldMaxSize);
+        /**
+         * @brief Get the position of the next horizontal or vertical element in a container
+         */
         Math::Vec2f GetNextElementPos(const Math::Vec2f& elementPosition, float elementWidth,
                                       unsigned int elementGridDepth, float newRowXPos, bool onNewRow);
         void RenderDebugGrid(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize);

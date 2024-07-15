@@ -30,7 +30,37 @@ namespace Anwill {
 
     void Gui::EraseWindow(const Shared<GuiWindow>& window)
     {
-        //for(int i = 0; i < s_Windows.size())
+        for(int i = 0; i < s_Windows.size(); i++)
+        {
+            if(s_Windows[i] == window)
+            {
+                s_Windows.erase(s_Windows.begin() + i);
+            }
+        }
+    }
+
+    long double Gui::GetRenderFramesPerSecond()
+    {
+        //return 1 / s_State.lastRenderTime.GetSeconds();
+        Timestamp average = Timestamp(0);
+        unsigned int size = s_State.renderTimes.size();
+        for(int i = 0; i < size; i++)
+        {
+            average += s_State.renderTimes[i];
+        }
+        return 1 / (average / size).GetSeconds();
+    }
+
+    long double Gui::GetRenderFrameTimeMS()
+    {
+        //return s_State.lastRenderTime.GetMilliseconds();
+        Timestamp average = Timestamp(0);
+        unsigned int size = s_State.renderTimes.size();
+        for(int i = 0; i < size; i++)
+        {
+            average += s_State.renderTimes[i];
+        }
+        return (average / size).GetMilliseconds();
     }
 
     Shared<GuiDropdown> Gui::Dropdown(const std::string& text,
@@ -131,6 +161,7 @@ namespace Anwill {
 
     void Gui::Render(const Timestamp& delta)
     {
+        Timestamp renderStartTime;
         if(s_Windows.empty()) {
             return;
         }
@@ -147,12 +178,18 @@ namespace Anwill {
             s_State.hoverElement->OnHoverRender(s_State.mousePos,
                                                 s_State.gameWindowSize);
         }
+
+        Timestamp renderStopTime;
+        s_State.renderTimes.emplace_back(renderStopTime - renderStartTime);
+        if(s_State.renderTimes.size() > s_State.averageSize)
+        {
+            s_State.renderTimes.pop_front();
+        }
     }
 
     void Gui::Update()
     {
         AW_PROFILE_FUNC();
-        GuiEventHandler::Pop();
         if(s_State.hoverElement != nullptr)
         {
             s_State.hoverElement->OnHover(s_State.mousePos - s_State.hoverElementPos);
@@ -161,6 +198,7 @@ namespace Anwill {
         {
             s_State.pressElement->OnPress(s_State.mousePos - s_State.pressElementPos);
         }
+        GuiEventHandler::Pop();
     }
 
     void Gui::OnMouseMove(std::unique_ptr<Event>& event)

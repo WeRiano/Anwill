@@ -5,6 +5,7 @@
 #include <functional>
 #include <vector>
 #include <utility>
+#include <deque>
 
 #include "elements/GuiButton.h"
 #include "elements/GuiCheckbox.h"
@@ -40,8 +41,10 @@ namespace Anwill {
     public:
         // Client functions (API)
         static Shared<GuiWindow> CreateWindow(const std::string& title);
-
         static void EraseWindow(const Shared<GuiWindow>& window);
+
+        static long double GetRenderFramesPerSecond();
+        static long double GetRenderFrameTimeMS();
 
         static Shared<GuiDropdown> Dropdown(const std::string& title,
                                                      const Shared<GuiContainer>& container = nullptr);
@@ -115,6 +118,11 @@ namespace Anwill {
 
             // Misc
             Math::Vec2f mousePos, gameWindowSize;
+
+            // Fps
+            Timestamp lastRenderTime;
+            std::deque<Timestamp> renderTimes;
+            const unsigned int averageSize = 100;
         };
 
         static State s_State;

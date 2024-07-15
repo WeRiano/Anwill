@@ -4,8 +4,9 @@
 
 namespace Anwill
 {
-    void LayerStack::Update()
+    Timestamp LayerStack::Update()
     {
+        Timestamp start;
         for(unsigned int i = 0; i < m_Stack.size(); i++)
         {
             Timestamp last = m_Stack[i]->GetLastUpdate();
@@ -15,5 +16,7 @@ namespace Anwill
                 m_Stack[i]->Update(now);
             }
         }
+        Timestamp end;
+        return end - start;
     }
 }

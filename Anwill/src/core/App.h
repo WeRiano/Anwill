@@ -1,10 +1,12 @@
 #pragma once
 
 #include <memory>
+#include <deque>
 
 #include "core/Core.h"
 #include "core/Window.h"
 #include "core/LayerStack.h"
+#include "core/AppStats.h"
 
 #include "events/SystemEventHandler.h"
 #include "events/WindowEvents.h"
@@ -69,10 +71,20 @@ namespace Anwill {
             m_LayerStack.Add<C>(ups, std::forward<Args>(args)...);
         }
 
+        template <class C>
+        void RemoveLayer()
+        {
+            m_LayerStack.Remove<C>();
+        }
+
+        void UpdateAverageStackUpdateDuration(const Timestamp& updateDuration);
+        Timestamp GetAverageStackUpdateDuration() const;
+
     private:
         bool m_Running, m_Minimized;
         Unique<Window> m_Window;
         LayerStack m_LayerStack;
+        std::deque<Timestamp> m_LayerStackUpdateDurations;
 
         // Event callbacks
         void OnWindowClose(Unique<Event>& event);

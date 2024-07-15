@@ -147,18 +147,46 @@ namespace Anwill {
         return m_GridDepth;
     }
 
-/**
-* @brief Get the maximum allowed width and height of an element given its position and
-*        the current maximum width and height.
-*/
+    void GuiContainer::RemoveElement(const Shared<GuiElement>& element)
+    {
+        for(int i = 0; i < m_ContainerElements.size(); i++)
+        {
+            if(m_ContainerElements[i].element == element)
+            {
+                m_ContainerElements.erase(m_ContainerElements.begin() + i);
+                m_GridDepth--;
+                break;
+            }
+        }
+    }
+
+    void GuiContainer::RemoveElements(const Shared<GuiElement>& element, unsigned int additionalElements)
+    {
+        for(int i = 0; i < m_ContainerElements.size(); i++)
+        {
+            if(m_ContainerElements[i].element == element)
+            {
+                additionalElements = Math::Min(additionalElements,
+                                               (unsigned int)(m_ContainerElements.size() - i));
+                m_ContainerElements.erase(m_ContainerElements.begin() + i,
+                                          m_ContainerElements.begin() + i + additionalElements);
+                m_GridDepth -= additionalElements + 1;
+                break;
+            }
+        }
+    }
+
+    void GuiContainer::Clear()
+    {
+        m_GridDepth = 0;
+        m_ContainerElements.clear();
+    }
+
     Math::Vec2f GuiContainer::GetNextElementSize(const Math::Vec2f& posDelta, const Math::Vec2f& oldMaxSize)
     {
         return {oldMaxSize.X - posDelta.X, oldMaxSize.Y + posDelta.Y};
     }
 
-/**
- * @brief Get the position of the next horizontal or vertical element in a container
- */
     Math::Vec2f GuiContainer::GetNextElementPos(const Math::Vec2f& elementPosition, float elementWidth,
                                                 unsigned int elementGridDepth, float newRowXPos, bool onNewRow)
     {

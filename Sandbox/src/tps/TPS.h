@@ -4,8 +4,8 @@
 
 class TPS : public Anwill::Layer {
 public:
-    TPS(const unsigned int ups, float chunkWidth, float chunkHeight, unsigned int worldWidth, unsigned int worldHeight,
-        const Anwill::WindowSettings& ws);
+    TPS(const unsigned int ups, float chunkWidth, float chunkHeight, unsigned int worldWidth,
+        unsigned int worldHeight, const Anwill::WindowSettings& ws);
 
     virtual void Update(const Anwill::Timestamp &timestamp) override;
 private:
