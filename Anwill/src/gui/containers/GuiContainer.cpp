@@ -21,9 +21,9 @@ namespace Anwill {
         if (!m_ShowElements) { return nullptr; }
         for (const auto& containerElement : m_ContainerElements)
         {
-            if (containerElement.element->IsHovering( adjustedMousePos - containerElement.position))
+            if (containerElement.element->IsHovering( adjustedMousePos - containerElement.position ))
             {
-                hoverElementPos = containerElement.position;
+                hoverElementPos = containerElement.position + m_Style->GetFirstElementPos();
                 return containerElement.element;
             }
             if (dynamic_cast<GuiContainer*>(containerElement.element.get()) != nullptr)
@@ -37,7 +37,8 @@ namespace Anwill {
                 if (maybeResult != nullptr)
                 {
                     // If we found an element we return it, otherwise we continue
-                    hoverElementPos = containerElement.position + elementPosInsideContainer;
+                    hoverElementPos = containerElement.position + elementPosInsideContainer +
+                            m_Style->GetFirstElementPos();
                     return maybeResult;
                 }
             }

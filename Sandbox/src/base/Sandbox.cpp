@@ -27,31 +27,6 @@ Sandbox::Sandbox(const Anwill::AppSettings& settings) : App(settings)
     AddLayer<SandboxLayer>(0, settings.GetWindowSettings());
 
     m_WindowSettings = settings.GetWindowSettings();
-
-    /*
-    /// Renderer tests
-    //AddLayer<RendererHelloWorld>(0, ws);
-    //AddLayer<TextureHelloWorld>(0, ws);
-    //AddLayer<FontHelloWorld>(0, ws);
-    //AddLayer<BatchRendererHelloWorld>(0, ws);
-    //AddLayer<SpriteAnimationTest>(0, ws);
-
-    /// Physics tests
-    //AddLayer<DynamicsTest>(10);
-    //AddLayer<DynamicsRender>(0, ws);
-    //AddLayer<CollisionRender>(0, ws);
-    //AddLayer<CollisionTest>(30, ws);
-
-    /// GUI tests
-    //AddLayer<GuiTest>(0);
-
-    /// ECS tests
-    //AddLayer<EcsTestLayer>(144);
-
-    /// Smaller projects
-    //AddLayer<TPSCalcs>(30);
-    //AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
-    */
 }
 
 void Sandbox::OnStartTestEnvironmentEvent(std::unique_ptr<Anwill::Event>& event)

@@ -99,7 +99,7 @@ namespace Anwill {
         public:
             static float markerWidth;
 
-            Math::Vec3f markerColor = {0.30f, 0.38f, 1.0f};
+            Math::Vec3f markerColor = {0.38f, 0.45f, 1.0f};
 
             static inline Math::Vec2f GetMarkerSize(float rowHeight) {
                 return {markerWidth, rowHeight - 3.0f};

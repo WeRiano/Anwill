@@ -3,13 +3,11 @@
 EcsTestLayer::EcsTestLayer(const unsigned int ups)
         : Layer(ups)
 {
-
     for(unsigned int i = 0; i < m_Entities.size(); i++)
     {
         m_Entities[i] = Anwill::Ecs::CreateEntity();
         AW_INFO("Entity ID: {}", m_Entities[i]);
     }
-
     /*
     Anwill::Ecs::AddComponent<Anwill::MeshComponent>(m_Entities[0],0, 13.0f);
     Anwill::Ecs::AddComponent<Anwill::CameraComponent>(m_Entities[0], 4);

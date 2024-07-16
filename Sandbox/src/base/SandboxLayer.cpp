@@ -18,13 +18,14 @@ void SandboxLayer::Update(const Anwill::Timestamp& timestamp)
 
     if(s_GuiFpsText != nullptr)
     {
-        s_GuiFpsText->SetText("GUI renders at " + std::to_string(Anwill::Gui::GetRenderFramesPerSecond()) +
-                              " fps (" + std::to_string(Anwill::Gui::GetRenderFrameTimeMS()) + " ms per frame)");
+        s_GuiFpsText->SetText("GUI renders at " + Anwill::Math::RoundToString(Anwill::Gui::GetRenderFramesPerSecond(), 1) +
+                              " fps (" + Anwill::Math::RoundToString(Anwill::Gui::GetRenderFrameTimeMS(), 1) +
+                              " ms per frame)");
     }
     if(s_AppFpsText != nullptr)
     {
-        s_AppFpsText->SetText("App updates at " + std::to_string(Anwill::AppStats::GetAppUpdatesPerSecond()) +
-                              " per second (" + std::to_string(Anwill::AppStats::GetAppUpdateTimeMS()) +
+        s_AppFpsText->SetText("App updates " + Anwill::Math::RoundToString(Anwill::AppStats::GetAppUpdatesPerSecond(), 1) +
+                              " times per second (" + Anwill::Math::RoundToString(Anwill::AppStats::GetAppUpdateTimeMS(), 1) +
                               " ms per cycle)");
     }
 
@@ -38,7 +39,7 @@ void SandboxLayer::CreateSandboxWindow(const Anwill::Shared<Anwill::GuiContainer
     editorWindow->Clear();
     Anwill::Gui::Button("Ecs test", [editorWindow]() {
         EnterTestEnvironment(SandboxEnvironmentEvent::Env::Ecs, editorWindow);
-    });
+    }, true, editorWindow);
 
     Anwill::Gui::Dropdown("Physics");
     Anwill::Gui::Button("Collisions", [editorWindow]() {

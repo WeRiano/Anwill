@@ -34,10 +34,9 @@ namespace Anwill {
         if(m_MinimizeButton->IsHovering(mousePos - m_Pos)) {
             return m_MinimizeButton;
         }
-        Math::Vec2f firstElementPos = m_Style->GetFirstElementPos();
         auto hoverElement = GuiContainer::GetHoverElement(hoverElementPos,
                                                           mousePos - m_Pos);
-        hoverElementPos = m_Pos + firstElementPos;
+        hoverElementPos = m_Pos + hoverElementPos;
         return hoverElement;
     }
 

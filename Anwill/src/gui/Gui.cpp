@@ -34,6 +34,10 @@ namespace Anwill {
         {
             if(s_Windows[i] == window)
             {
+                if(s_LastContainer == window)
+                {
+                    s_LastContainer = nullptr;
+                }
                 s_Windows.erase(s_Windows.begin() + i);
             }
         }
@@ -196,6 +200,8 @@ namespace Anwill {
         }
         if(s_State.pressElement != nullptr)
         {
+            auto a = s_State.pressElementPos;
+            auto b = s_State.mousePos;
             s_State.pressElement->OnPress(s_State.mousePos - s_State.pressElementPos);
         }
         GuiEventHandler::Pop();

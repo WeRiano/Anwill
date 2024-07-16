@@ -18,24 +18,34 @@ namespace Anwill {
 
         static void Init();
 
-        // Add an entity to the system and returns its unique ID;
+        /**
+         * Add an entity to the system and returns its unique ID;
+         */
         static EntityID CreateEntity();
 
-        // Remove an entity from the system and all its components, freeing its ID.
+        /**
+         * Remove an entity from the system and all its components, freeing its ID.
+         */
         static void RemoveEntity(EntityID entityID);
 
-        // Check if an entity is still alive;
+        /**
+         * Check if an entity is still alive
+         */
         static bool IsEntityAlive(EntityID entityID);
 
-        // Register a component (type) to the ECS. A component which has not been
-        // registered can not be used.
+        /**
+         * Register a component (type) to the ECS. A component which has not been
+         * registered can not be used.
+         */
         template <class C>
         static void RegisterComponent()
         {
             s_Instance->m_ComponentManager.RegisterComponent<C>();
         }
 
-        // Add a component to an entity. This will replace any pre-existing component of the same type.
+        /**
+         * Add a component to an entity. This will replace any pre-existing component of the same type.
+         */
         template <class C, typename... Args>
         static void AddComponent(EntityID entityID, Args&&... args)
         {

@@ -16,8 +16,8 @@ private:
     Anwill::OrthographicCamera m_Camera;
 
     //Anwill::Math::Vec2f m_MousePos;
-    Anwill::Mesh m_TriangleMesh, m_RectangleMesh;
-    Anwill::Shared<Anwill::Shader> m_RectShader;
+    Anwill::Mesh m_TriangleMesh, m_RectangleMesh, m_CheckmarkMesh;
+    Anwill::Shared<Anwill::Shader> m_RectShader, m_CircleShader;
     Anwill::Math::Vec2f m_TriangleSize, m_RectangleSize, m_CircleSize, m_CheckmarkSize;
     Anwill::Shared<Anwill::GuiWindow> m_GuiWindow;
 };
