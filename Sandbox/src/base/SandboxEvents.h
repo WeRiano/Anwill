@@ -13,7 +13,7 @@ public:
         Ecs,
         PhysicsCollision,
         PhysicsDynamics,
-        RendererHelloWorld,
+        Primitives,
         BatchRenderer,
         Font,
         SpriteAnimation,

@@ -15,6 +15,8 @@ namespace Anwill {
             m_LastUpdate = timestamp;
         }
 
+        virtual void OnDetach() {}
+
         const Timestamp GetUpdateSpeed() {
             return m_UpdateDelta;
         }

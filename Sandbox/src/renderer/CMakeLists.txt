@@ -1,5 +1,5 @@
 add_library(RendererSandbox STATIC
-        BatchRendererHelloWorld.cpp FontHelloWorld.cpp RendererHelloWorld.cpp SpriteAnimationTest.cpp
+        BatchRendererHelloWorld.cpp FontHelloWorld.cpp PrimitivesTest.cpp SpriteAnimationTest.cpp
         TextureHelloWorld.cpp
 )
 

@@ -7,7 +7,7 @@
 #include "physics/collision/CollisionTest.h"
 #include "physics/dynamics/DynamicsRender.h"
 #include "physics/dynamics/DynamicsTest.h"
-#include "renderer/RendererHelloWorld.h"
+#include "renderer/PrimitivesTest.h"
 #include "renderer/BatchRendererHelloWorld.h"
 #include "renderer/FontHelloWorld.h"
 #include "renderer/SpriteAnimationTest.h"
@@ -28,6 +28,7 @@ Sandbox::Sandbox(const Anwill::AppSettings& settings) : App(settings)
 
     m_WindowSettings = settings.GetWindowSettings();
 
+    /*
     /// Renderer tests
     //AddLayer<RendererHelloWorld>(0, ws);
     //AddLayer<TextureHelloWorld>(0, ws);
@@ -50,6 +51,7 @@ Sandbox::Sandbox(const Anwill::AppSettings& settings) : App(settings)
     /// Smaller projects
     //AddLayer<TPSCalcs>(30);
     //AddLayer<TPS>(0, 80.0f, 80.0f, 12, 10, ws);
+    */
 }
 
 void Sandbox::OnStartTestEnvironmentEvent(std::unique_ptr<Anwill::Event>& event)
@@ -79,8 +81,8 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
             AddLayer<CollisionRender>(0, m_WindowSettings);
             AddLayer<CollisionTest>(30, m_WindowSettings);
             break;
-        case SandboxEnvironmentEvent::Env::RendererHelloWorld:
-            AddLayer<RendererHelloWorld>(0, m_WindowSettings);
+        case SandboxEnvironmentEvent::Env::Primitives:
+            AddLayer<PrimitivesTest>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::Font:
             AddLayer<FontHelloWorld>(0, m_WindowSettings);
@@ -117,8 +119,8 @@ void Sandbox::EndTestEnvironment(SandboxEnvironmentEvent event)
             RemoveLayer<CollisionRender>();
             RemoveLayer<CollisionTest>();
             break;
-        case SandboxEnvironmentEvent::Env::RendererHelloWorld:
-            RemoveLayer<RendererHelloWorld>();
+        case SandboxEnvironmentEvent::Env::Primitives:
+            RemoveLayer<PrimitivesTest>();
             break;
         case SandboxEnvironmentEvent::Env::Font:
             RemoveLayer<FontHelloWorld>();

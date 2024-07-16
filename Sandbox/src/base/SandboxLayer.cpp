@@ -48,13 +48,14 @@ void SandboxLayer::CreateSandboxWindow(const Anwill::Shared<Anwill::GuiContainer
         EnterTestEnvironment(SandboxEnvironmentEvent::Env::PhysicsDynamics, editorWindow);
     });
 
-    Anwill::Gui::Button("Renderer Hello World", [editorWindow]() {
-        EnterTestEnvironment(SandboxEnvironmentEvent::Env::RendererHelloWorld, editorWindow);
-    }, true, editorWindow);
+    auto renderingDropdown = Anwill::Gui::Dropdown("Rendering", editorWindow);
+    Anwill::Gui::Button("Primitives", [editorWindow]() {
+        EnterTestEnvironment(SandboxEnvironmentEvent::Env::Primitives, editorWindow);
+    });
 
     Anwill::Gui::Button("Font", [editorWindow]() {
         EnterTestEnvironment(SandboxEnvironmentEvent::Env::Font, editorWindow);
-    });
+    }, true, renderingDropdown);
 
     Anwill::Gui::Button("Batch renderer", [editorWindow]() {
         EnterTestEnvironment(SandboxEnvironmentEvent::Env::BatchRenderer, editorWindow);
@@ -70,7 +71,7 @@ void SandboxLayer::CreateSandboxWindow(const Anwill::Shared<Anwill::GuiContainer
 
     Anwill::Gui::Button("Top Down Shooter", [editorWindow]() {
         EnterTestEnvironment(SandboxEnvironmentEvent::Env::TopDownShooter, editorWindow);
-    });
+    }, true, editorWindow);
 }
 
 void SandboxLayer::EnterTestEnvironment(SandboxEnvironmentEvent::Env environment,

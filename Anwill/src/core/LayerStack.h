@@ -32,6 +32,7 @@ namespace Anwill {
             {
                 if( dynamic_cast<C*>(m_Stack[i].get()) != nullptr )
                 {
+                    m_Stack[i]->OnDetach();
                     m_Stack.erase(m_Stack.begin() + i);
                     break;
                 }

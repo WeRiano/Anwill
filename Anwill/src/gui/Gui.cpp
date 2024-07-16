@@ -100,7 +100,7 @@ namespace Anwill {
                                                   bool onNewRow,
                                                   const Shared<GuiContainer>& container)
     {
-        return AddElementToContainer<GuiSlider<float>>(container, true, true, min, max, sliderValue);
+        return AddElementToContainer<GuiSlider<float>>(container, onNewRow, false, min, max, sliderValue);
     }
 
     Shared<GuiSlider<int>> Gui::Slider(int min,
@@ -109,7 +109,7 @@ namespace Anwill {
                                                 bool onNewRow,
                                                 const Shared<GuiContainer>& container)
     {
-        return AddElementToContainer<GuiSlider<int>>(container, true, true, min, max, sliderValue);
+        return AddElementToContainer<GuiSlider<int>>(container, onNewRow, false, min, max, sliderValue);
     }
 
     Shared<GuiRadioButton> Gui::RadioButton(const std::string& text,
