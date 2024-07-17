@@ -3,21 +3,14 @@
 BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
                                                  const Anwill::WindowSettings& ws)
     : MovingCameraBaseLayer(ups, ws, 5.0f),
+      m_RectShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectColor.glsl")),
+      m_CircleShader(Anwill::Shader::Create("Sandbox/assets/shaders/CircleColor.glsl")),
+      m_TextureShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl")),
+      m_PrimitiveSize(20.0f, 20.0f),
       m_SpriteSheet(Anwill::SpriteSheet::Create(
-              "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48)),
-      m_TestFunc(AW_BIND_THIS_MEMBER_FUNC(BatchRendering))
+              "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48))
 {
-    m_SlowTextShader = Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl");
-    m_SlowColorShader = Anwill::Shader::Create("Sandbox/assets/shaders/RectColor.glsl");
-
-    m_QuadWidth = 20.0f;
-    m_QuadHeight = 20.0f;
-    m_CanvasWidth = ws.width * 2;
-    m_CanvasHeight = ws.height * 2;
-    m_NrQuadsX = static_cast<unsigned int>(m_CanvasWidth) /
-            static_cast<unsigned int>(m_QuadWidth);
-    m_NrQuadsY = static_cast<unsigned int>(m_CanvasHeight) /
-            static_cast<unsigned int>(m_QuadHeight);
+    m_NumPrimitives = 100;
 
     m_Camera.Move(100.0f, 0.0f);
 }
@@ -26,36 +19,69 @@ void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_Camera);
 
-    m_TestFunc();
+    ImGui::Begin("Batch renderer");
 
-    SwapTest();
+    static bool batchRendering = true, textureRendering = false;
+    ImGui::Checkbox("Batch rendering", &batchRendering);
+    ImGui::Checkbox("Texture rendering", &textureRendering);
+    if(!textureRendering) {
+        ImGui::Checkbox("Render quads", &m_IsRenderingQuads);
+        ImGui::Checkbox("Render circles", &m_IsRenderingCircles);
+    }
+    if(!textureRendering) {
+        ImGui::Text("Currently rendering n^2 = %d primitives", m_NumPrimitives * m_NumPrimitives);
+        ImGui::SliderInt("n", (int*) &m_NumPrimitives, 0, 300);
+    }
+
+    ImGui::End();
+
+    GetStrategy(batchRendering, textureRendering)();
 
     MovingCameraBaseLayer::Update(timestamp);
 }
 
-void BatchRendererHelloWorld::BatchRendering() const
+std::function<void()> BatchRendererHelloWorld::GetStrategy(bool batchRendering, bool textureRendering)
+{
+    if(batchRendering) {
+        if (textureRendering) {
+            return AW_BIND_THIS_MEMBER_FUNC(BatchRenderingTextureQuads);
+        } else {
+            return AW_BIND_THIS_MEMBER_FUNC(BatchRendering);
+        }
+    } else {
+        if (textureRendering) {
+            return AW_BIND_THIS_MEMBER_FUNC(SlowRenderingTextureQuads);
+        } else {
+            return AW_BIND_THIS_MEMBER_FUNC(SlowRendering);
+        }
+    }
+}
+
+void BatchRendererHelloWorld::BatchRendering()
 {
     AW_PROFILE_FUNC();
-    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
-                                                {m_QuadWidth, m_QuadHeight, 0.0f});
-    for(unsigned int y = 0; y < m_NrQuadsY; y++)
-    {
-        for(unsigned int x = 0; x < m_NrQuadsX; x++)
-        {
-            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NrQuadsY);
-            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NrQuadsX);
+    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), m_PrimitiveSize);
+    for(unsigned int y = 0; y < m_NumPrimitives; y++) {
+        for(unsigned int x = 0; x < m_NumPrimitives; x++) {
+            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NumPrimitives);
+            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NumPrimitives);
             Anwill::Math::Vec3f color(xClamp, yClamp, 0.5f);
-            if((y % 2 == 0 && x % 2 == 0) || (y % 2 == 1 && x % 2 == 1))
-            {
+            if( m_IsRenderingQuads && m_IsRenderingCircles) {
+                if( (y % 2 == 0 && x % 2 == 0) || (y % 2 == 1 && x % 2 == 1) ) {
+                    Anwill::Renderer2D::PushQuadToBatch(transform, color);
+                } else {
+                    Anwill::Renderer2D::PushCircleToBatch(transform, color);
+                }
+            } else if(m_IsRenderingQuads) {
                 Anwill::Renderer2D::PushQuadToBatch(transform, color);
-            } else {
+            } else if(m_IsRenderingCircles) {
                 Anwill::Renderer2D::PushCircleToBatch(transform, color);
             }
-            transform = Anwill::Math::Mat4f::Translate(transform,
-                                                       {m_QuadWidth, 0.0f, 0.0f});
+            transform = Anwill::Math::Mat4f::Translate(transform, {m_PrimitiveSize.X, 0.0f, 0.0f});
         }
         transform = Anwill::Math::Mat4f::Translate(transform,
-                                                   {-static_cast<float>(m_CanvasWidth), m_QuadHeight, 0.0f});
+                                                   {-static_cast<float>(m_NumPrimitives * m_PrimitiveSize.X),
+                                                    m_PrimitiveSize.Y, 0.0f});
     }
 
     Anwill::Renderer2D::DrawBatch();
@@ -64,50 +90,54 @@ void BatchRendererHelloWorld::BatchRendering() const
 void BatchRendererHelloWorld::SlowRendering()
 {
     AW_PROFILE_FUNC();
-    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
-                                                {m_QuadWidth, m_QuadHeight, 0.0f});
-    for(unsigned int y = 0; y < m_NrQuadsY; y++)
-    {
-        for(unsigned int x = 0; x < m_NrQuadsX; x++)
-        {
-            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NrQuadsY);
-            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NrQuadsX);
+    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), m_PrimitiveSize);
+    for(unsigned int y = 0; y < m_NumPrimitives; y++) {
+        for(unsigned int x = 0; x < m_NumPrimitives; x++) {
+            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NumPrimitives);
+            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NumPrimitives);
             Anwill::Math::Vec3f color(xClamp, yClamp, 0.5f);
+            Anwill::Shared<Anwill::Shader> shader;
+            if( m_IsRenderingQuads && m_IsRenderingCircles) {
+                if( (y % 2 == 0 && x % 2 == 0) || (y % 2 == 1 && x % 2 == 1) ) {
+                    shader = m_RectShader;
+                } else {
+                    shader = m_CircleShader;
+                }
+            } else if(m_IsRenderingQuads) {
+                shader = m_RectShader;
+            } else if(m_IsRenderingCircles) {
+                shader = m_CircleShader;
+            }
 
-            m_SlowColorShader->Bind();
-            m_SlowColorShader->SetUniformVec3f(color, "u_Color");
-            m_SlowColorShader->Unbind();
+            shader->Bind();
+            shader->SetUniformVec3f(color, "u_Color");
+            shader->Unbind();
 
-            Anwill::Renderer2D::SubmitMesh(m_SlowColorShader, Anwill::Mesh::GetUnitRectangle(false),
-                                           transform);
-            transform = Anwill::Math::Mat4f::Translate(transform,
-                                                       {m_QuadWidth, 0.0f, 0.0f});
+            Anwill::Renderer2D::SubmitMesh(shader, Anwill::Mesh::GetUnitRectangle(false), transform);
+            transform = Anwill::Math::Mat4f::Translate(transform, {m_PrimitiveSize.X, 0.0f, 0.0f});
         }
         transform = Anwill::Math::Mat4f::Translate(transform,
-                                                   {-static_cast<float>(m_CanvasWidth),
-                                                    m_QuadHeight, 0.0f});
+                                                   {-static_cast<float>(m_NumPrimitives * m_PrimitiveSize.X),
+                                                    m_PrimitiveSize.Y, 0.0f});
     }
 }
 
-void BatchRendererHelloWorld::BatchRenderingTextureQuads() {
+void BatchRendererHelloWorld::BatchRenderingTextureQuads()
+{
     AW_PROFILE_FUNC();
 
-    const float textureWidth = m_QuadWidth * 2;
-    const float textureHeight = m_QuadHeight * 2;
+    const auto textureSize = m_PrimitiveSize * 2;
 
-    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
-                                                {textureWidth, textureHeight, 0.0f});
+    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), textureSize);
     for(int x = 0; x < m_SpriteSheet->GetSpriteXCount(); x++) {
         for(int y = 0; y < m_SpriteSheet->GetSpriteYCount(); y++) {
             Anwill::Renderer2D::PushQuadToBatch(transform, m_SpriteSheet->GetSprite(x, y));
-            transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, textureHeight, 0.0f});
+            transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, textureSize.Y, 0.0f});
         }
         transform = Anwill::Math::Mat4f::Translate(transform,
-                                                   {textureWidth,
-                                                    -textureHeight * m_SpriteSheet->GetSpriteYCount(),
-                                                    0.0f});
+                                                   {textureSize.X,
+                                                    -textureSize.Y * m_SpriteSheet->GetSpriteYCount(), 0.0f});
     }
-
     Anwill::Renderer2D::DrawBatch();
 }
 
@@ -115,56 +145,16 @@ void BatchRendererHelloWorld::SlowRenderingTextureQuads()
 {
     AW_PROFILE_FUNC();
 
-    const float textureWidth = m_QuadWidth * 2;
-    const float textureHeight = m_QuadHeight * 2;
+    const auto textureSize = m_PrimitiveSize * 2;
 
-    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(),
-                                                {textureWidth, textureHeight, 0.0f});
-    for(unsigned int x = 0; x < m_SpriteSheet->GetSpriteYCount(); x++)
-    {
-        for(unsigned int y = 0; y < m_SpriteSheet->GetSpriteXCount(); y++)
-        {
-            float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_SpriteSheet->GetSpriteXCount());
-            float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_SpriteSheet->GetSpriteYCount());
-            Anwill::Math::Vec3f color(xClamp, yClamp, 0.5f);
-
-            m_SlowColorShader->Bind();
-            m_SlowColorShader->SetUniformVec3f(color, "u_Color");
-            m_SlowColorShader->Unbind();
-
-            Anwill::Renderer2D::SubmitSprite(m_SlowTextShader, m_SpriteSheet->GetSprite(x, y),
-                                           transform);
-            transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, textureHeight, 0.0f});
+    auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), textureSize);
+    for(unsigned int x = 0; x < m_SpriteSheet->GetSpriteYCount(); x++) {
+        for(unsigned int y = 0; y < m_SpriteSheet->GetSpriteXCount(); y++) {
+            Anwill::Renderer2D::SubmitSprite(m_TextureShader, m_SpriteSheet->GetSprite(x, y), transform);
+            transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, textureSize.Y, 0.0f});
         }
         transform = Anwill::Math::Mat4f::Translate(transform,
-                                                   {textureWidth,
-                                                    -textureHeight * m_SpriteSheet->GetSpriteYCount(),
-                                                    0.0f});
-    }
-}
-
-void BatchRendererHelloWorld::BatchRenderingEllipses()
-{
-    // TODO:
-    /*
-    transform = Anwill::Math::Mat4f::Scale(transform, {2.0f, 1.0f, 0.0f});
-    transform = Anwill::Math::Mat4f::Translate(transform, {400.0f, 0.0f, 0.0f});
-    Anwill::Renderer2D::PushCircleToBatch(transform, {0.3f, 0.4f, 0.9f});
-    Anwill::Renderer2D::DrawBatch();
-     */
-}
-
-void BatchRendererHelloWorld::SwapTest()
-{
-    if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D1)) {
-        m_TestFunc = AW_BIND_THIS_MEMBER_FUNC(BatchRendering);
-    } else if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D2)) {
-        m_TestFunc = AW_BIND_THIS_MEMBER_FUNC(SlowRendering);
-    } else if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D3)) {
-        m_TestFunc = AW_BIND_THIS_MEMBER_FUNC(BatchRenderingTextureQuads);
-    } else if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D4)) {
-        m_TestFunc = AW_BIND_THIS_MEMBER_FUNC(SlowRenderingTextureQuads);
-    } else if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D5)) {
-        m_TestFunc = AW_BIND_THIS_MEMBER_FUNC(BatchRenderingEllipses);
+                                                   {textureSize.X,
+                                                    -textureSize.Y * m_SpriteSheet->GetSpriteYCount(), 0.0f});
     }
 }
