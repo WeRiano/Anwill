@@ -13,23 +13,6 @@ PrimitivesTest::PrimitivesTest(const unsigned int ups, const Anwill::WindowSetti
     m_CheckmarkSize(ws.width / 5.0f, ws.height / 5.0f)
 {
     Anwill::Renderer::SetClearColor({1.0f, 1.0f, 1.0f});
-
-    m_GuiWindow = Anwill::Gui::CreateWindow("Primitives test");
-    Anwill::Gui::Text("Triangle");
-    Anwill::Gui::Slider(10.0f, ws.width / 4.0f, m_TriangleSize.X, false);
-    Anwill::Gui::Slider(10.0f, ws.height / 4.0f, m_TriangleSize.Y, false);
-
-    Anwill::Gui::Text("Rectangle");
-    Anwill::Gui::Slider(10.0f, ws.width / 4.0f, m_RectangleSize.X, false);
-    Anwill::Gui::Slider(10.0f, ws.height / 4.0f, m_RectangleSize.Y, false);
-
-    Anwill::Gui::Text("Circle");
-    Anwill::Gui::Slider(10.0f, ws.width / 4.0f, m_CircleSize.X, false);
-    Anwill::Gui::Slider(10.0f, ws.height / 4.0f, m_CircleSize.Y, false);
-
-    Anwill::Gui::Text("Checkmark");
-    Anwill::Gui::Slider(10.0f, ws.width / 4.0f, m_CheckmarkSize.X, false);
-    Anwill::Gui::Slider(10.0f, ws.height / 4.0f, m_CheckmarkSize.Y, false);
 }
 
 void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
@@ -81,5 +64,5 @@ void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
 
 void PrimitivesTest::OnDetach()
 {
-    Anwill::Gui::EraseWindow(m_GuiWindow);
+
 }

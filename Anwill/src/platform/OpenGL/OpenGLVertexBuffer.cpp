@@ -2,8 +2,6 @@
 
 #include "platform/OpenGL/OpenGLVertexBuffer.h"
 
-#include <iostream> // TODO: Remove!
-
 namespace Anwill {
 
     OpenGLVertexBuffer::OpenGLVertexBuffer(const float* data, unsigned int size)

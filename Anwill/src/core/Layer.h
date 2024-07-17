@@ -7,7 +7,7 @@ namespace Anwill {
     class Layer
     {
     public:
-        Layer(const unsigned int ups)
+        explicit Layer(unsigned int ups)
                 : m_UpdateDelta(ups == 0 ? 0 : 1000000/ups), m_LastUpdate(Timestamp())
         {}
 
@@ -17,15 +17,15 @@ namespace Anwill {
 
         virtual void OnDetach() {}
 
-        const Timestamp GetUpdateSpeed() {
+        Timestamp GetUpdateSpeed() {
             return m_UpdateDelta;
         }
 
-        const Timestamp GetLastUpdate() {
+        Timestamp GetLastUpdate() {
             return m_LastUpdate;
         }
 
-        const Timestamp GetUpdateDelta(const Anwill::Timestamp& timestamp) {
+        Timestamp GetUpdateDelta(const Anwill::Timestamp& timestamp) {
             return timestamp - m_LastUpdate;
         }
 

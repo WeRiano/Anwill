@@ -10,14 +10,4 @@ public:
 
     void Update(const Anwill::Timestamp& timestamp) override;
 
-private:
-    /**
-     * Spawn the window with sandbox test environments.
-     */
-    static void CreateSandboxWindow(const Anwill::Shared <Anwill::GuiContainer>& editorWindow);
-    static void EnterTestEnvironment(SandboxEnvironmentEvent::Env environment,
-                                     const Anwill::Shared <Anwill::GuiContainer>& window);
-
-    static Anwill::Shared<Anwill::GuiText> s_GuiFpsText;
-    static Anwill::Shared<Anwill::GuiText> s_AppFpsText;
 };
