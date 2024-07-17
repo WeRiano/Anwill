@@ -24,7 +24,7 @@
 #include "gfx/Font.h"
 
 // GUI (imgui)
-#include "imgui/ImGuiLayer.h"
+#include "imgui/Imgui.h"
 
 // Math
 #include "math/Math.h"

@@ -1,13 +1,15 @@
 #include <GLFW/glfw3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
-#include "ImguiLayer.h"
+#include "Imgui.h"
 #include "gfx/Renderer.h"
+
 
 namespace Anwill {
 
-    void ImguiLayer::Init(const Window& window)
+    void Imgui::Init(const Window& window)
     {
-
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -23,19 +25,20 @@ namespace Anwill {
         ImGui::StyleColorsLight();
     }
 
-    ImguiLayer::ImguiLayer(const unsigned int ups, const Window& window)
-        : Layer(ups)
+    void Imgui::NewFrame()
     {
-        Init(window);
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
     }
 
-    void ImguiLayer::Update(const Timestamp& timestamp)
+    void Imgui::EndFrame()
     {
-        Layer::Update(timestamp);
-
-        //ImGui::ShowDemoWindow();
-
         ImGui::EndFrame();
+    }
+
+    void Imgui::Render()
+    {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }

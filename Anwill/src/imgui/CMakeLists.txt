@@ -21,7 +21,7 @@ set(IMGUI_SOURCES
 )
 
 add_library(ImGui STATIC
-        ImguiLayer.cpp
+        Imgui.cpp
         ${IMGUI_SOURCES}
 )
 

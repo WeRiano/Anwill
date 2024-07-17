@@ -11,7 +11,7 @@
 #include "gfx/Renderer.h"
 #include "gfx/VertexBuffer.h"
 
-#include "imgui/ImguiLayer.h"
+#include "imgui/Imgui.h"
 
 #include "utils/Random.h"
 #include "utils/Profiler.h"
@@ -32,7 +32,7 @@ namespace Anwill {
 
         Renderer::Init();
 
-        AddLayer<ImguiLayer>(0, *m_Window.get());
+        Imgui::Init(*m_Window.get());
 
         Ecs::Init();
 
@@ -68,13 +68,14 @@ namespace Anwill {
 
             m_Window->PreRenderUpdate();
 
-            ImGui_ImplOpenGL3_NewFrame();
-            ImGui_ImplGlfw_NewFrame();
-            ImGui::NewFrame();
+            Imgui::NewFrame();
 
             Timestamp updateDuration = m_LayerStack.Update();
             UpdateAverageStackUpdateDuration(updateDuration);
             AppStats::layerStackAverageUpdateDuration = GetAverageStackUpdateDuration();
+
+            Imgui::EndFrame();
+            Imgui::Render();
 
             m_Window->PostRenderUpdate();
 
