@@ -4,7 +4,7 @@
 
 #include "Imgui.h"
 #include "gfx/Renderer.h"
-
+#include "utils/Profiler.h"
 
 namespace Anwill {
 
@@ -39,6 +39,7 @@ namespace Anwill {
 
     void Imgui::Render()
     {
+        AW_PROFILE_FUNC();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     }

@@ -7,55 +7,97 @@ PrimitivesTest::PrimitivesTest(const unsigned int ups, const Anwill::WindowSetti
     m_CheckmarkMesh(Anwill::Mesh::CreateCheckmarkMesh(1.0f, 1.0f)),
     m_RectShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectColor.glsl")),
     m_CircleShader(Anwill::Shader::Create("Sandbox/assets/shaders/CircleColor.glsl")),
-    m_TriangleSize(ws.width / 5.0f, ws.height / 5.0f),
-    m_RectangleSize(ws.width / 5.0f, ws.height / 5.0f),
-    m_CircleSize(ws.width / 5.0f, ws.height / 5.0f),
-    m_CheckmarkSize(ws.width / 5.0f, ws.height / 5.0f)
+    m_TriangleSize(ws.width / 5.0f, ws.width / 5.0f),
+    m_RectangleSize(ws.width / 5.0f, ws.width / 5.0f),
+    m_CircleSize(ws.width / 5.0f, ws.width / 5.0f),
+    m_CheckmarkSize(ws.width / 5.0f, ws.width / 5.0f),
+    m_WindowSize(ws.width, ws.height),
+    m_TrianglePos(m_Camera.GetWidth() * 0.25f, m_Camera.GetHeight() * 0.75f),
+    m_RectanglePos(m_Camera.GetWidth() * 0.75f, m_Camera.GetHeight() * 0.75f),
+    m_CirclePos(m_Camera.GetWidth() * 0.25f, m_Camera.GetHeight() * 0.25f),
+    m_CheckmarkPos(m_Camera.GetWidth() * 0.75f, m_Camera.GetHeight() * 0.25f),
+    m_BackgroundColor(1.0f, 1.0f, 1.0f),
+    m_TriangleColor(0.3f, 0.8f, 1.0f),
+    m_RectangleColor(0.8f, 0.3f, 1.0f),
+    m_CircleColor(1.0f, 0.8f, 0.3f),
+    m_CheckmarkColor(0.0f, 1.0f, 0.3f)
 {
-    Anwill::Renderer::SetClearColor({1.0f, 1.0f, 1.0f});
 }
 
 void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_Camera);
 
+    Anwill::Renderer::SetClearColor(m_BackgroundColor);
+
+    float maxPos = m_WindowSize.Max();
+
+    ImGui::Begin("Primitives");
+
+    ImGui::PushID(42);
+    ImGui::SeparatorText("Background");
+    ImGui::ColorEdit3("Color", &m_BackgroundColor.X);
+    ImGui::PopID();
+
+    ImGui::SeparatorText("Triangle");
+    ImGui::PushID(1);
+    ImGui::SliderFloat2("Scale", &m_TriangleSize.X, 10.0f, 1000.0f);
+    ImGui::SliderFloat2("Translation", &m_TrianglePos.X, 0.0f, maxPos);
+    ImGui::ColorEdit3("Color", &m_TriangleColor.X);
+    ImGui::PopID();
+
+    ImGui::SeparatorText("Rectangle");
+    ImGui::PushID(2);
+    ImGui::SliderFloat2("Scale", &m_RectangleSize.X, 10.0f, 1000.0f);
+    ImGui::SliderFloat2("Translation", &m_RectanglePos.X, 0.0f, maxPos);
+    ImGui::ColorEdit3("Color", &m_RectangleColor.X);
+    ImGui::PopID();
+
+    ImGui::SeparatorText("Circle");
+    ImGui::PushID(3);
+    ImGui::SliderFloat2("Scale", &m_CircleSize.X, 10.0f, 1000.0f);
+    ImGui::SliderFloat2("Translation", &m_CirclePos.X, 0.0f, maxPos);
+    ImGui::ColorEdit3("Color", &m_CircleColor.X);
+    ImGui::PopID();
+
+    ImGui::SeparatorText("Checkmark");
+    ImGui::PushID(4);
+    ImGui::SliderFloat2("Scale", &m_CheckmarkSize.X, 10.0f, 1000.0f);
+    ImGui::SliderFloat2("Translation", &m_CheckmarkPos.X, 0.0f, maxPos);
+    ImGui::ColorEdit3("Color", &m_CheckmarkColor.X);
+    ImGui::PopID();
+
+    ImGui::End();
+
     // Triangle
     auto transform = Anwill::Math::Mat4f::Scale({}, m_TriangleSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, {m_Camera.GetWidth() * 0.25f,
-                                                           m_Camera.GetHeight() * 0.75f,
-                                                           0.0f});
+    transform = Anwill::Math::Mat4f::Translate(transform, m_TrianglePos);
     m_RectShader->Bind();
-    m_RectShader->SetUniformVec3f({0.3f, 0.8f, 1.0f}, "u_Color");
+    m_RectShader->SetUniformVec3f(m_TriangleColor, "u_Color");
     Anwill::Renderer2D::SubmitMesh(m_RectShader, m_TriangleMesh, transform);
     m_RectShader->Unbind();
 
     // Rectangle
     transform = Anwill::Math::Mat4f::Scale({}, m_RectangleSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, {m_Camera.GetWidth() * 0.75f,
-                                                           m_Camera.GetHeight() * 0.75f,
-                                                           0.0f});
+    transform = Anwill::Math::Mat4f::Translate(transform, m_RectanglePos);
     m_RectShader->Bind();
-    m_RectShader->SetUniformVec3f({0.8f, 0.3f, 1.0f}, "u_Color");
+    m_RectShader->SetUniformVec3f(m_RectangleColor, "u_Color");
     Anwill::Renderer2D::SubmitMesh(m_RectShader, m_RectangleMesh, transform);
     m_RectShader->Unbind();
 
     // Circle
     transform = Anwill::Math::Mat4f::Scale({}, m_CircleSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, {m_Camera.GetWidth() * 0.25f,
-                                                           m_Camera.GetHeight() * 0.25f,
-                                                           0.0f});
+    transform = Anwill::Math::Mat4f::Translate(transform, m_CirclePos);
     m_CircleShader->Bind();
-    m_CircleShader->SetUniformVec3f({1.0f, 0.8f, 0.3f}, "u_Color");
+    m_CircleShader->SetUniformVec3f(m_CircleColor, "u_Color");
     Anwill::Renderer2D::SubmitMesh(m_CircleShader, m_RectangleMesh, transform);
     m_CircleShader->Unbind();
 
     // Checkmark
     transform = Anwill::Math::Mat4f::Scale({}, m_CheckmarkSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, {m_Camera.GetWidth() * 0.75f,
-                                                           m_Camera.GetHeight() * 0.25f,
-                                                           0.0f});
+    transform = Anwill::Math::Mat4f::Translate(transform, m_CheckmarkPos);
     m_RectShader->Bind();
-    m_RectShader->SetUniformVec3f({0.0f, 1.0f, 0.3f}, "u_Color");
+    m_RectShader->SetUniformVec3f(m_CheckmarkColor, "u_Color");
     Anwill::Renderer2D::SubmitMesh(m_RectShader, m_CheckmarkMesh, transform);
     m_RectShader->Unbind();
 

@@ -10,4 +10,8 @@ public:
 
     void Update(const Anwill::Timestamp& timestamp) override;
 
+private:
+    void StartTestEnv(SandboxEnvironmentEvent::Env env);
+
+    bool m_IsRunningTestEnv;
 };

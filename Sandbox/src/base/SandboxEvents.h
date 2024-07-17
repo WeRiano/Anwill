@@ -18,17 +18,16 @@ public:
         Font,
         SpriteAnimation,
         Texture,
-        TopDownShooter
+        TopDownShooter,
+
+        None
     };
 
-    explicit SandboxEnvironmentEvent(Env env, bool isStarting)
-        : m_Env(env), m_IsStarting(isStarting)
+    explicit SandboxEnvironmentEvent(Env env)
+        : m_Env(env)
     {}
     inline Env GetEnv() const { return m_Env; }
-    inline bool IsStarting() const { return m_IsStarting; }
 
 private:
     Env m_Env;
-    // False = ending
-    bool m_IsStarting;
 };

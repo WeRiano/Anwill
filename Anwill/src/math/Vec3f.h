@@ -31,6 +31,8 @@ namespace Anwill::Math {
 
         Vec3f Abs() const;
         Vec3f Negate() const;
+        float Min() const;
+        float Max() const;
         float DotProduct(const Vec3f& other) const;
         Vec3f CrossProduct(const Vec3f& other) const;
         void Move(float deltaX, float deltaY, float deltaZ);

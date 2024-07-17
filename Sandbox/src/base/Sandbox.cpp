@@ -15,7 +15,8 @@
 #include "tps/TPS.h"
 #include "tps/TPSCalcs.h"
 
-Sandbox::Sandbox(const Anwill::AppSettings& settings) : App(settings)
+Sandbox::Sandbox(const Anwill::AppSettings& settings)
+    : App(settings), m_ActiveEnv(SandboxEnvironmentEvent::Env::None)
 {
     SandboxEventHandler::Init();
 
@@ -32,18 +33,19 @@ Sandbox::Sandbox(const Anwill::AppSettings& settings) : App(settings)
 void Sandbox::OnStartTestEnvironmentEvent(std::unique_ptr<Anwill::Event>& event)
 {
     auto e = static_cast<SandboxEnvironmentEvent&>(*event);
-    if(e.IsStarting())
+    if(e.GetEnv() == SandboxEnvironmentEvent::Env::None)
     {
-        StartTestEnvironment(e);
+        EndTestEnvironment();
     } else
     {
-        EndTestEnvironment(e);
+        StartTestEnvironment(e);
     }
 }
 
 void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
 {
-    switch (event.GetEnv())
+    m_ActiveEnv = event.GetEnv();
+    switch (m_ActiveEnv)
     {
         case SandboxEnvironmentEvent::Env::Ecs:
             AddLayer<EcsTestLayer>(0);
@@ -79,9 +81,9 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
     }
 }
 
-void Sandbox::EndTestEnvironment(SandboxEnvironmentEvent event)
+void Sandbox::EndTestEnvironment()
 {
-    switch (event.GetEnv())
+    switch (m_ActiveEnv)
     {
         case SandboxEnvironmentEvent::Env::Ecs:
             RemoveLayer<EcsTestLayer>();
@@ -114,4 +116,5 @@ void Sandbox::EndTestEnvironment(SandboxEnvironmentEvent event)
             RemoveLayer<TPS>();
             break;
     }
+    m_ActiveEnv = SandboxEnvironmentEvent::Env::None;
 }

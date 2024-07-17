@@ -10,8 +10,9 @@ public:
 
 private:
     Anwill::WindowSettings m_WindowSettings;
+    SandboxEnvironmentEvent::Env m_ActiveEnv;
 
     void OnStartTestEnvironmentEvent(std::unique_ptr<Anwill::Event>& event);
     void StartTestEnvironment(SandboxEnvironmentEvent event);
-    void EndTestEnvironment(SandboxEnvironmentEvent event);
+    void EndTestEnvironment();
 };

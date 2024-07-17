@@ -33,8 +33,6 @@ void main()
 
     //vec3 color = vec3(normDistance);
     //vec3 color = vec3(step(1.0f, normDistance));
-    vec3 color = vec3(smoothstep(1.0f - edgeSoftness, 1.0f + edgeSoftness, normDistance));
-    color += u_Color;
-
-    FragColor = vec4(color, 1.0f);
+    float alpha = smoothstep(1.0f - edgeSoftness, 1.0f + edgeSoftness, normDistance);
+    FragColor = vec4(u_Color, 1.0f - alpha);
 }

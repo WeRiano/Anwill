@@ -19,6 +19,7 @@
 namespace Anwill {
 
     Timestamp AppStats::layerStackAverageUpdateDuration = Timestamp(0);
+    std::deque<Timestamp> AppStats::layerStackUpdateDurations;
 
     App::App(const AppSettings& settings)
         : m_Running(true), m_Minimized(false)
@@ -71,8 +72,7 @@ namespace Anwill {
             Imgui::NewFrame();
 
             Timestamp updateDuration = m_LayerStack.Update();
-            UpdateAverageStackUpdateDuration(updateDuration);
-            AppStats::layerStackAverageUpdateDuration = GetAverageStackUpdateDuration();
+            AppStats::PushUpdateDuration(updateDuration);
 
             Imgui::EndFrame();
             Imgui::Render();
@@ -81,25 +81,6 @@ namespace Anwill {
 
             SystemEventHandler::Pop();
         }
-    }
-
-    void App::UpdateAverageStackUpdateDuration(const Timestamp& updateDuration)
-    {
-        m_LayerStackUpdateDurations.push_back(updateDuration);
-        if(m_LayerStackUpdateDurations.size() > 100)
-        {
-            m_LayerStackUpdateDurations.pop_front();
-        }
-    }
-
-    Timestamp App::GetAverageStackUpdateDuration() const
-    {
-        Timestamp average = Timestamp(0);
-        for(int i = 0; i < m_LayerStackUpdateDurations.size(); i++)
-        {
-            average += m_LayerStackUpdateDurations[i];
-        }
-        return average / m_LayerStackUpdateDurations.size();
     }
 
     void App::OnWindowClose(std::unique_ptr<Event>& event)

@@ -109,6 +109,15 @@ namespace Anwill::Math {
         return {X, -Y};
     }
 
+    float Vec2f::Min() const
+    {
+        return Math::Min(X, Y);
+    }
+
+    float Vec2f::Max() const
+    {
+        return Math::Max(X, Y);
+    }
 
     float Vec2f::ScalarProjection(Vec2f vec2f) const
     {

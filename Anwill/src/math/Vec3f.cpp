@@ -108,6 +108,16 @@ namespace Anwill::Math {
         return {-X, -Y, -Z};
     }
 
+    float Vec3f::Min() const
+    {
+        return Math::Min(Math::Min(X, Y), Z);
+    }
+
+    float Vec3f::Max() const
+    {
+        return Math::Max(Math::Max(X, Y), Z);
+    }
+
     float Vec3f::DotProduct(const Vec3f& other) const
     {
         return X * other.X + Y * other.Y + Z * other.Z;

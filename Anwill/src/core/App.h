@@ -84,7 +84,6 @@ namespace Anwill {
         bool m_Running, m_Minimized;
         Unique<Window> m_Window;
         LayerStack m_LayerStack;
-        std::deque<Timestamp> m_LayerStackUpdateDurations;
 
         // Event callbacks
         void OnWindowClose(Unique<Event>& event);

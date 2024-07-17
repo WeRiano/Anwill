@@ -18,5 +18,8 @@ private:
     //Anwill::Math::Vec2f m_MousePos;
     Anwill::Mesh m_TriangleMesh, m_RectangleMesh, m_CheckmarkMesh;
     Anwill::Shared<Anwill::Shader> m_RectShader, m_CircleShader;
-    Anwill::Math::Vec2f m_TriangleSize, m_RectangleSize, m_CircleSize, m_CheckmarkSize;
+    const Anwill::Math::Vec2f m_WindowSize;
+    Anwill::Math::Vec2f m_TriangleSize, m_RectangleSize, m_CircleSize, m_CheckmarkSize,
+                        m_TrianglePos, m_RectanglePos, m_CirclePos, m_CheckmarkPos;
+    Anwill::Math::Vec3f m_BackgroundColor, m_TriangleColor, m_RectangleColor, m_CircleColor, m_CheckmarkColor;
 };

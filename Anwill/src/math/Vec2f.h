@@ -34,6 +34,8 @@ namespace Anwill::Math {
         Vec2f Negate() const;
         Vec2f NegateX() const;
         Vec2f NegateY() const;
+        float Min() const;
+        float Max() const;
         float ScalarProjection(Vec2f vec2f) const;
         float DotProduct(const Vec2f& other) const;
         void Move(float deltaX, float deltaY);
