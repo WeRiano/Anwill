@@ -1,0 +1,36 @@
+#pragma once
+
+#include "GuiElement.h"
+#include "core/Core.h"
+
+namespace Anwill {
+
+    class GuiButton : public virtual GuiElement {
+    public:
+        Shared<GuiStyling::Button> m_Style;
+
+        // TODO: Size parameter should be swapped out to width only.
+        //  Hardcode height = containerStyle->elementHeight.
+        GuiButton(const Shared<GuiStyling::Container>& containerStyle, const Math::Vec2f& size,
+                  const std::function<void()>& callback,
+                  const Shared<GuiStyling::Button>& style = nullptr);
+
+        void Render(const Math::Vec2f& assignedPos, const Math::Vec2f& assignedMaxSize,
+                    const Timestamp& delta) override;
+        bool IsHovering(const Math::Vec2f& mousePos) const override;
+        float GetWidth() const override;
+        unsigned int GetGridDepth() const override;
+        void Release() override;
+
+        void SetCallback(const std::function<void()>& callback);
+        void SetWidth(float width);
+        void SetHeight(float height);
+
+    protected:
+        Math::Vec2f m_ButtonSize;
+        std::function<void()> m_Callback;
+
+        float GetHeight() const;
+        Math::Vec2f GetSize() const;
+    };
+}
