@@ -13,6 +13,12 @@
 
 namespace Anwill {
 
+    struct RenderData {
+        unsigned int drawCalls = 0;
+        unsigned int drawnCircles = 0;
+        unsigned int drawnQuads = 0;
+    };
+
     struct BatchData2D {
         // "Global" values that is shared between all types of batches
         inline static unsigned int maxTextureSlots;
@@ -26,17 +32,17 @@ namespace Anwill {
         std::shared_ptr<VertexBuffer> VB;
         std::shared_ptr<VertexArray> VA;
         std::shared_ptr<Shader> shader;
-
     };
 
     struct QuadVertex {
         Math::Vec2f pos;
         Math::Vec2f texCoords;
         Math::Vec3f color;
+        float textureID;
     };
 
     struct QuadBatchData : public BatchData2D {
-        static const unsigned int maxQuads = 20000;
+        static const unsigned int maxQuads = 40000;
         static const unsigned int vertexAttribCount = 8;
         static const unsigned int quadAttribCount = vertexAttribCount * 4;
         static const unsigned int verticesArrMaxSize = maxQuads * quadAttribCount;
@@ -72,7 +78,7 @@ namespace Anwill {
             }
         }
 
-        void VertexToArr(const QuadVertex& vertex, int textureID)
+        void VertexToArr(const QuadVertex& vertex)
         {
             verticesArr[verticesArrIndex + 0] = vertex.pos.X;
             verticesArr[verticesArrIndex + 1] = vertex.pos.Y;
@@ -81,38 +87,32 @@ namespace Anwill {
             verticesArr[verticesArrIndex + 4] = vertex.color.X;
             verticesArr[verticesArrIndex + 5] = vertex.color.Y;
             verticesArr[verticesArrIndex + 6] = vertex.color.Z;
-            verticesArr[verticesArrIndex + 7] = static_cast<float>(textureID);
+            verticesArr[verticesArrIndex + 7] = vertex.textureID;
             verticesArrIndex += vertexAttribCount;
         }
     };
 
     struct CircleVertex {
-        Math::Vec2f pos;
-        Math::Vec2f texCoords;
+        Math::Vec2f worldPosition;
+        Math::Vec2f localPosition;
         Math::Vec3f color;
-        Math::Vec2f centre;
-        Math::Vec2f radius;
     };
 
     struct CircleBatchData : public BatchData2D {
-        static const unsigned int maxCircles = 20000;
-        static const unsigned int vertexAttribCount = 11;
+        static const unsigned int maxCircles = 40000;
+        static const unsigned int vertexAttribCount = 7;
         static const unsigned int circleAttribCount = vertexAttribCount * 4;
         static const unsigned int verticesArrMaxSize = maxCircles * circleAttribCount;
 
         void VertexToArr(const CircleVertex& vertex)
         {
-            verticesArr[verticesArrIndex + 0] = vertex.pos.X;
-            verticesArr[verticesArrIndex + 1] = vertex.pos.Y;
-            verticesArr[verticesArrIndex + 2] = vertex.texCoords.X;
-            verticesArr[verticesArrIndex + 3] = vertex.texCoords.Y;
+            verticesArr[verticesArrIndex + 0] = vertex.worldPosition.X;
+            verticesArr[verticesArrIndex + 1] = vertex.worldPosition.Y;
+            verticesArr[verticesArrIndex + 2] = vertex.localPosition.X;
+            verticesArr[verticesArrIndex + 3] = vertex.localPosition.Y;
             verticesArr[verticesArrIndex + 4] = vertex.color.X;
             verticesArr[verticesArrIndex + 5] = vertex.color.Y;
             verticesArr[verticesArrIndex + 6] = vertex.color.Z;
-            verticesArr[verticesArrIndex + 7] = vertex.centre.X;
-            verticesArr[verticesArrIndex + 8] = vertex.centre.Y;
-            verticesArr[verticesArrIndex + 9] = vertex.radius.X;
-            verticesArr[verticesArrIndex + 10] = vertex.radius.Y;
             verticesArrIndex += vertexAttribCount;
         }
     };

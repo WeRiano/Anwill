@@ -23,6 +23,9 @@ namespace Anwill {
         // positive x values means moving the camera to the right, and vise-versa
         // positive y values means moving the camera up, and vise-versa
         void Move(float deltaX, float deltaY);
+        void Move(const Math::Vec2f delta);
+        void SetPos(float x, float y);
+        void SetPos(const Math::Vec2f pos);
         void SetProjection(float width, float height);
         float GetWidth() const;
         float GetHeight() const;

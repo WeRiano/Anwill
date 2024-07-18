@@ -12,8 +12,7 @@ public:
     void Update(const Anwill::Timestamp& timestamp) override;
 
 private:
-    void ChangeAnimationSpeed();
-
     std::shared_ptr<Anwill::SpriteSheet> m_SpriteSheet;
     Anwill::SpriteAnimation m_SpriteAnimation;
+    const Anwill::Math::Vec2f m_AnimationPos;
 };

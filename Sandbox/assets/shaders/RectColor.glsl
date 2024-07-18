@@ -1,14 +1,14 @@
 #shadertype vertex
 #version 330 core
 
-layout(location = 0) in vec3 v_Pos;
+layout(location = 0) in vec2 a_Pos;
 
 uniform mat4 u_ViewProjMat;
 uniform mat4 u_Transform;
 
 void main()
 {
-    gl_Position = u_ViewProjMat * u_Transform * vec4(v_Pos, 1.0f);
+    gl_Position = u_ViewProjMat * u_Transform * vec4(a_Pos, 0.0f, 1.0f);
 }
 
 #shadertype fragment

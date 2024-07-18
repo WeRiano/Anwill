@@ -6,50 +6,42 @@ namespace Anwill {
 
     Mesh Mesh::CreateRectMesh(float width, float height, bool texture)
     {
-        unsigned int arrLength = texture ? 5 * 4 : 3 * 4;
+        unsigned int arrLength = texture ? 4 * 4 : 2 * 4;
         float* vertices = new float[arrLength];
 
         if(!texture)
         {
             vertices[0] = -width / 2.0f;
             vertices[1] = -height / 2.0f;
-            vertices[2] = 0.0f;
 
-            vertices[3] = -width / 2.0f;
-            vertices[4] = height / 2.0f;
-            vertices[5] = 0.0f;
+            vertices[2] = -width / 2.0f;
+            vertices[3] = height / 2.0f;
+
+            vertices[4] = width / 2.0f;
+            vertices[5] = height / 2.0f;
 
             vertices[6] = width / 2.0f;
-            vertices[7] = height / 2.0f;
-            vertices[8] = 0.0f;
-
-            vertices[9] = width / 2.0f;
-            vertices[10] = -height / 2.0f;
-            vertices[11] = 0.0f;
+            vertices[7] = -height / 2.0f;
         } else {
             vertices[0] = -width / 2.0f;
             vertices[1] = -height / 2.0f;
             vertices[2] = 0.0f;
             vertices[3] = 0.0f;
-            vertices[4] = 0.0f;
 
-            vertices[5] = -width / 2.0f;
-            vertices[6] = height / 2.0f;
-            vertices[7] = 0.0f;
-            vertices[8] = 0.0f;
-            vertices[9] = 1.0f;
+            vertices[4] = -width / 2.0f;
+            vertices[5] = height / 2.0f;
+            vertices[6] = 0.0f;
+            vertices[7] = 1.0f;
 
-            vertices[10] = width / 2.0f;
-            vertices[11] = height / 2.0f;
-            vertices[12] = 0.0f;
-            vertices[13] = 1.0f;
+            vertices[8] = width / 2.0f;
+            vertices[9] = height / 2.0f;
+            vertices[10] = 1.0f;
+            vertices[11] = 1.0f;
+
+            vertices[12] = width / 2.0f;
+            vertices[13] = -height / 2.0f;
             vertices[14] = 1.0f;
-
-            vertices[15] = width / 2.0f;
-            vertices[16] = -height / 2.0f;
-            vertices[17] = 0.0f;
-            vertices[18] = 1.0f;
-            vertices[19] = 0.0f;
+            vertices[15] = 0.0f;
         }
 
         unsigned int indices[] = {
@@ -58,7 +50,7 @@ namespace Anwill {
         };
 
         std::vector<BufferElement> elements = {
-                BufferElement(ShaderDataType::Float3)
+                BufferElement(ShaderDataType::Float2)
         };
 
         if(texture)

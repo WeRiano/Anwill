@@ -14,7 +14,7 @@ void main()
 #shadertype fragment
 #version 330 core
 
-layout(location = 0) out vec4 color;
+layout(location = 0) out vec4 o_Color;
 
 uniform float u_Radius;
 uniform vec3 u_Color;
@@ -31,8 +31,8 @@ void main()
 
     if (length(temp) > (u_Radius - u_Radius/15.0f))
     {
-        color = vec4(0.439f, 0.8f, 0.843f, 1.0f);
+        o_Color = vec4(0.439f, 0.8f, 0.843f, 1.0f);
     } else {
-        color = vec4(u_Color, 1.0f);
+        o_Color = vec4(u_Color, 1.0f);
     }
 }

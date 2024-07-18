@@ -1,8 +1,8 @@
 #shadertype vertex
 #version 330 core
 
-layout(location = 0) in vec3 v_Pos;
-layout(location = 1) in vec2 v_TexCoords;
+layout(location = 0) in vec2 a_Pos;
+layout(location = 1) in vec2 a_TexCoords;
 
 out vec2 v_FragTexCoords;
 
@@ -11,8 +11,8 @@ uniform mat4 u_Transform;
 
 void main()
 {
-    gl_Position = u_ViewProjMat * u_Transform * vec4(v_Pos, 1.0f);
-    v_FragTexCoords = v_TexCoords;
+    gl_Position = u_ViewProjMat * u_Transform * vec4(a_Pos, 0.0f, 1.0f);
+    v_FragTexCoords = a_TexCoords;
 }
 
 #shadertype fragment

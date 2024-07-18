@@ -1,21 +1,20 @@
-#include "BatchRendererHelloWorld.h"
+#include "BatchRendererTest.h"
 
-BatchRendererHelloWorld::BatchRendererHelloWorld(unsigned int ups,
-                                                 const Anwill::WindowSettings& ws)
+BatchRendererTest::BatchRendererTest(unsigned int ups,
+                                     const Anwill::WindowSettings& ws)
     : MovingCameraBaseLayer(ups, ws, 5.0f),
       m_RectShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectColor.glsl")),
       m_CircleShader(Anwill::Shader::Create("Sandbox/assets/shaders/CircleColor.glsl")),
       m_TextureShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl")),
-      m_PrimitiveSize(20.0f, 20.0f),
-      m_SpriteSheet(Anwill::SpriteSheet::Create(
-              "Sandbox/assets/textures/test_sprite_sheet.png", 64, 48))
+      m_PrimitiveSize(200.0f, 200.0f),
+      m_NumPrimitives(50),
+      m_SpriteSheet(Anwill::SpriteSheet::Create("Sandbox/assets/textures/test_sprite_sheet.png", 64, 48)),
+      m_BatchRenderData()
 {
-    m_NumPrimitives = 100;
-
-    m_Camera.Move(100.0f, 0.0f);
+    m_Camera.Move(0.0f, 0.0f);
 }
 
-void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
+void BatchRendererTest::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_Camera);
 
@@ -32,6 +31,16 @@ void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
         ImGui::Text("Currently rendering n^2 = %d primitives", m_NumPrimitives * m_NumPrimitives);
         ImGui::SliderInt("n", (int*) &m_NumPrimitives, 0, 300);
     }
+    ImGui::SliderFloat2("Primitive size", &m_PrimitiveSize.X, 1.0f, 300.0f, "%.0f");
+
+    if(batchRendering) {
+        ImGui::SeparatorText("Batch render data");
+        ImGui::Text("Draw calls: %i", m_BatchRenderData.drawCalls);
+        ImGui::Text("Drawn quads: %i", m_BatchRenderData.drawnQuads);
+        ImGui::Text("Drawn circles: %i", m_BatchRenderData.drawnCircles);
+    }
+
+    DisplayCameraGuiControls();
 
     ImGui::End();
 
@@ -40,7 +49,7 @@ void BatchRendererHelloWorld::Update(const Anwill::Timestamp& timestamp)
     MovingCameraBaseLayer::Update(timestamp);
 }
 
-std::function<void()> BatchRendererHelloWorld::GetStrategy(bool batchRendering, bool textureRendering)
+std::function<void()> BatchRendererTest::GetStrategy(bool batchRendering, bool textureRendering)
 {
     if(batchRendering) {
         if (textureRendering) {
@@ -57,11 +66,14 @@ std::function<void()> BatchRendererHelloWorld::GetStrategy(bool batchRendering, 
     }
 }
 
-void BatchRendererHelloWorld::BatchRendering()
+void BatchRendererTest::BatchRendering()
 {
     AW_PROFILE_FUNC();
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), m_PrimitiveSize);
     for(unsigned int y = 0; y < m_NumPrimitives; y++) {
+        if( !m_IsRenderingQuads && !m_IsRenderingCircles ) {
+            break;
+        }
         for(unsigned int x = 0; x < m_NumPrimitives; x++) {
             float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NumPrimitives);
             float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NumPrimitives);
@@ -83,20 +95,22 @@ void BatchRendererHelloWorld::BatchRendering()
                                                    {-static_cast<float>(m_NumPrimitives * m_PrimitiveSize.X),
                                                     m_PrimitiveSize.Y, 0.0f});
     }
-
-    Anwill::Renderer2D::DrawBatch();
+    m_BatchRenderData = Anwill::Renderer2D::DrawBatch();
 }
 
-void BatchRendererHelloWorld::SlowRendering()
+void BatchRendererTest::SlowRendering()
 {
     AW_PROFILE_FUNC();
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), m_PrimitiveSize);
     for(unsigned int y = 0; y < m_NumPrimitives; y++) {
+        if( !m_IsRenderingQuads && !m_IsRenderingCircles ) {
+            break;
+        }
         for(unsigned int x = 0; x < m_NumPrimitives; x++) {
             float xClamp = Anwill::Math::NormalizeToFloat(x, 0u, m_NumPrimitives);
             float yClamp = Anwill::Math::NormalizeToFloat(y, 0u, m_NumPrimitives);
             Anwill::Math::Vec3f color(xClamp, yClamp, 0.5f);
-            Anwill::Shared<Anwill::Shader> shader;
+            Anwill::Shared<Anwill::Shader> shader = nullptr;
             if( m_IsRenderingQuads && m_IsRenderingCircles) {
                 if( (y % 2 == 0 && x % 2 == 0) || (y % 2 == 1 && x % 2 == 1) ) {
                     shader = m_RectShader;
@@ -111,9 +125,8 @@ void BatchRendererHelloWorld::SlowRendering()
 
             shader->Bind();
             shader->SetUniformVec3f(color, "u_Color");
-            shader->Unbind();
-
             Anwill::Renderer2D::SubmitMesh(shader, Anwill::Mesh::GetUnitRectangle(false), transform);
+            shader->Unbind();
             transform = Anwill::Math::Mat4f::Translate(transform, {m_PrimitiveSize.X, 0.0f, 0.0f});
         }
         transform = Anwill::Math::Mat4f::Translate(transform,
@@ -122,7 +135,7 @@ void BatchRendererHelloWorld::SlowRendering()
     }
 }
 
-void BatchRendererHelloWorld::BatchRenderingTextureQuads()
+void BatchRendererTest::BatchRenderingTextureQuads()
 {
     AW_PROFILE_FUNC();
 
@@ -138,10 +151,10 @@ void BatchRendererHelloWorld::BatchRenderingTextureQuads()
                                                    {textureSize.X,
                                                     -textureSize.Y * m_SpriteSheet->GetSpriteYCount(), 0.0f});
     }
-    Anwill::Renderer2D::DrawBatch();
+    m_BatchRenderData = Anwill::Renderer2D::DrawBatch();
 }
 
-void BatchRendererHelloWorld::SlowRenderingTextureQuads()
+void BatchRendererTest::SlowRenderingTextureQuads()
 {
     AW_PROFILE_FUNC();
 

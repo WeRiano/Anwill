@@ -7,6 +7,7 @@ namespace Anwill {
 
     std::shared_ptr<GraphicsAPI> Renderer2D::s_API = nullptr;
     Renderer2D::SceneData2D Renderer2D::s_SceneData;
+    RenderData Renderer2D::s_RenderData;
     QuadBatchData Renderer2D::s_QData;
     CircleBatchData Renderer2D::s_CData;
 
@@ -22,23 +23,23 @@ namespace Anwill {
     {
         s_SceneData = SceneData2D();
         s_SceneData.ViewProjMat = camera.GetViewProj();
-        s_SceneData.CameraPos = camera.GetPos();
     }
 
     void Renderer2D::PushQuadToBatch(const Math::Mat4f& transform,
                                      const Math::Vec3f& color)
     {
-        if(s_QData.elementsPushed == QuadBatchData::maxQuads) {
+        AW_PROFILE_FUNC();
+        if(s_QData.elementsPushed >= QuadBatchData::maxQuads) {
             DrawQuadBatch();
         }
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[0], {},
-                             color}, -1);
+                             color, -1.0f});
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[1], {},
-                             color}, -1);
+                             color, -1.0f});
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[2], {},
-                             color}, -1);
+                             color, -1.0f});
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[3], {},
-                             color}, -1);
+                             color, -1.0f});
         s_QData.elementsPushed++;
     }
 
@@ -53,20 +54,16 @@ namespace Anwill {
 
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[0],
                              Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y0),
-                             {1.0f, 1.0f, 1.0f}},
-                            textureID);
+                             {1.0f, 1.0f, 1.0f}, static_cast<float>(textureID)});
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[1],
                              Math::Vec2f(sprite.texCoords.x0, sprite.texCoords.y1),
-                             {1.0f, 1.0f, 1.0f}},
-                            textureID);
+                             {1.0f, 1.0f, 1.0f}, static_cast<float>(textureID)});
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[2],
                              Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y1),
-                             {1.0f, 1.0f, 1.0f}},
-                            textureID);
+                             {1.0f, 1.0f, 1.0f}, static_cast<float>(textureID)});
         s_QData.VertexToArr({transform * QuadBatchData::unitPositions[3],
                              Math::Vec2f(sprite.texCoords.x1, sprite.texCoords.y0),
-                             {1.0f, 1.0f, 1.0f}},
-                            textureID);
+                             {1.0f, 1.0f, 1.0f}, static_cast<float>(textureID)});
         s_QData.elementsPushed++;
     }
 
@@ -85,31 +82,36 @@ namespace Anwill {
     void Renderer2D::PushCircleToBatch(const Math::Mat4f& transform,
                                        const Math::Vec3f& color)
     {
-        if(s_CData.elementsPushed == CircleBatchData::maxCircles) {
+        AW_PROFILE_FUNC();
+        if(s_CData.elementsPushed >= CircleBatchData::maxCircles) {
             DrawCircleBatch();
         }
-
-        auto scaleVec = transform.GetScale();
-        float xRadius = scaleVec.X / 2;
-        float yRadius = scaleVec.Y / 2;
-        auto centre = (transform * Math::Vec2f()) + s_SceneData.CameraPos;
-        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[0], {},
-                             color, centre, Math::Vec2f(xRadius, yRadius)});
-        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[1], {},
-                             color, centre, Math::Vec2f(xRadius, yRadius)});
-        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[2], {},
-                             color, centre, Math::Vec2f(xRadius, yRadius)});
-        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[3], {},
-                             color, centre, Math::Vec2f(xRadius, yRadius)});
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[0],
+                             QuadBatchData::unitPositions[0],
+                             color});
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[1],
+                             QuadBatchData::unitPositions[1],
+                             color});
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[2],
+                             QuadBatchData::unitPositions[2],
+                             color});
+        s_CData.VertexToArr({transform * QuadBatchData::unitPositions[3],
+                             QuadBatchData::unitPositions[3],
+                             color});
         s_CData.elementsPushed++;
     }
 
-    void Renderer2D::DrawBatch()
+    const RenderData Renderer2D::DrawBatch()
     {
         AW_PROFILE_FUNC();
+
         DrawQuadBatch();
         DrawCircleBatch();
         //DrawLineBatch(); TODO
+
+        auto renderData = s_RenderData;
+        s_RenderData = RenderData();
+        return renderData;
     }
 
     void Renderer2D::SubmitText(const std::shared_ptr<Shader>& shader, Font& font,
@@ -287,13 +289,10 @@ namespace Anwill {
         auto cLayout = BufferLayout({
            BufferElement(ShaderDataType::Float2),
            BufferElement(ShaderDataType::Float2),
-           BufferElement(ShaderDataType::Float3),
-           BufferElement(ShaderDataType::Float2),
-           BufferElement(ShaderDataType::Float2)
+           BufferElement(ShaderDataType::Float3)
         });
         s_CData.VA->AddBuffer(*s_CData.VB, cLayout);
 
-        // Shaders
         s_QData.shader = s_API->CreateQuadBatchShader();
         s_CData.shader = s_API->CreateCircleBatchShader();
 
@@ -302,6 +301,8 @@ namespace Anwill {
 
     void Renderer2D::DrawQuadBatch()
     {
+        AW_PROFILE_FUNC();
+
         if(!s_QData.elementsPushed) {
             return;
         }
@@ -324,6 +325,11 @@ namespace Anwill {
                                   s_QData.elementsPushed * 6);
         s_API->DrawIndexed(s_QData.VA, s_QData.IB);
 
+        // Render data
+        s_RenderData.drawCalls++;
+        s_RenderData.drawnQuads += s_QData.elementsPushed;
+
+        // Reset
         s_QData.elementsPushed = 0;
         s_QData.verticesArrIndex = 0;
         s_QData.textureNewIDCount = BatchData2D::startTextureID;
@@ -333,13 +339,15 @@ namespace Anwill {
 
     void Renderer2D::DrawCircleBatch()
     {
+        AW_PROFILE_FUNC();
+
         if(!s_CData.elementsPushed) {
             return;
         }
         s_CData.shader->Bind();
         s_CData.shader->SetUniformMat4f(s_SceneData.ViewProjMat, "u_ViewProjMat");
 
-        // Reusing quad index buffer since they are identical
+        // Reusing quad index buffer since they would be identical
         s_CData.VB->DynamicUpdate(s_CData.verticesArr,
                                   sizeof(float) * s_CData.elementsPushed *
                                   CircleBatchData::circleAttribCount);
@@ -347,6 +355,11 @@ namespace Anwill {
                                   s_CData.elementsPushed * 6);
         s_API->DrawIndexed(s_CData.VA, s_QData.IB);
 
+        // Render data
+        s_RenderData.drawCalls++;
+        s_RenderData.drawnCircles += s_CData.elementsPushed;
+
+        // Reset
         s_CData.elementsPushed = 0;
         s_CData.verticesArrIndex = 0;
         s_CData.shader->Unbind();

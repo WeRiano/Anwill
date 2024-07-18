@@ -39,6 +39,18 @@ void SandboxLayer::Update(const Anwill::Timestamp& timestamp)
                 {
                     StartTestEnv(SandboxEnvironmentEvent::Env::BatchRenderer);
                 }
+                if (ImGui::Button("Texture"))
+                {
+                    StartTestEnv(SandboxEnvironmentEvent::Env::Texture);
+                }
+                if (ImGui::Button("Font"))
+                {
+                    StartTestEnv(SandboxEnvironmentEvent::Env::Font);
+                }
+                if (ImGui::Button("Sprite animation"))
+                {
+                    StartTestEnv(SandboxEnvironmentEvent::Env::SpriteAnimation);
+                }
             }
         }
     }

@@ -1,55 +1,39 @@
 #shadertype vertex
 #version 460 core
 
-layout(location = 0) in vec2 a_Vertex;
-layout(location = 1) in vec2 a_TexCoords;
+layout(location = 0) in vec2 a_WorldPosition;
+layout(location = 1) in vec2 a_LocalPosition;
 layout(location = 2) in vec3 a_Color;
-layout(location = 3) in vec2 a_Centre;
-layout(location = 4) in vec2 a_Radius;
 
-out vec2 v_TexCoords;
+out vec2 v_WorldPosition;
+out vec2 v_LocalPosition;
 out vec3 v_Color;
-out vec2 v_Centre;
-out vec2 v_Radius;
 
 uniform mat4 u_ViewProjMat;
 
 void main()
 {
-    gl_Position = u_ViewProjMat * vec4(a_Vertex, 0.0f, 1.0f);
-    v_TexCoords = a_TexCoords;
+    gl_Position = u_ViewProjMat * vec4(a_WorldPosition, 0.0f, 1.0f);
+    v_LocalPosition = a_LocalPosition;
     v_Color = a_Color;
-    v_Centre = a_Centre;
-    v_Radius = a_Radius;
 }
 
 #shadertype fragment
 #version 460 core
 
-in vec2 v_TexCoords;
+in vec2 v_WorldPosition;
+in vec2 v_LocalPosition;
 in vec3 v_Color;
-in vec2 v_Centre;
-in vec2 v_Radius;
 
-layout(location = 0) out vec4 FragColor;
+layout(location = 0) out vec4 o_Color;
 
 uniform sampler2D u_Textures[AW_MAX_FRAGMENT_SAMPLERS];
 
-bool IsOutsideEllipse(vec2 point, vec2 origin, vec2 radius)
-{
-    return (((point.x - origin.x)*(point.x - origin.x))*((radius.y * radius.y)) +
-            ((point.y - origin.y)*(point.y - origin.y))*((radius.x * radius.x))) >=
-            ((radius.x)*(radius.x)*(radius.y)*(radius.y));
-}
-
 void main()
 {
-    vec2 delta = vec2(gl_FragCoord.xy - (v_Centre));
+    float distance = length(v_LocalPosition);
+    float edgeSoftness = fwidth(distance);
+    float alpha = smoothstep(0.5f - edgeSoftness, 0.5f + edgeSoftness, distance);
 
-    if (IsOutsideEllipse(gl_FragCoord.xy, v_Centre, v_Radius))
-    {
-        discard;
-    }
-
-    FragColor = vec4(v_Color, 1.0f);
+    o_Color = vec4(v_Color, 1.0f - alpha);
 }

@@ -8,10 +8,10 @@
 #include "physics/dynamics/DynamicsRender.h"
 #include "physics/dynamics/DynamicsTest.h"
 #include "renderer/PrimitivesTest.h"
-#include "renderer/BatchRendererHelloWorld.h"
-#include "renderer/FontHelloWorld.h"
+#include "renderer/BatchRendererTest.h"
+#include "renderer/FontTest.h"
 #include "renderer/SpriteAnimationTest.h"
-#include "renderer/TextureHelloWorld.h"
+#include "renderer/TextureTest.h"
 #include "tps/TPS.h"
 #include "tps/TPSCalcs.h"
 
@@ -62,16 +62,16 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
             AddLayer<PrimitivesTest>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::Font:
-            AddLayer<FontHelloWorld>(0, m_WindowSettings);
+            AddLayer<FontTest>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::BatchRenderer:
-            AddLayer<BatchRendererHelloWorld>(0, m_WindowSettings);
+            AddLayer<BatchRendererTest>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::SpriteAnimation:
             AddLayer<SpriteAnimationTest>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::Texture:
-            AddLayer<TextureHelloWorld>(0, m_WindowSettings);
+            AddLayer<TextureTest>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::TopDownShooter:
             AddLayer<TPSCalcs>(30);
@@ -100,16 +100,16 @@ void Sandbox::EndTestEnvironment()
             RemoveLayer<PrimitivesTest>();
             break;
         case SandboxEnvironmentEvent::Env::Font:
-            RemoveLayer<FontHelloWorld>();
+            RemoveLayer<FontTest>();
             break;
         case SandboxEnvironmentEvent::Env::BatchRenderer:
-            RemoveLayer<BatchRendererHelloWorld>();
+            RemoveLayer<BatchRendererTest>();
             break;
         case SandboxEnvironmentEvent::Env::SpriteAnimation:
             RemoveLayer<SpriteAnimationTest>();
             break;
         case SandboxEnvironmentEvent::Env::Texture:
-            RemoveLayer<TextureHelloWorld>();
+            RemoveLayer<TextureTest>();
             break;
         case SandboxEnvironmentEvent::Env::TopDownShooter:
             RemoveLayer<TPSCalcs>();

@@ -1,18 +1,23 @@
 #shadertype vertex
 #version 460 core
 
-layout(location = 0) in vec3 v_Pos;
+layout(location = 0) in vec2 a_Pos;
+
+out vec2 v_Pos;
 
 uniform mat4 u_ViewProjMat;
 uniform mat4 u_Transform;
 
 void main()
 {
-    gl_Position = u_ViewProjMat * u_Transform * vec4(v_Pos, 1.0f);
+    v_Pos = a_Pos.xy;
+    gl_Position = u_ViewProjMat * u_Transform * vec4(a_Pos, 0.0f, 1.0f);
 }
 
 #shadertype fragment
 #version 460 core
+
+in vec2 v_Pos;
 
 layout(location = 0) out vec4 FragColor;
 
@@ -21,18 +26,9 @@ uniform vec3 u_Color;
 
 void main()
 {
+    float distance = length(v_Pos);
+    float edgeSoftness = fwidth(distance);
+    float alpha = smoothstep(0.5f - edgeSoftness, 0.5f + edgeSoftness, distance);
 
-    vec2 centre = vec2(u_Transform[3][0], u_Transform[3][1]);
-    vec2 size = vec2( length(vec2(u_Transform[0][0], u_Transform[0][1])),
-                      length(vec2(u_Transform[1][0], u_Transform[1][1])) );
-    vec2 radii = size * 0.5f;
-
-    vec2 normalized = (gl_FragCoord.xy - centre) / radii;
-    float normDistance = length(normalized);
-    float edgeSoftness = fwidth(normDistance);
-
-    //vec3 color = vec3(normDistance);
-    //vec3 color = vec3(step(1.0f, normDistance));
-    float alpha = smoothstep(1.0f - edgeSoftness, 1.0f + edgeSoftness, normDistance);
     FragColor = vec4(u_Color, 1.0f - alpha);
 }

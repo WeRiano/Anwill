@@ -48,7 +48,7 @@ namespace Anwill {
          * Additional draw calls may also occur depending on the number of textures used
          * and the number of texture slots supported.
          */
-        static void DrawBatch();
+        static const RenderData DrawBatch();
 
         static void SubmitText(const std::shared_ptr<Shader>& shader, Font& font,
                                const std::string& text, const Math::Mat4f& transform, float maxWidth = 0);
@@ -72,13 +72,13 @@ namespace Anwill {
     private:
         struct SceneData2D {
             Math::Mat4f ViewProjMat;
-            Math::Vec2f CameraPos;
 
             SceneData2D()
                     : ViewProjMat(Math::Mat4f::Identity())
             {}
         };
 
+        static RenderData s_RenderData;
         static QuadBatchData s_QData;
         static CircleBatchData s_CData;
 
