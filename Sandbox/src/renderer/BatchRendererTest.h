@@ -19,7 +19,7 @@ private:
     bool m_IsRenderingQuads, m_IsRenderingCircles;
     std::shared_ptr<Anwill::SpriteSheet> m_SpriteSheet;
     std::shared_ptr<Anwill::Texture> m_TestTexture;
-    Anwill::RenderData m_BatchRenderData;
+    Anwill::BatchRenderStats m_BatchRenderData;
 
     std::function<void()> GetStrategy(bool batchRendering, bool textureRendering);
     void BatchRendering();

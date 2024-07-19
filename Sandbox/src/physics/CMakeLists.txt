@@ -1,2 +1,2 @@
-add_subdirectory(collision)
-add_subdirectory(dynamics)
+add_subdirectory(arena)
+add_subdirectory(sprinkler)

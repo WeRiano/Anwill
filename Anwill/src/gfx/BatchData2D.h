@@ -13,7 +13,7 @@
 
 namespace Anwill {
 
-    struct RenderData {
+    struct BatchRenderStats {
         unsigned int drawCalls = 0;
         unsigned int drawnCircles = 0;
         unsigned int drawnQuads = 0;
@@ -42,7 +42,7 @@ namespace Anwill {
     };
 
     struct QuadBatchData : public BatchData2D {
-        static const unsigned int maxQuads = 40000;
+        static const unsigned int maxQuads = 30000;
         static const unsigned int vertexAttribCount = 8;
         static const unsigned int quadAttribCount = vertexAttribCount * 4;
         static const unsigned int verticesArrMaxSize = maxQuads * quadAttribCount;
@@ -99,7 +99,7 @@ namespace Anwill {
     };
 
     struct CircleBatchData : public BatchData2D {
-        static const unsigned int maxCircles = 40000;
+        static const unsigned int maxCircles = 30000;
         static const unsigned int vertexAttribCount = 7;
         static const unsigned int circleAttribCount = vertexAttribCount * 4;
         static const unsigned int verticesArrMaxSize = maxCircles * circleAttribCount;

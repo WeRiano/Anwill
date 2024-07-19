@@ -1,42 +1,56 @@
-#include "DynamicsTest.h"
+#include "SprinklerTest.h"
 
-DynamicsTest::DynamicsTest(unsigned int ups)
-    : Anwill::Layer(ups), m_SpawnTimeCount(1000000 * s_SpawnDeltaSeconds)
+SprinklerTest::SprinklerTest(unsigned int ups)
+    : Anwill::Layer(ups),
+      m_SpawnTimeCount(1000000 * s_SpawnDeltaSeconds),
+      m_ObjSize(20.0f)
 {
     Anwill::Ecs::RegisterComponent<Anwill::RBody>();
     Anwill::Ecs::RegisterComponent<Anwill::Math::Mat4f>();
     Anwill::Ecs::RegisterComponent<Anwill::Mesh>();
 }
 
-void DynamicsTest::Update(const Anwill::Timestamp& timestamp)
+void SprinklerTest::Update(const Anwill::Timestamp& timestamp)
 {
-    m_SpawnTimeCount += timestamp.DeltaAbs(m_LastUpdate);
+    // Increment a counter and spawn an object when the counter has reached some value,
+    // then reset counter.
+    m_SpawnTimeCount += GetUpdateDelta(timestamp);
     if (m_SpawnTimeCount.GetSeconds() >= s_SpawnDeltaSeconds) {
         m_SpawnTimeCount = Anwill::Timestamp(0);
         SpawnObject();
     }
+
+    // Cleanup all "dead" objects.
     KillObjects();
 
     Layer::Update(timestamp);
 }
 
-void DynamicsTest::SpawnObject()
+void SprinklerTest::ImguiUpdate()
 {
-    float objWidth = 20.0f;
-    float objHeight = 20.0f;
+    ImGui::Begin("Sprinkler");
+
+    ImGui::SliderFloat("Particle size", &m_ObjSize, 10.0f, 40.0f);
+
+    // TODO: Show ecs / object stats
+
+    ImGui::End();
+}
+
+void SprinklerTest::SpawnObject()
+{
+    AW_PROFILE_FUNC();
+
     Anwill::EntityID newID = Anwill::Ecs::CreateEntity();
     Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(newID,
-                                       Anwill::Math::Mat4f::Scale(
-                                               Anwill::Math::Mat4f::Identity(),
-                                               {objWidth, objHeight, 0.0f}));
+                                                   Anwill::Math::Mat4f::Scale({},
+                                                                              {m_ObjSize, m_ObjSize                                                                                           , 0.0f}));
     Anwill::Ecs::AddComponent<Anwill::RBody>(newID, 2.5f, false);
 
-    Anwill::Ecs::ForEntity<Anwill::RBody>(newID, []
-    (Anwill::RBody& rBody){
+    Anwill::Ecs::ForEntity<Anwill::RBody>(newID, [](Anwill::RBody& rBody) {
         float randAngle = Anwill::Random::GetUniformFloat(-20.0f, 20.0f);
-        auto pushVec = Anwill::Math::Vec3f(150.0f, 250.0f, 0.0f);
-        auto rotMat = Anwill::Math::Mat4f::RotateZ(Anwill::Math::Mat4f::Identity(),
-                                                   randAngle);
+        auto pushVec = Anwill::Math::Vec3f(150.0f, 350.0f, 0.0f);
+        auto rotMat = Anwill::Math::Mat4f::RotateZ(Anwill::Math::Mat4f::Identity(), randAngle);
         pushVec = rotMat * pushVec;
         rBody.ApplyImpulse(pushVec);
 
@@ -44,13 +58,13 @@ void DynamicsTest::SpawnObject()
     });
 }
 
-void DynamicsTest::KillObjects()
+void SprinklerTest::KillObjects()
 {
-    Anwill::Ecs::ForEach<Anwill::RBody>([](Anwill::EntityID id,
-                    Anwill::RBody& rBody){
-        if ( (rBody.GetPosition().Y <= -10.0f) or
-             (rBody.GetPosition().X >= 1500.0f) )
-        {
+    AW_PROFILE_FUNC();
+
+    // Remove objects that are in Africa
+    Anwill::Ecs::ForEach<Anwill::RBody>([](Anwill::EntityID id, Anwill::RBody& rBody) {
+        if ( (rBody.GetPosition().Y <= -10.0f) or (rBody.GetPosition().X >= 3000.0f) ) {
             Anwill::Ecs::RemoveEntity(id);
         }
     });
@@ -61,6 +75,7 @@ void DynamicsTest::KillObjects()
         Anwill::RBody rBody;
     };
 
+    // Grab all entities
     std::vector<ColEntity> cols;
     std::set<Anwill::EntityID> toRemove;
     Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([&cols]
@@ -68,12 +83,11 @@ void DynamicsTest::KillObjects()
         cols.emplace_back(id, transform, rBody);
     });
 
-    for(unsigned int i = 0; i < cols.size(); i++)
-    {
+    // Loop through all entities (O(n^2)) and grab colliding entities
+    for(unsigned int i = 0; i < cols.size(); i++) {
         if(toRemove.contains(cols[i].id)) {
             continue;
         }
-        bool collidedOnce = false;
         for (unsigned int j = i + 1; j < cols.size(); j++)
         {
             if(toRemove.contains(cols[j].id)) {
@@ -82,15 +96,11 @@ void DynamicsTest::KillObjects()
             Anwill::CollisionData colData;
             if (Anwill::Collision::Check(cols[i].rBody, cols[i].transform,
                                          cols[j].rBody, cols[j].transform,
-                                         colData))
-            {
+                                         colData)) {
+                toRemove.insert(cols[i].id);
                 toRemove.insert(cols[j].id);
-                collidedOnce = true;
+                break;
             }
-        }
-        if (collidedOnce)
-        {
-            toRemove.insert(cols[i].id);
         }
     }
 

@@ -43,7 +43,12 @@ namespace Anwill {
          * Update each layer in the stack.
          * @return Combined duration it took to update the entire stack.
          */
-        Timestamp Update();
+        void Update();
+
+        /**
+         * Update ImGui for each layer in the stack.
+         */
+         void ImguiUpdate();
 
     private:
         std::vector<std::unique_ptr<Layer>> m_Stack;

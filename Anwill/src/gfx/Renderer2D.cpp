@@ -7,7 +7,7 @@ namespace Anwill {
 
     std::shared_ptr<GraphicsAPI> Renderer2D::s_API = nullptr;
     Renderer2D::SceneData2D Renderer2D::s_SceneData;
-    RenderData Renderer2D::s_RenderData;
+    BatchRenderStats Renderer2D::s_BatchRenderStats;
     QuadBatchData Renderer2D::s_QData;
     CircleBatchData Renderer2D::s_CData;
 
@@ -101,7 +101,7 @@ namespace Anwill {
         s_CData.elementsPushed++;
     }
 
-    const RenderData Renderer2D::DrawBatch()
+    const BatchRenderStats Renderer2D::DrawBatch()
     {
         AW_PROFILE_FUNC();
 
@@ -109,9 +109,9 @@ namespace Anwill {
         DrawCircleBatch();
         //DrawLineBatch(); TODO
 
-        auto renderData = s_RenderData;
-        s_RenderData = RenderData();
-        return renderData;
+        auto renderStats = s_BatchRenderStats;
+        s_BatchRenderStats = BatchRenderStats();
+        return renderStats;
     }
 
     void Renderer2D::SubmitText(const std::shared_ptr<Shader>& shader, Font& font,
@@ -326,8 +326,8 @@ namespace Anwill {
         s_API->DrawIndexed(s_QData.VA, s_QData.IB);
 
         // Render data
-        s_RenderData.drawCalls++;
-        s_RenderData.drawnQuads += s_QData.elementsPushed;
+        s_BatchRenderStats.drawCalls++;
+        s_BatchRenderStats.drawnQuads += s_QData.elementsPushed;
 
         // Reset
         s_QData.elementsPushed = 0;
@@ -356,8 +356,8 @@ namespace Anwill {
         s_API->DrawIndexed(s_CData.VA, s_QData.IB);
 
         // Render data
-        s_RenderData.drawCalls++;
-        s_RenderData.drawnCircles += s_CData.elementsPushed;
+        s_BatchRenderStats.drawCalls++;
+        s_BatchRenderStats.drawnCircles += s_CData.elementsPushed;
 
         // Reset
         s_CData.elementsPushed = 0;

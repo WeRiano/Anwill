@@ -2,15 +2,17 @@
 
 #include "Anwill.h"
 
-class DynamicsTest : public Anwill::Layer
+class SprinklerTest : public Anwill::Layer
 {
 public:
-    DynamicsTest(unsigned int ups);
+    SprinklerTest(unsigned int ups);
 
     void Update(const Anwill::Timestamp& timestamp) override;
+    void ImguiUpdate() override;
 
 private:
     Anwill::Timestamp m_SpawnTimeCount;
+    float m_ObjSize;
     static constexpr double s_SpawnDeltaSeconds = 0.15;
 
     void SpawnObject();

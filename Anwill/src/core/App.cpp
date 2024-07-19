@@ -69,10 +69,14 @@ namespace Anwill {
 
             m_Window->PreRenderUpdate();
 
+            // TODO: Move down
             Imgui::NewFrame();
 
-            Timestamp updateDuration = m_LayerStack.Update();
-            AppStats::PushUpdateDuration(updateDuration);
+            Timestamp start;
+            m_LayerStack.Update();
+            m_LayerStack.ImguiUpdate();
+            Timestamp end;
+            AppStats::PushUpdateDuration(end-start);
 
             Imgui::EndFrame();
             Imgui::Render();

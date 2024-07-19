@@ -1,13 +1,13 @@
 #include "core/LayerStack.h"
-#include "core/Log.h"
 #include "utils/Profiler.h"
 
 namespace Anwill
 {
-    Timestamp LayerStack::Update()
+    void LayerStack::Update()
     {
-        Timestamp start;
-        for(unsigned int i = 0; i < m_Stack.size(); i++)
+        AW_PROFILE_FUNC();
+
+        for (int i = 0; i < m_Stack.size(); i++)
         {
             Timestamp last = m_Stack[i]->GetLastUpdate();
             Timestamp now = Timestamp();
@@ -16,7 +16,14 @@ namespace Anwill
                 m_Stack[i]->Update(now);
             }
         }
-        Timestamp end;
-        return end - start;
+    }
+
+    void LayerStack::ImguiUpdate()
+    {
+        AW_PROFILE_FUNC();
+
+        for (int i = 0; i < m_Stack.size(); i++) {
+            m_Stack[i]->ImguiUpdate();
+        }
     }
 }

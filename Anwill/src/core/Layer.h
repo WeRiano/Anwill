@@ -15,6 +15,8 @@ namespace Anwill {
             m_LastUpdate = timestamp;
         }
 
+        virtual void ImguiUpdate() {}
+
         virtual void OnDetach() {}
 
         Timestamp GetUpdateSpeed() {

@@ -24,8 +24,13 @@ namespace Anwill {
         template <class C>
         void RegisterComponent()
         {
+            std::type_index typeIndex = std::type_index(typeid(C));
+            if(m_IDs.find(typeIndex) != m_IDs.end()) {
+                AW_WARN("ECS: Component has already been registered.");
+                return;
+            }
             ComponentID id = CreateID();
-            m_IDs[std::type_index(typeid(C))] = id;
+            m_IDs[typeIndex] = id;
             m_Containers[id] = std::make_shared<ComponentContainer<C>>();
         }
 

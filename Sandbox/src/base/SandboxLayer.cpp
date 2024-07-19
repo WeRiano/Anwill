@@ -9,8 +9,6 @@ SandboxLayer::SandboxLayer(unsigned int ups, const Anwill::WindowSettings& ws)
 
 void SandboxLayer::Update(const Anwill::Timestamp& timestamp)
 {
-    Layer::Update(timestamp);
-
     if (ImGui::Begin("Sandbox test environments"))
     {
         if (m_IsRunningTestEnv)
@@ -52,11 +50,24 @@ void SandboxLayer::Update(const Anwill::Timestamp& timestamp)
                     StartTestEnv(SandboxEnvironmentEvent::Env::SpriteAnimation);
                 }
             }
+            if (ImGui::CollapsingHeader("Physics"))
+            {
+                if (ImGui::Button("Sprinkler"))
+                {
+                    StartTestEnv(SandboxEnvironmentEvent::Env::PhysicsCollision);
+                }
+                if (ImGui::Button("Arena"))
+                {
+                    StartTestEnv(SandboxEnvironmentEvent::Env::PhysicsDynamics);
+                }
+            }
         }
+        ImGui::End();
     }
-    ImGui::End();
 
     SandboxEventHandler::Pop();
+
+    Layer::Update(timestamp);
 }
 
 void SandboxLayer::StartTestEnv(SandboxEnvironmentEvent::Env env)

@@ -3,10 +3,10 @@
 #include "base/SandboxEventHandler.h"
 
 #include "ecs/EcsTestLayer.h"
-#include "physics/collision/CollisionRender.h"
-#include "physics/collision/CollisionTest.h"
-#include "physics/dynamics/DynamicsRender.h"
-#include "physics/dynamics/DynamicsTest.h"
+#include "physics/sprinkler/CollisionRender.h"
+#include "physics/sprinkler/CollisionTest.h"
+#include "physics/arena/SprinklerRender.h"
+#include "physics/arena/SprinklerTest.h"
 #include "renderer/PrimitivesTest.h"
 #include "renderer/BatchRendererTest.h"
 #include "renderer/FontTest.h"
@@ -51,8 +51,8 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
             AddLayer<EcsTestLayer>(0);
             break;
         case SandboxEnvironmentEvent::Env::PhysicsCollision:
-            AddLayer<DynamicsTest>(10);
-            AddLayer<DynamicsRender>(0, m_WindowSettings);
+            AddLayer<SprinklerTest>(10);
+            AddLayer<SprinklerRender>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::PhysicsDynamics:
             AddLayer<CollisionRender>(0, m_WindowSettings);
@@ -89,8 +89,8 @@ void Sandbox::EndTestEnvironment()
             RemoveLayer<EcsTestLayer>();
             break;
         case SandboxEnvironmentEvent::Env::PhysicsCollision:
-            RemoveLayer<DynamicsTest>();
-            RemoveLayer<DynamicsRender>();
+            RemoveLayer<SprinklerTest>();
+            RemoveLayer<SprinklerRender>();
             break;
         case SandboxEnvironmentEvent::Env::PhysicsDynamics:
             RemoveLayer<CollisionRender>();
