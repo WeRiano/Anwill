@@ -10,7 +10,7 @@ class SandboxEnvironmentEvent : public Anwill::Event
 public:
     enum class Env
     {
-        Ecs,
+        EcsStressTest,
         PhysicsCollision,
         PhysicsDynamics,
         Primitives,
@@ -18,7 +18,7 @@ public:
         Font,
         SpriteAnimation,
         Texture,
-        TopDownShooter,
+        TopDownShadow,
 
         None
     };

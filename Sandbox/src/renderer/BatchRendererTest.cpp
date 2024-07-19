@@ -8,7 +8,7 @@ BatchRendererTest::BatchRendererTest(unsigned int ups,
       m_TextureShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl")),
       m_PrimitiveSize(200.0f, 200.0f),
       m_NumPrimitives(50),
-      m_SpriteSheet(Anwill::SpriteSheet::Create("Sandbox/assets/textures/test_sprite_sheet.png", 64, 48)),
+      m_SpriteSheet(Anwill::SpriteSheet::Create("Sandbox/assets/textures/test_sprite_sheet.png", 64, 47)),
       m_BatchRenderData()
 {
     m_Camera.Move(0.0f, 0.0f);

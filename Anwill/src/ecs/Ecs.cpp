@@ -22,6 +22,12 @@ namespace Anwill {
         }
     }
 
+    void Ecs::Reset()
+    {
+        s_Instance = std::make_unique<Ecs>();
+        AW_INFO("ECS Reset.");
+    }
+
     EntityID Ecs::CreateEntity()
     {
         return s_Instance->m_EntityManager.CreateEntity();
@@ -56,5 +62,14 @@ namespace Anwill {
     bool Ecs::IsEntityAlive(EntityID entityID)
     {
         return s_Instance->m_EntityManager.IsAlive(entityID);
+    }
+
+    EcsStats Ecs::GetStats()
+    {
+        EcsStats stats;
+        stats.numAliveEntities = s_Instance->m_EntityManager.GetNumAliveEntities();
+        stats.numRegisteredComponents = s_Instance->m_ComponentManager.GetNumRegisteredComponents();
+        stats.numComponents = s_Instance->m_ComponentManager.GetNumComponents();
+        return stats;
     }
 }

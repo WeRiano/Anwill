@@ -3,7 +3,7 @@
 #include <typeindex>
 #include <bitset>
 
-#define AW_MAX_ENTITIES 10000              // Maximum number of (unique) entities
+#define AW_MAX_ENTITIES 60000              // Maximum number of (unique) entities
 #define AW_MAX_COMPONENTS AW_MAX_ENTITIES  // Maximum number of component instances for one type of component
 #define AW_MAX_TYPE_COMPONENTS 100         // Maximum number of different types of components
 

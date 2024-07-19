@@ -77,9 +77,6 @@ namespace Anwill {
             m_LayerStack.Remove<C>();
         }
 
-        void UpdateAverageStackUpdateDuration(const Timestamp& updateDuration);
-        Timestamp GetAverageStackUpdateDuration() const;
-
     private:
         bool m_Running, m_Minimized;
         Unique<Window> m_Window;

@@ -32,7 +32,11 @@ void SprinklerTest::ImguiUpdate()
 
     ImGui::SliderFloat("Particle size", &m_ObjSize, 10.0f, 40.0f);
 
-    // TODO: Show ecs / object stats
+    Anwill::EcsStats ecsStats = Anwill::Ecs::GetStats();
+    ImGui::SeparatorText("ECS");
+    ImGui::Text("Registered component types: %d", ecsStats.numRegisteredComponents);
+    ImGui::Text("Alive entities: %d", ecsStats.numAliveEntities);
+    ImGui::Text("Alive components: %d", ecsStats.numComponents);
 
     ImGui::End();
 }

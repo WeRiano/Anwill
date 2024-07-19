@@ -90,7 +90,6 @@ namespace Anwill {
             // (Grab all components of type B for entity x1, x2, ..., xn)
             // (...)
             using C = std::tuple_element_t<CompNr, std::tuple<Comps...>>;
-            const ComponentID& id = compIDs[CompNr];
             std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
 
             C& c = container->GetComponent(entityID);
@@ -112,7 +111,6 @@ namespace Anwill {
             // (Grab all components of type B for entity x1, x2, ..., xn)
             // (...)
             using C = std::tuple_element_t<CompNr, std::tuple<Comps...>>;
-            const ComponentID& id = compIDs[CompNr];
             std::shared_ptr<ComponentContainer<C>> container = GetComponentContainer<C>();
             unsigned int count = 0;
             for(const auto& entityID : entityIDs)
@@ -143,6 +141,21 @@ namespace Anwill {
             }
         }
 
+        inline unsigned int GetNumRegisteredComponents()
+        {
+            // return m_IDCounter; <-- This assumes some start value, which is not optimal.
+            return m_IDs.size();
+        }
+
+        inline unsigned int GetNumComponents()
+        {
+            unsigned int sum = 0;
+            for(auto& it : m_Containers) {
+                sum += it.second->GetSize();
+            }
+            return sum;
+        }
+
     private:
         std::unordered_map<ComponentID, std::shared_ptr<IContainer>> m_Containers;
         std::unordered_map<std::type_index, ComponentID> m_IDs;
@@ -167,8 +180,7 @@ namespace Anwill {
             AW_ASSERT(m_Containers[id] != nullptr,
                       "ECS: Attempted to access a component container of a type that has "
                       "not been registered.");
-            return std::static_pointer_cast<ComponentContainer<C>>(
-                    m_Containers[m_IDs[std::type_index(typeid(C))]]);
+            return std::static_pointer_cast<ComponentContainer<C>>(m_Containers[id]);
         }
     };
 

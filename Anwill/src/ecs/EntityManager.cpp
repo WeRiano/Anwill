@@ -82,6 +82,11 @@ namespace Anwill {
         return true;
     }
 
+    unsigned int EntityManager::GetNumAliveEntities() const
+    {
+        return m_AliveEntities.size();
+    }
+
     EntityID EntityManager::GenerateID()
     {
         AW_ASSERT(!m_AvailableIDs.empty(), "There is no available Entity ID for generation.");

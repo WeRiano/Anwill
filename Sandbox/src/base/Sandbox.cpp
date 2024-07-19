@@ -2,7 +2,7 @@
 #include "base/SandboxLayer.h"
 #include "base/SandboxEventHandler.h"
 
-#include "ecs/EcsTestLayer.h"
+#include "ecs/EcsStressTest.h"
 #include "physics/sprinkler/CollisionRender.h"
 #include "physics/sprinkler/CollisionTest.h"
 #include "physics/arena/SprinklerRender.h"
@@ -47,8 +47,8 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
     m_ActiveEnv = event.GetEnv();
     switch (m_ActiveEnv)
     {
-        case SandboxEnvironmentEvent::Env::Ecs:
-            AddLayer<EcsTestLayer>(0);
+        case SandboxEnvironmentEvent::Env::EcsStressTest:
+            AddLayer<EcsStressTest>(0);
             break;
         case SandboxEnvironmentEvent::Env::PhysicsCollision:
             AddLayer<SprinklerTest>(10);
@@ -73,7 +73,7 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
         case SandboxEnvironmentEvent::Env::Texture:
             AddLayer<TextureTest>(0, m_WindowSettings);
             break;
-        case SandboxEnvironmentEvent::Env::TopDownShooter:
+        case SandboxEnvironmentEvent::Env::TopDownShadow:
             AddLayer<TPSCalcs>(30);
             AddLayer<TPS>(0, 80.0f, 80.0f, m_WindowSettings.width / 80.0f, m_WindowSettings.height / 80.0f,
                           m_WindowSettings);
@@ -85,8 +85,8 @@ void Sandbox::EndTestEnvironment()
 {
     switch (m_ActiveEnv)
     {
-        case SandboxEnvironmentEvent::Env::Ecs:
-            RemoveLayer<EcsTestLayer>();
+        case SandboxEnvironmentEvent::Env::EcsStressTest:
+            RemoveLayer<EcsStressTest>();
             break;
         case SandboxEnvironmentEvent::Env::PhysicsCollision:
             RemoveLayer<SprinklerTest>();
@@ -111,7 +111,7 @@ void Sandbox::EndTestEnvironment()
         case SandboxEnvironmentEvent::Env::Texture:
             RemoveLayer<TextureTest>();
             break;
-        case SandboxEnvironmentEvent::Env::TopDownShooter:
+        case SandboxEnvironmentEvent::Env::TopDownShadow:
             RemoveLayer<TPSCalcs>();
             RemoveLayer<TPS>();
             break;

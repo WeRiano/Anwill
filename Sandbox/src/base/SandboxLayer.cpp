@@ -50,7 +50,13 @@ void SandboxLayer::Update(const Anwill::Timestamp& timestamp)
                     StartTestEnv(SandboxEnvironmentEvent::Env::SpriteAnimation);
                 }
             }
-            if (ImGui::CollapsingHeader("Physics"))
+            if (ImGui::CollapsingHeader("ECS")) {
+                if (ImGui::Button("Stress test"))
+                {
+                    StartTestEnv(SandboxEnvironmentEvent::Env::EcsStressTest);
+                }
+            }
+            if (ImGui::CollapsingHeader("Independent projects & tests"))
             {
                 if (ImGui::Button("Sprinkler"))
                 {
@@ -59,6 +65,10 @@ void SandboxLayer::Update(const Anwill::Timestamp& timestamp)
                 if (ImGui::Button("Arena"))
                 {
                     StartTestEnv(SandboxEnvironmentEvent::Env::PhysicsDynamics);
+                }
+                if (ImGui::Button("Top down shadow"))
+                {
+                    StartTestEnv(SandboxEnvironmentEvent::Env::TopDownShadow);
                 }
             }
         }

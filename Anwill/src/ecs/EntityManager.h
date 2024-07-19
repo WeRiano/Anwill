@@ -38,6 +38,9 @@ namespace Anwill {
         // Check if a specific component type is linked to a unique entity.
         bool HasComponents(const EntityID& entityID, const std::vector<ComponentID>& comps);
 
+        // Get the number of currently alive entities.
+        unsigned int GetNumAliveEntities() const;
+
     private:
         std::set<EntityID> m_AliveEntities;
         std::array<CompSig, AW_MAX_ENTITIES> m_CompSigs;

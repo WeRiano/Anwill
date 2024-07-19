@@ -11,12 +11,20 @@
 
 namespace Anwill {
 
+    struct EcsStats {
+        unsigned int numAliveEntities = 0;
+        unsigned int numRegisteredComponents = 0;
+        unsigned int numComponents = 0;
+    };
+
     class Ecs
     {
     public:
         Ecs();
 
         static void Init();
+
+        static void Reset();
 
         /**
          * Add an entity to the system and returns its unique ID;
@@ -32,6 +40,11 @@ namespace Anwill {
          * Check if an entity is still alive
          */
         static bool IsEntityAlive(EntityID entityID);
+
+        /**
+         * Get ECS stats. See @EcsStats for more.
+         */
+        static EcsStats GetStats();
 
         /**
          * Register a component (type) to the ECS. A component which has not been
@@ -96,7 +109,6 @@ namespace Anwill {
             // Since we are getting the components in a very weird fashion we
             // populate the tuple vector pre-emptively.
             // This however requires default constructor for all Entities.
-            // Probably a lot faster too since cache can focus on array.
             std::vector<std::tuple<Comps*...>> comps;
             for(unsigned int i = 0; i < entities.size(); i++)
             {
