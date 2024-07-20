@@ -22,6 +22,7 @@
 #include "gfx/Mesh.h"
 #include "gfx/Texture.h"
 #include "gfx/Font.h"
+#include "gfx/CameraController.h"
 
 // GUI (imgui)
 #include "imgui/Imgui.h"

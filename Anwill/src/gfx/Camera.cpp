@@ -23,7 +23,7 @@ namespace Anwill {
     {
         m_ViewMat = Math::Mat4f::Identity();
 
-        SystemEventHandler::Subscribe<WindowResizeEvent>(AW_BIND_THIS_MEMBER_FUNC(OnWindowResize));
+        //SystemEventHandler::Subscribe<WindowResizeEvent>(AW_BIND_THIS_MEMBER_FUNC(OnWindowResize));
     }
 
     void OrthographicCamera::Move(float deltaX, float deltaY)
@@ -61,8 +61,8 @@ namespace Anwill {
     void OrthographicCamera::OnWindowResize(Unique<Event>& event)
     {
         const auto& e = static_cast<WindowResizeEvent&>(*event);
-        //m_Width = (float)e.GetNewWidth();
-        //m_Height = (float)e.GetNewHeight();
-        //SetProjection(m_Width, m_Height);
+        m_Width = (float)e.GetNewWidth();
+        m_Height = (float)e.GetNewHeight();
+        SetProjection(m_Width, m_Height);
     }
 }
