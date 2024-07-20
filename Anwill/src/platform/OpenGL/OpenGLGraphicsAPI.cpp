@@ -76,6 +76,7 @@ namespace Anwill {
     void OpenGLGraphicsAPI::SetViewport(unsigned int x, unsigned int y,
                                         unsigned int width, unsigned int height) const
     {
+        AW_DEBUG("Viewport set to ({0}, {1})", width, height);
         glViewport((GLint) x, (GLint) y, (GLint) width, (GLint) height);
     }
 

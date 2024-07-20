@@ -117,7 +117,7 @@ namespace Anwill {
 
         m_gc = GraphicsContext::Create(m_Window);
 
-        // Define and setting window callbacks
+        // Callback setup
         glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height) {
             WindowResizeEvent resizeEvent(width, height);
             SystemEventHandler::Add(resizeEvent);

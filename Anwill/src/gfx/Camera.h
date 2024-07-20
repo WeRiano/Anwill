@@ -1,13 +1,17 @@
 #pragma once
 
+#include "core/Core.h"
 #include "math/Mat4f.h"
+#include "events/Event.h"
 
 namespace Anwill {
 
     class Camera
     {
     public:
-        const Math::Vec3f GetPos() const;
+        Camera(const Math::Mat4f& projMat);
+
+        Math::Vec3f GetPos() const;
         Math::Mat4f GetViewProj() const;
 
     protected:
@@ -27,10 +31,11 @@ namespace Anwill {
         void SetPos(float x, float y);
         void SetPos(const Math::Vec2f pos);
         void SetProjection(float width, float height);
-        float GetWidth() const;
-        float GetHeight() const;
 
     private:
         float m_Width, m_Height;
+
+        Math::Mat4f GetProjection(float width, float height) const;
+        void OnWindowResize(Unique<Event>& event);
     };
 }

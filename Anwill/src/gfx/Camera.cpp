@@ -1,8 +1,14 @@
 #include "Camera.h"
+#include "events/SystemEventHandler.h"
+#include "events/WindowEvents.h"
 
 namespace Anwill {
 
-    const Math::Vec3f Camera::GetPos() const
+    Camera::Camera(const Math::Mat4f& projMat)
+        : m_ProjMat(projMat)
+    {}
+
+    Math::Vec3f Camera::GetPos() const
     {
         return m_ViewMat.GetTranslateVector();
     }
@@ -13,15 +19,11 @@ namespace Anwill {
     }
 
     OrthographicCamera::OrthographicCamera(float width, float height)
-        : m_Width(width), m_Height(height)
+        : Camera(GetProjection(width, height)), m_Width(width), m_Height(height)
     {
-        // TODO: Automatically make the orthographic camera relative to the CURRENT screensize??
-        //       Probably use the event system somehow ...
-        //      (Subscribe to window resize event and remake m_ProjMat)
-        m_ProjMat = Math::Mat4f::Orthographic(0.0f, width,
-                                              0.0f, height,
-                                              -1.0f, 1.0f);
         m_ViewMat = Math::Mat4f::Identity();
+
+        SystemEventHandler::Subscribe<WindowResizeEvent>(AW_BIND_THIS_MEMBER_FUNC(OnWindowResize));
     }
 
     void OrthographicCamera::Move(float deltaX, float deltaY)
@@ -46,16 +48,21 @@ namespace Anwill {
 
     void OrthographicCamera::SetProjection(float width, float height)
     {
-        m_ProjMat = Math::Mat4f::Orthographic(0.0f, width, 0.0f, height, -1.0f, 1.0f);
+        m_ProjMat = GetProjection(width, height);
     }
 
-    float OrthographicCamera::GetWidth() const
+    Math::Mat4f OrthographicCamera::GetProjection(float width, float height) const
     {
-        return m_Width;
+        float spanX = width * 0.5f;
+        float spanY = height * 0.5f;
+        return Math::Mat4f::Orthographic(-spanX, spanX, -spanY, spanY, -1.0f, 1.0f);
     }
 
-    float OrthographicCamera::GetHeight() const
+    void OrthographicCamera::OnWindowResize(Unique<Event>& event)
     {
-        return m_Height;
+        const auto& e = static_cast<WindowResizeEvent&>(*event);
+        //m_Width = (float)e.GetNewWidth();
+        //m_Height = (float)e.GetNewHeight();
+        //SetProjection(m_Width, m_Height);
     }
 }

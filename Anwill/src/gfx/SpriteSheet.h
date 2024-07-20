@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/Core.h"
 #include "gfx/Sprite.h"
 
 namespace Anwill {
@@ -16,9 +17,9 @@ namespace Anwill {
     class SpriteSheet
     {
     public:
-        static std::shared_ptr<SpriteSheet> Create(const std::string& filePath,
-                                                   const unsigned int spriteCountX,
-                                                   const unsigned int spriteCountY);
+        static Shared<SpriteSheet> Create(const std::string& filePath,
+                                          const unsigned int spriteCountX,
+                                          const unsigned int spriteCountY);
 
         /**
          * Get the tex coordinates of a sprite located in an even spritesheet.
@@ -53,14 +54,14 @@ namespace Anwill {
         Sprite GetSprite(unsigned int x, unsigned int y,
                          unsigned int width, unsigned int height);
 
-        std::shared_ptr<Texture> GetTexture() const;
-        unsigned int GetSpriteXCount() const;
-        unsigned int GetSpriteYCount() const;
+        Shared<Texture> GetTexture() const;
+        unsigned int GetSpriteCountX() const;
+        unsigned int GetSpriteCountY() const;
 
     private:
-        std::shared_ptr<Texture> m_Texture;
+        Shared<Texture> m_Texture;
         // Assuming an evenly distributed sprite sheet. See GetUnevenSpriteTexCoords if
         // this assumption is unrealistic
-        unsigned int m_SpriteCountX, m_SpriteCountY, m_SpriteXCount, m_SpriteYCount;
+        unsigned int m_SpriteCountX, m_SpriteCountY, m_SpriteWidthX, m_SpriteWidthY;
     };
 }

@@ -12,17 +12,16 @@ PrimitivesTest::PrimitivesTest(const unsigned int ups, const Anwill::WindowSetti
     m_CircleSize(ws.width / 5.0f, ws.width / 5.0f),
     m_CheckmarkSize(ws.width / 5.0f, ws.width / 5.0f),
     m_WindowSize(ws.width, ws.height),
-    m_TrianglePos(m_Camera.GetWidth() * 0.25f, m_Camera.GetHeight() * 0.75f),
-    m_RectanglePos(m_Camera.GetWidth() * 0.75f, m_Camera.GetHeight() * 0.75f),
-    m_CirclePos(m_Camera.GetWidth() * 0.25f, m_Camera.GetHeight() * 0.25f),
-    m_CheckmarkPos(m_Camera.GetWidth() * 0.75f, m_Camera.GetHeight() * 0.25f),
+    m_TrianglePos(-(float)ws.width * 0.25f, (float)ws.height * 0.25f),
+    m_RectanglePos((float)ws.width * 0.25f, (float)ws.height * 0.25f),
+    m_CirclePos((float)ws.width * 0.25f, -(float)ws.height * 0.25f),
+    m_CheckmarkPos(-(float)ws.width * 0.25f, -(float)ws.height * 0.25f),
     m_BackgroundColor(1.0f, 1.0f, 1.0f),
     m_TriangleColor(0.3f, 0.8f, 1.0f),
     m_RectangleColor(0.8f, 0.3f, 1.0f),
     m_CircleColor(1.0f, 0.8f, 0.3f),
     m_CheckmarkColor(0.0f, 1.0f, 0.3f)
-{
-}
+{}
 
 void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
 {
@@ -30,11 +29,11 @@ void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
 
     Anwill::Renderer::SetClearColor(m_BackgroundColor);
 
-    float maxPos = m_WindowSize.Max();
+    float maxPos = m_WindowSize.Max() * 0.5f;
 
     ImGui::Begin("Primitives");
 
-    ImGui::PushID(42);
+    ImGui::PushID(0);
     ImGui::SeparatorText("Background");
     ImGui::ColorEdit3("Color", &m_BackgroundColor.X);
     ImGui::PopID();
@@ -42,28 +41,28 @@ void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
     ImGui::SeparatorText("Triangle");
     ImGui::PushID(1);
     ImGui::SliderFloat2("Scale", &m_TriangleSize.X, 10.0f, 1000.0f);
-    ImGui::SliderFloat2("Translation", &m_TrianglePos.X, 0.0f, maxPos);
+    ImGui::SliderFloat2("Translation", &m_TrianglePos.X, -maxPos, maxPos);
     ImGui::ColorEdit3("Color", &m_TriangleColor.X);
     ImGui::PopID();
 
     ImGui::SeparatorText("Rectangle");
     ImGui::PushID(2);
     ImGui::SliderFloat2("Scale", &m_RectangleSize.X, 10.0f, 1000.0f);
-    ImGui::SliderFloat2("Translation", &m_RectanglePos.X, 0.0f, maxPos);
+    ImGui::SliderFloat2("Translation", &m_RectanglePos.X, -maxPos, maxPos);
     ImGui::ColorEdit3("Color", &m_RectangleColor.X);
     ImGui::PopID();
 
     ImGui::SeparatorText("Circle");
     ImGui::PushID(3);
     ImGui::SliderFloat2("Scale", &m_CircleSize.X, 10.0f, 1000.0f);
-    ImGui::SliderFloat2("Translation", &m_CirclePos.X, 0.0f, maxPos);
+    ImGui::SliderFloat2("Translation", &m_CirclePos.X, -maxPos, maxPos);
     ImGui::ColorEdit3("Color", &m_CircleColor.X);
     ImGui::PopID();
 
     ImGui::SeparatorText("Checkmark");
     ImGui::PushID(4);
     ImGui::SliderFloat2("Scale", &m_CheckmarkSize.X, 10.0f, 1000.0f);
-    ImGui::SliderFloat2("Translation", &m_CheckmarkPos.X, 0.0f, maxPos);
+    ImGui::SliderFloat2("Translation", &m_CheckmarkPos.X, -maxPos, maxPos);
     ImGui::ColorEdit3("Color", &m_CheckmarkColor.X);
     ImGui::PopID();
 

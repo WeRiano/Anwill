@@ -6,9 +6,9 @@ BatchRendererTest::BatchRendererTest(unsigned int ups,
       m_RectShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectColor.glsl")),
       m_CircleShader(Anwill::Shader::Create("Sandbox/assets/shaders/CircleColor.glsl")),
       m_TextureShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl")),
-      m_PrimitiveSize(200.0f, 200.0f),
+      m_PrimitiveSize(20.0f, 20.0f),
       m_NumPrimitives(50),
-      m_SpriteSheet(Anwill::SpriteSheet::Create("Sandbox/assets/textures/test_sprite_sheet.png", 64, 47)),
+      m_SpriteSheet(Anwill::SpriteSheet::Create("Sandbox/assets/textures/test_sprite_sheet.png", 64, 48)),
       m_BatchRenderData()
 {
     m_Camera.Move(0.0f, 0.0f);
@@ -20,7 +20,7 @@ void BatchRendererTest::Update(const Anwill::Timestamp& timestamp)
 
     ImGui::Begin("Batch renderer");
 
-    static bool batchRendering = true, textureRendering = false;
+    static bool batchRendering = true, textureRendering = true;
     ImGui::Checkbox("Batch rendering", &batchRendering);
     ImGui::Checkbox("Texture rendering", &textureRendering);
     if(!textureRendering) {
@@ -142,14 +142,14 @@ void BatchRendererTest::BatchRenderingTextureQuads()
     const auto textureSize = m_PrimitiveSize * 2;
 
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), textureSize);
-    for(int x = 0; x < m_SpriteSheet->GetSpriteXCount(); x++) {
-        for(int y = 0; y < m_SpriteSheet->GetSpriteYCount(); y++) {
-            Anwill::Renderer2D::PushQuadToBatch(transform, m_SpriteSheet->GetSprite(x, y));
+    for(int x = 0; x < m_SpriteSheet->GetSpriteCountX(); x++) {
+        for(int y = 0; y < m_SpriteSheet->GetSpriteCountY(); y++) {
+            Anwill::Renderer2D::PushQuadToBatch(transform, m_SpriteSheet->GetSprite(x + 1, y + 1));
             transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, textureSize.Y, 0.0f});
         }
         transform = Anwill::Math::Mat4f::Translate(transform,
                                                    {textureSize.X,
-                                                    -textureSize.Y * m_SpriteSheet->GetSpriteYCount(), 0.0f});
+                                                    -textureSize.Y * m_SpriteSheet->GetSpriteCountY(), 0.0f});
     }
     m_BatchRenderData = Anwill::Renderer2D::DrawBatch();
 }
@@ -161,13 +161,13 @@ void BatchRendererTest::SlowRenderingTextureQuads()
     const auto textureSize = m_PrimitiveSize * 2;
 
     auto transform = Anwill::Math::Mat4f::Scale(Anwill::Math::Mat4f::Identity(), textureSize);
-    for(unsigned int x = 0; x < m_SpriteSheet->GetSpriteYCount(); x++) {
-        for(unsigned int y = 0; y < m_SpriteSheet->GetSpriteXCount(); y++) {
-            Anwill::Renderer2D::SubmitSprite(m_TextureShader, m_SpriteSheet->GetSprite(x, y), transform);
+    for(unsigned int x = 0; x < m_SpriteSheet->GetSpriteCountX(); x++) {
+        for(unsigned int y = 0; y < m_SpriteSheet->GetSpriteCountY(); y++) {
+            Anwill::Renderer2D::SubmitSprite(m_TextureShader, m_SpriteSheet->GetSprite(x + 1, y + 1), transform);
             transform = Anwill::Math::Mat4f::Translate(transform, {0.0f, textureSize.Y, 0.0f});
         }
         transform = Anwill::Math::Mat4f::Translate(transform,
                                                    {textureSize.X,
-                                                    -textureSize.Y * m_SpriteSheet->GetSpriteYCount(), 0.0f});
+                                                    -textureSize.Y * m_SpriteSheet->GetSpriteCountY(), 0.0f});
     }
 }

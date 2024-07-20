@@ -97,6 +97,7 @@ namespace Anwill {
         auto e = static_cast<WindowResizeEvent&>(*event);
         AW_INFO("Resized Window to width {0} and height {1}.", e.GetNewWidth(), e.GetNewHeight());
         Renderer::SetViewport(0, 0, e.GetNewWidth(), e.GetNewHeight());
+        Renderer::SetScissor({}, {(float)e.GetNewWidth(), (float)e.GetNewHeight()});
     }
 
     void App::OnWindowFocus(Unique<Event>& event)

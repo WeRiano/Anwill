@@ -14,9 +14,9 @@ namespace Anwill {
         spriteSheet->m_Texture = Texture::Create(filePath);
         spriteSheet->m_SpriteCountX = spriteCountX;
         spriteSheet->m_SpriteCountY = spriteCountY;
-        spriteSheet->m_SpriteXCount = spriteSheet->m_Texture->GetWidth() /
+        spriteSheet->m_SpriteWidthX = spriteSheet->m_Texture->GetWidth() /
                                       spriteSheet->m_SpriteCountX;
-        spriteSheet->m_SpriteYCount = spriteSheet->m_Texture->GetHeight() /
+        spriteSheet->m_SpriteWidthY = spriteSheet->m_Texture->GetHeight() /
                                       spriteSheet->m_SpriteCountY;
         return spriteSheet;
     }
@@ -32,19 +32,19 @@ namespace Anwill {
         }
         QuadTexCoords texCoords = {
                 Math::NormalizeToFloat<int>(
-                        m_SpriteXCount * (spriteXPos - 1) - leftPadPixels,
+                        m_SpriteWidthX * (spriteXPos - 1) - leftPadPixels,
                         0,
                         m_Texture->GetWidth()),
                 Math::NormalizeToFloat<int>(
-                        m_SpriteYCount * (spriteYPos - 1) - bottomPadPixels,
+                        m_SpriteWidthY * (spriteYPos - 1) - bottomPadPixels,
                         0,
                         m_Texture->GetHeight()),
                 Math::NormalizeToFloat<int>(
-                        m_SpriteXCount * spriteXPos + rightPadPixels,
+                        m_SpriteWidthX * spriteXPos + rightPadPixels,
                         0,
                         m_Texture->GetWidth()),
                 Math::NormalizeToFloat<int>(
-                        m_SpriteYCount * spriteYPos + topPadPixels,
+                        m_SpriteWidthY * spriteYPos + topPadPixels,
                         0,
                         m_Texture->GetHeight())
         };
@@ -53,7 +53,7 @@ namespace Anwill {
     }
 
     Sprite SpriteSheet::GetSprite(unsigned int x, unsigned int y,
-                                               unsigned int width, unsigned int height)
+                                  unsigned int width, unsigned int height)
     {
         if((x + width) > m_Texture->GetWidth() or (y + height) > m_Texture->GetHeight()) {
             AW_ERROR("Incorrect sprite coordinates.");
@@ -79,18 +79,18 @@ namespace Anwill {
         return {m_Texture, texCoords};
     }
 
-    std::shared_ptr<Texture> SpriteSheet::GetTexture() const
+    Shared<Texture> SpriteSheet::GetTexture() const
     {
         return m_Texture;
     }
 
-    unsigned int SpriteSheet::GetSpriteXCount() const
+    unsigned int SpriteSheet::GetSpriteCountX() const
     {
-        return m_SpriteXCount;
+        return m_SpriteCountX;
     }
 
-    unsigned int SpriteSheet::GetSpriteYCount() const
+    unsigned int SpriteSheet::GetSpriteCountY() const
     {
-        return m_SpriteYCount;
+        return m_SpriteCountY;
     }
 }
