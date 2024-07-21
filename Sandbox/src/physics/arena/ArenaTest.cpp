@@ -1,10 +1,10 @@
-#include "CollisionTest.h"
+#include "ArenaTest.h"
 
-CollisionTest::CollisionTest(unsigned int ups, const Anwill::WindowSettings& ws)
+ArenaTest::ArenaTest(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_WS(ws)
 {}
 
-void CollisionTest::Update(const Anwill::Timestamp& timestamp)
+void ArenaTest::Update(const Anwill::Timestamp& timestamp)
 {
     MoveAndTiltPlayer();
     HandleCollisions();
@@ -14,7 +14,7 @@ void CollisionTest::Update(const Anwill::Timestamp& timestamp)
     Layer::Update(timestamp);
 }
 
-void CollisionTest::HandleCollisions()
+void ArenaTest::HandleCollisions()
 {
     std::set<std::pair<Anwill::EntityID, Anwill::EntityID>> colSet;
     Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([&colSet](Anwill::EntityID idA,
@@ -41,29 +41,29 @@ void CollisionTest::HandleCollisions()
     });
 }
 
-void CollisionTest::SwapShape()
+void ArenaTest::SwapShape()
 {
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::C))
     {
-        Anwill::Ecs::ForEntity<Anwill::RBody>(CollisionRender::s_Player, [](Anwill::RBody& body) {
+        Anwill::Ecs::ForEntity<Anwill::RBody>(ArenaRender::s_Player, [](Anwill::RBody& body) {
             body.EmplaceCollider<Anwill::CircleCollider>(40.0f);
         });
-        CollisionRender::s_PlayerIsRound = true;
+        ArenaRender::s_PlayerIsRound = true;
     }
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::R))
     {
-        Anwill::Ecs::ForEntity<Anwill::RBody>(CollisionRender::s_Player, [this](Anwill::RBody& body) {
-            auto vs = CollisionRender::s_Mesh.GetVertices();
+        Anwill::Ecs::ForEntity<Anwill::RBody>(ArenaRender::s_Player, [this](Anwill::RBody& body) {
+            auto vs = ArenaRender::s_Mesh.GetVertices();
             body.EmplaceCollider<Anwill::PolygonCollider>(vs);
         });
-        CollisionRender::s_PlayerIsRound = false;
+        ArenaRender::s_PlayerIsRound = false;
     }
 }
 
-void CollisionTest::MoveAndTiltPlayer()
+void ArenaTest::MoveAndTiltPlayer()
 {
-    Anwill::Ecs::ForEntity<Anwill::Math::Mat4f, Anwill::RBody>(CollisionRender::s_Player, [](Anwill::Math::Mat4f& transform,
-            Anwill::RBody& pBody) {
+    Anwill::Ecs::ForEntity<Anwill::Math::Mat4f, Anwill::RBody>(ArenaRender::s_Player, [](Anwill::Math::Mat4f& transform,
+                                                                                         Anwill::RBody& pBody) {
         float speed = 0.1f;
         float velMag = 100.0f;
         Anwill::Math::Vec3f newVel = {};
@@ -101,7 +101,7 @@ void CollisionTest::MoveAndTiltPlayer()
     });
 }
 
-void CollisionTest::WrapBodies()
+void ArenaTest::WrapBodies()
 {
     Anwill::Ecs::ForEach<Anwill::RBody>([this](Anwill::EntityID id, Anwill::RBody& body){
         // We are assuming camera positioning at origin here

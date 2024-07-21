@@ -3,10 +3,10 @@
 #include "base/SandboxEventHandler.h"
 
 #include "ecs/EcsStressTest.h"
-#include "physics/sprinkler/CollisionRender.h"
-#include "physics/sprinkler/CollisionTest.h"
-#include "physics/arena/SprinklerRender.h"
-#include "physics/arena/SprinklerTest.h"
+#include "physics/arena/ArenaRender.h"
+#include "physics/arena/ArenaTest.h"
+#include "physics/sprinkler/SprinklerRender.h"
+#include "physics/sprinkler/SprinklerTest.h"
 #include "renderer/PrimitivesTest.h"
 #include "renderer/BatchRendererTest.h"
 #include "renderer/FontTest.h"
@@ -55,8 +55,8 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
             AddLayer<SprinklerRender>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::PhysicsDynamics:
-            AddLayer<CollisionRender>(0, m_WindowSettings);
-            AddLayer<CollisionTest>(30, m_WindowSettings);
+            AddLayer<ArenaRender>(0, m_WindowSettings);
+            AddLayer<ArenaTest>(30, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::Primitives:
             AddLayer<PrimitivesTest>(0, m_WindowSettings);
@@ -93,8 +93,8 @@ void Sandbox::EndTestEnvironment()
             RemoveLayer<SprinklerRender>();
             break;
         case SandboxEnvironmentEvent::Env::PhysicsDynamics:
-            RemoveLayer<CollisionRender>();
-            RemoveLayer<CollisionTest>();
+            RemoveLayer<ArenaRender>();
+            RemoveLayer<ArenaTest>();
             break;
         case SandboxEnvironmentEvent::Env::Primitives:
             RemoveLayer<PrimitivesTest>();

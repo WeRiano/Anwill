@@ -3,7 +3,9 @@
 SprinklerRender::SprinklerRender(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups),
       m_Camera(ws.width, ws.height)
-{}
+{
+    m_Camera.Move(ws.width * 0.5f, ws.height * 0.5f);
+}
 
 void SprinklerRender::Update(const Anwill::Timestamp& timestamp)
 {

@@ -2,14 +2,14 @@
 
 #include "Anwill.h"
 
-class CollisionRender : public Anwill::Layer
+class ArenaRender : public Anwill::Layer
 {
 public:
     static bool s_PlayerIsRound;
     static Anwill::EntityID s_Player;
     static Anwill::Mesh s_Mesh;
 
-    CollisionRender(unsigned int ups, const Anwill::WindowSettings& ws);
+    ArenaRender(unsigned int ups, const Anwill::WindowSettings& ws);
 
     void Update(const Anwill::Timestamp& timestamp) override;
 private:

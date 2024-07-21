@@ -15,7 +15,7 @@ target_link_libraries(Sandbox INTERFACE
         Anwill
         SandboxBase
         EcsSandbox
-        CollisionSandbox DynamicsSandbox
+        ArenaSandbox SprinklerSandbox
         RendererSandbox
         TopDownShadow
 )

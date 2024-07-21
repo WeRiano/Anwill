@@ -1,12 +1,12 @@
 #include <set>
 
-#include "CollisionRender.h"
+#include "ArenaRender.h"
 
-bool CollisionRender::s_PlayerIsRound = false;
-Anwill::EntityID CollisionRender::s_Player;
-Anwill::Mesh CollisionRender::s_Mesh;
+bool ArenaRender::s_PlayerIsRound = false;
+Anwill::EntityID ArenaRender::s_Player;
+Anwill::Mesh ArenaRender::s_Mesh;
 
-CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings& ws)
+ArenaRender::ArenaRender(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_Camera(ws.width, ws.height)
 {
     s_Mesh = Anwill::Mesh::CreateRectMesh(80.0f, 80.0f);
@@ -23,12 +23,14 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
     m_CircleShader->SetUniformVec3f(Anwill::Math::Vec3f(0.905f, 0.294f, 0.301f), "u_Color");
     m_CircleShader->Unbind();
 
+    m_Camera.Move(ws.width * 0.5f, ws.height * 0.5f);
+
     Anwill::Ecs::RegisterComponent<Anwill::RBody>(); // TODO: Move to engine(?)
     Anwill::Ecs::RegisterComponent<Anwill::Math::Mat4f>();
 
     float mass = 5.0f;
 
-    // Even are circles
+    // Even ids are circles
     Anwill::EntityID npc1 = Anwill::Ecs::CreateEntity(); // Rect
     Anwill::EntityID npc2 = Anwill::Ecs::CreateEntity(); // Ellipse
     Anwill::EntityID npc3 = Anwill::Ecs::CreateEntity(); // Rect
@@ -63,7 +65,7 @@ CollisionRender::CollisionRender(unsigned int ups, const Anwill::WindowSettings&
     Anwill::Renderer::SetClearColor({0.278f, 0.333f, 0.443f});
 }
 
-void CollisionRender::Update(const Anwill::Timestamp& timestamp)
+void ArenaRender::Update(const Anwill::Timestamp& timestamp)
 {
     float delta = GetUpdateDelta(timestamp).GetSeconds();
 
@@ -79,16 +81,16 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
         if(id == s_Player)
         {
             if(s_PlayerIsRound) {
-                Anwill::Renderer2D::SubmitMesh(m_CircleShader, s_Mesh, transform);
+                Anwill::Renderer2D::PushCircleToBatch(transform, {1.0f, 0.0f, 0.0f});
             } else {
-                Anwill::Renderer2D::SubmitMesh(m_RectShader, s_Mesh, transform);
+                Anwill::Renderer2D::PushQuadToBatch(transform, {0.858f, 0.552f, 0.223f});
             }
         } else {
             if(id % 2 == 0)
             {
-                Anwill::Renderer2D::SubmitMesh(m_CircleShader, s_Mesh, transform);
+                Anwill::Renderer2D::PushCircleToBatch(transform, {1.0f, 1.0f, 0.0f});
             } else {
-                Anwill::Renderer2D::SubmitMesh(m_RectShader, s_Mesh, transform);
+                Anwill::Renderer2D::PushQuadToBatch(transform, {0.258f, 0.852f, 0.223f});
             }
         }
 
@@ -96,6 +98,8 @@ void CollisionRender::Update(const Anwill::Timestamp& timestamp)
         vel.Normalize();
         body.ApplyForce(-vel * 250.0f);
         body.Tick(delta * 2.0f);
+
+        Anwill::Renderer2D::DrawBatch();
     });
 
     Layer::Update(timestamp);

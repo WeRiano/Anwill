@@ -2,12 +2,12 @@
 
 #include "Anwill.h"
 
-#include "CollisionRender.h"
+#include "ArenaRender.h"
 
-class CollisionTest : public Anwill::Layer
+class ArenaTest : public Anwill::Layer
 {
 public:
-    CollisionTest(unsigned int ups, const Anwill::WindowSettings& ws);
+    ArenaTest(unsigned int ups, const Anwill::WindowSettings& ws);
 
     void Update(const Anwill::Timestamp& timestamp) override;
 

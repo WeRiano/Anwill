@@ -1,3 +1,3 @@
-add_library(CollisionSandbox STATIC CollisionRender.cpp CollisionTest.cpp)
+add_library(SprinklerSandbox STATIC SprinklerRender.cpp SprinklerTest.cpp)
 
-target_link_libraries(CollisionSandbox PUBLIC Anwill)
+target_link_libraries(SprinklerSandbox PUBLIC Anwill)
