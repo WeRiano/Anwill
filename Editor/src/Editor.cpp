@@ -21,9 +21,10 @@ namespace Anwill {
 Anwill::App* Anwill::CreateApp()
 {
     // Define graphics API, Window Settings and more
+    // TODO: Move to local config file perhaps
     Anwill::AppSettings appSettings = AppSettings()
         .SetTitle("Anwill Editor")
-        .SetWindowResolution(1920, 1080)
+        .SetWindowResolution(1800, 900)
         .SetGraphicsAPI(GraphicsAPI::API::OpenGL)
         .SetNumSamples(8);
 

@@ -10,13 +10,11 @@ BatchRendererTest::BatchRendererTest(unsigned int ups,
       m_NumPrimitives(50),
       m_SpriteSheet(Anwill::SpriteSheet::Create("Sandbox/assets/textures/test_sprite_sheet.png", 64, 48)),
       m_BatchRenderData()
-{
-    m_Camera.Move(0.0f, 0.0f);
-}
+{}
 
 void BatchRendererTest::Update(const Anwill::Timestamp& timestamp)
 {
-    Anwill::Renderer2D::BeginScene(m_Camera);
+    Anwill::Renderer2D::BeginScene(m_CameraController);
 
     ImGui::Begin("Batch renderer");
 
@@ -40,7 +38,7 @@ void BatchRendererTest::Update(const Anwill::Timestamp& timestamp)
         ImGui::Text("Drawn circles: %i", m_BatchRenderData.drawnCircles);
     }
 
-    DisplayCameraGuiControls();
+    m_CameraController.ShowGuiControls();
 
     ImGui::End();
 

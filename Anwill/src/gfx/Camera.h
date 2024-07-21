@@ -30,12 +30,15 @@ namespace Anwill {
         void Move(const Math::Vec2f delta);
         void SetPos(float x, float y);
         void SetPos(const Math::Vec2f pos);
+        void Zoom(float delta);
         void SetProjection(float width, float height);
 
-    private:
+    protected:
         float m_Width, m_Height;
+        float m_ZoomLevel;
 
         Math::Mat4f GetProjection(float width, float height) const;
+        float GetMaxZoom() const;
         void OnWindowResize(Unique<Event>& event);
     };
 }

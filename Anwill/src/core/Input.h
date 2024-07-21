@@ -12,7 +12,7 @@ namespace Anwill {
     public:
         static void Init(void* nativeWindow);
 
-        static bool IsKeyPressed(const KeyCode& keyCode);
-        static bool IsMouseButtonDown(const MouseButtonCode& mouseButtonCode);
+        static bool IsKeyPressed(KeyCode keyCode);
+        static bool IsMouseButtonDown(MouseButtonCode mouseButtonCode);
     };
 }

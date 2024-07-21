@@ -1,23 +1,21 @@
 #pragma once
 
 #include "Camera.h"
-#include "events/KeyEvents.h"
+#include "events/MouseEvents.h"
+#include "core/Timestamp.h"
 
 namespace Anwill {
 
-    class CameraController
-    {
-
-    };
-
-    class OrthographicCameraController : public CameraController
+    class OrthographicCameraController : public OrthographicCamera
     {
     public:
         OrthographicCameraController(float width, float height);
-    private:
-        OrthographicCamera m_Camera;
-        float m_Speed;
 
-        void OnKeyPress(Unique<Event>& event);
+        void PollMovement(Timestamp delta);
+        void ShowGuiControls();
+    private:
+        float m_MovementSpeed, m_ZoomSpeed;
+
+        void OnMouseScroll(Unique<Event>& event);
     };
 }

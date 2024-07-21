@@ -18,11 +18,11 @@ void TextureTest::Update(const Anwill::Timestamp& timestamp)
 
     ImGui::SliderFloat2("Texture size", &m_TextureSize.X, 10.0f, 5000.0f);
 
-    DisplayCameraGuiControls();
+    m_CameraController.ShowGuiControls();
 
     ImGui::End();
 
-    Anwill::Renderer2D::BeginScene(m_Camera);
+    Anwill::Renderer2D::BeginScene(m_CameraController);
 
     auto transform = Anwill::Math::Mat4f::Scale({}, m_TextureSize);
     transform = Anwill::Math::Mat4f::Translate(transform, m_TexturePos);

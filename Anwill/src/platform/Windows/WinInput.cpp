@@ -9,12 +9,12 @@ namespace Anwill {
         s_Window = nativeWindow;
     }
 
-    bool WinInput::IsKeyPressed(const KeyCode& keyCode)
+    bool WinInput::IsKeyPressed(const KeyCode keyCode)
     {
         return glfwGetKey(s_Window, (int) keyCode) == GLFW_PRESS;
     }
 
-    bool WinInput::IsMouseButtonDown(const MouseButtonCode& mouseButtonCode)
+    bool WinInput::IsMouseButtonDown(const MouseButtonCode mouseButtonCode)
     {
         return glfwGetMouseButton(s_Window, (int) mouseButtonCode) == GLFW_PRESS;
     }

@@ -10,11 +10,5 @@ public:
     void Update(const Anwill::Timestamp& timestamp) override;
 
 protected:
-    //Anwill::OrthographicCamera m_Camera;
-    //float m_Speed;
     Anwill::OrthographicCameraController m_CameraController;
-
-    void MoveCamera(const Anwill::Timestamp& delta);
-    void DisplayCameraGuiControls();
-    float GetCameraDisplacement(const Anwill::Timestamp& timestamp) const;
 };

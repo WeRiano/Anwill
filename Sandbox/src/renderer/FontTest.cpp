@@ -9,7 +9,7 @@ FontTest::FontTest(unsigned int ups, const Anwill::WindowSettings& ws)
 
 void FontTest::Update(const Anwill::Timestamp& timestamp)
 {
-    Anwill::Renderer2D::BeginScene(m_Camera);
+    Anwill::Renderer2D::BeginScene(m_CameraController);
 
     static int fontSize = 40;
 
@@ -17,7 +17,7 @@ void FontTest::Update(const Anwill::Timestamp& timestamp)
 
     ImGui::SliderInt("Size", &fontSize, 10, 300);
 
-    DisplayCameraGuiControls();
+    m_CameraController.ShowGuiControls();
 
     ImGui::End();
 

@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "events/SystemEventHandler.h"
 #include "events/WindowEvents.h"
+#include "math/Math.h"
 
 namespace Anwill {
 
@@ -19,7 +20,7 @@ namespace Anwill {
     }
 
     OrthographicCamera::OrthographicCamera(float width, float height)
-        : Camera(GetProjection(width, height)), m_Width(width), m_Height(height)
+        : Camera(GetProjection(width, height)), m_Width(width), m_Height(height), m_ZoomLevel(0)
     {
         m_ViewMat = Math::Mat4f::Identity();
 
@@ -46,9 +47,19 @@ namespace Anwill {
         m_ViewMat.SetTranslation(pos);
     }
 
+    void OrthographicCamera::Zoom(float delta)
+    {
+        m_ZoomLevel = Math::Clamp(m_ZoomLevel + delta, -GetMaxZoom(), GetMaxZoom());
+        float oldAspectRatio = m_Width / m_Height;
+        m_ProjMat = GetProjection((m_Height + m_ZoomLevel) * oldAspectRatio, m_Height + m_ZoomLevel);
+    }
+
     void OrthographicCamera::SetProjection(float width, float height)
     {
-        m_ProjMat = GetProjection(width, height);
+        m_Width = width;
+        m_Height = height;
+        float oldAspectRatio = m_Width / m_Height;
+        m_ProjMat = GetProjection((m_Height + m_ZoomLevel) * oldAspectRatio, m_Height + m_ZoomLevel);
     }
 
     Math::Mat4f OrthographicCamera::GetProjection(float width, float height) const
@@ -58,11 +69,17 @@ namespace Anwill {
         return Math::Mat4f::Orthographic(-spanX, spanX, -spanY, spanY, -1.0f, 1.0f);
     }
 
+    float OrthographicCamera::GetMaxZoom() const
+    {
+        return m_Height * 0.75f;
+    }
+
     void OrthographicCamera::OnWindowResize(Unique<Event>& event)
     {
         const auto& e = static_cast<WindowResizeEvent&>(*event);
         m_Width = (float)e.GetNewWidth();
         m_Height = (float)e.GetNewHeight();
-        SetProjection(m_Width, m_Height);
+        float oldAspectRatio = m_Width / m_Height;
+        SetProjection((m_Height + m_ZoomLevel) * oldAspectRatio, m_Height + m_ZoomLevel);
     }
 }

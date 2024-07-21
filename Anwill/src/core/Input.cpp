@@ -14,14 +14,14 @@ namespace Anwill {
         #endif
     }
 
-    bool Input::IsKeyPressed(const KeyCode& keyCode)
+    bool Input::IsKeyPressed(const KeyCode keyCode)
     {
         #ifdef AW_PLATFORM_WINDOWS
             return WinInput::IsKeyPressed(keyCode);
         #endif
     }
 
-    bool Input::IsMouseButtonDown(const MouseButtonCode& mouseButtonCode)
+    bool Input::IsMouseButtonDown(const MouseButtonCode mouseButtonCode)
     {
         #ifdef AW_PLATFORM_WINDOWS
             return WinInput::IsMouseButtonDown(mouseButtonCode);
