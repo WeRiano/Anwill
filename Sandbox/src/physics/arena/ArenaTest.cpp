@@ -46,7 +46,7 @@ void ArenaTest::SwapShape()
     if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::C))
     {
         Anwill::Ecs::ForEntity<Anwill::RBody>(ArenaRender::s_Player, [](Anwill::RBody& body) {
-            body.EmplaceCollider<Anwill::CircleCollider>(40.0f);
+            body.EmplaceCollider<Anwill::CircleCollider>(0.5f);
         });
         ArenaRender::s_PlayerIsRound = true;
     }

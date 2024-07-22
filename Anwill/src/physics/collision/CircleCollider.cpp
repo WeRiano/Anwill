@@ -33,7 +33,8 @@ namespace Anwill {
         Math::Vec2f otherCentre = otherTransform * m_Centre;
 
         float bodyDistance = (thisCentre - otherCentre).GetLength();
-        float collisionDistance = (m_Radius + circleCollider->m_Radius);
+        float scale = thisTransform.GetScale().X; // TODO: Ellipses
+        float collisionDistance = (m_Radius * scale + circleCollider->m_Radius * scale);
         if( bodyDistance <= collisionDistance) {
             Math::Vec2f temp = thisCentre - otherCentre;
             colData.normal = {temp.X, temp.Y, 0.0f};
@@ -51,8 +52,9 @@ namespace Anwill {
     {
         Math::Vec2f axisCopy = axis;
         axisCopy.Normalize();
-        min = ((transform * m_Centre) - (axisCopy * m_Radius)).ScalarProjection(axis);
-        max = ((transform * m_Centre) + (axisCopy * m_Radius)).ScalarProjection(axis);
+        float scale = transform.GetScale().X; // TODO: Ellipses
+        min = ((transform * m_Centre) - (axisCopy * m_Radius * scale)).ScalarProjection(axis);
+        max = ((transform * m_Centre) + (axisCopy * m_Radius * scale)).ScalarProjection(axis);
     }
 
     bool CircleCollider::SATCollision(const PolygonCollider* otherCollider, const Math::Mat4f& thisTransform,

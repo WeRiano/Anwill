@@ -24,7 +24,7 @@ namespace Anwill {
             normal = -normal;
         }
 
-        float e = 0.8f; // Idk
+        float e = 0.8f;
         float j = -(1.0f + e) * relVel.DotProduct(normal);
         j /= (1.0f / body1.GetMass()) + (1.0f / body2.GetMass());
 
@@ -47,6 +47,7 @@ namespace Anwill {
         // just in case we accidentally spawn them within range or something like that :)
     }
 
+    // TODO: Remove
     Math::Vec3f Collision::GetArithmeticMean(const std::vector<Math::Vec3f>& vertices, Math::Mat4f transform)
     {
         Math::Vec3f sum;

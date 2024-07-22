@@ -113,7 +113,6 @@ namespace Anwill {
         return true;
     }
 
-
     QuadCollider::QuadCollider()
     {
         m_Vertices = {

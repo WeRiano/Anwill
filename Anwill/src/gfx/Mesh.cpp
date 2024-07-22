@@ -138,13 +138,14 @@ namespace Anwill {
     Mesh::Mesh(float* vertices, unsigned int verticesSizeBytes, unsigned int* indices,
                unsigned int indicesCount, const Anwill::BufferLayout& bufferLayout)
     {
-        for(unsigned int i = 0; i < verticesSizeBytes / sizeof(float); i += 3)
+        // TODO: Assume that first attribute is the vertices. I think this is fair.
+        auto vertexCount = bufferLayout.GetElements()[0].count;
+        for(unsigned int i = 0; i < verticesSizeBytes / sizeof(float); i += vertexCount)
         {
-            m_Vertices.emplace_back(vertices[i], vertices[i+1], vertices[i+2]);
+            m_Vertices.emplace_back(vertices[i], vertices[i+1], vertexCount == 2 ? 0 : vertices[i+3]);
         }
 
-        std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices,
-                                                                verticesSizeBytes);
+        std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices,verticesSizeBytes);
 
         m_VA = VertexArray::Create();
         m_VA->AddBuffer(*vb, bufferLayout);
