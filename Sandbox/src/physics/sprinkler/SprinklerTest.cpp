@@ -48,7 +48,7 @@ void SprinklerTest::SpawnObject()
     Anwill::EntityID newID = Anwill::Ecs::CreateEntity();
     Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(newID,
                                                    Anwill::Math::Mat4f::Scale({},
-                                                                              {m_ObjSize, m_ObjSize                                                                                           , 0.0f}));
+                                                                              {m_ObjSize, m_ObjSize, 0.0f}));
     Anwill::Ecs::AddComponent<Anwill::RBody>(newID, 2.5f, false);
 
     Anwill::Ecs::ForEntity<Anwill::RBody>(newID, [](Anwill::RBody& rBody) {

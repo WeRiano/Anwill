@@ -20,8 +20,5 @@ namespace Anwill {
         static void Resolve(RBody& body1, Math::Mat4f& transform1, RBody& body2,
                             Math::Mat4f& transform2,
                             const CollisionData& collisionData);
-    private:
-        static Math::Vec3f GetArithmeticMean(const std::vector<Math::Vec3f>& vertices,
-                                             Math::Mat4f transform);
     };
 }

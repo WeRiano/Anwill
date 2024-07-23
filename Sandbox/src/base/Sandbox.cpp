@@ -51,12 +51,12 @@ void Sandbox::StartTestEnvironment(SandboxEnvironmentEvent event)
             AddLayer<EcsStressTest>(0);
             break;
         case SandboxEnvironmentEvent::Env::PhysicsCollision:
-            AddLayer<SprinklerTest>(10);
+            AddLayer<SprinklerTest>(60);
             AddLayer<SprinklerRender>(0, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::PhysicsDynamics:
             AddLayer<ArenaRender>(0, m_WindowSettings);
-            AddLayer<ArenaTest>(30, m_WindowSettings);
+            AddLayer<ArenaTest>(140, m_WindowSettings);
             break;
         case SandboxEnvironmentEvent::Env::Primitives:
             AddLayer<PrimitivesTest>(0, m_WindowSettings);

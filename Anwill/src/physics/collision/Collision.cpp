@@ -24,7 +24,7 @@ namespace Anwill {
             normal = -normal;
         }
 
-        float e = 0.8f;
+        float e = collisionData.e;
         float j = -(1.0f + e) * relVel.DotProduct(normal);
         j /= (1.0f / body1.GetMass()) + (1.0f / body2.GetMass());
 
@@ -33,8 +33,7 @@ namespace Anwill {
         if(body1.IsStatic() and !body2.IsStatic()) {
             body2.ApplyImpulse(impulse * 2.0f, false);
             body2.Move(-normal * (collisionData.depth));
-        } else if(body2.IsStatic() and !body1.IsStatic())
-        {
+        } else if(body2.IsStatic() and !body1.IsStatic()) {
             body1.ApplyImpulse(impulse * 2.0f, true);
             body1.Move(normal * (collisionData.depth));
         } else if(!body1.IsStatic() and !body2.IsStatic()) {
@@ -45,17 +44,5 @@ namespace Anwill {
         }
         // Two static bodies should not be able to collide, but we account for it anyway
         // just in case we accidentally spawn them within range or something like that :)
-    }
-
-    // TODO: Remove
-    Math::Vec3f Collision::GetArithmeticMean(const std::vector<Math::Vec3f>& vertices, Math::Mat4f transform)
-    {
-        Math::Vec3f sum;
-        for(unsigned int i = 0; i < vertices.size(); i++)
-        {
-            sum += vertices[i];
-        }
-        sum = sum / (float) vertices.size();
-        return sum;
     }
 }

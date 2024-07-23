@@ -10,12 +10,16 @@ public:
     ArenaTest(unsigned int ups, const Anwill::WindowSettings& ws);
 
     void Update(const Anwill::Timestamp& timestamp) override;
+    void ImguiUpdate() override;
 
 private:
     Anwill::WindowSettings m_WS;
+    float m_VelocityMagnitude;
+    float m_FrictionMultiplier;
+    // Coefficient of restitution
+    float m_CoR;
 
-    void MoveAndTiltPlayer();
+    void MoveAndRotatePlayer();
     void HandleCollisions();
-    void SwapShape();
-    void WrapBodies();
+    void WrapAndSlowBodies(const Anwill::Timestamp delta);
 };

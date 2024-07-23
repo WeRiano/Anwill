@@ -12,6 +12,7 @@ public:
     ArenaRender(unsigned int ups, const Anwill::WindowSettings& ws);
 
     void Update(const Anwill::Timestamp& timestamp) override;
+    void ImguiUpdate() override;
 private:
     Anwill::OrthographicCamera m_Camera;
     std::shared_ptr<Anwill::Shader> m_RectShader, m_CircleShader;

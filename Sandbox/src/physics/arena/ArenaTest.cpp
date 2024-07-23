@@ -1,26 +1,50 @@
 #include "ArenaTest.h"
 
 ArenaTest::ArenaTest(unsigned int ups, const Anwill::WindowSettings& ws)
-    : Anwill::Layer(ups), m_WS(ws)
+    : Anwill::Layer(ups), m_WS(ws), m_VelocityMagnitude(50), m_FrictionMultiplier(250.0f), m_CoR(0.8f)
 {}
 
 void ArenaTest::Update(const Anwill::Timestamp& timestamp)
 {
-    MoveAndTiltPlayer();
+    MoveAndRotatePlayer();
     HandleCollisions();
-    SwapShape();
-    WrapBodies();
+    WrapAndSlowBodies(GetUpdateDelta(timestamp));
 
     Layer::Update(timestamp);
+}
+
+void ArenaTest::ImguiUpdate()
+{
+    ImGui::Begin("Arena");
+
+    static int shape = 0;
+    ImGui::SeparatorText("Player");
+    Anwill::Ecs::ForEntity<Anwill::RBody>(ArenaRender::s_Player, [](Anwill::RBody& body) {
+        if(ImGui::RadioButton("Quad", &shape, 0)) {
+            auto vs = ArenaRender::s_Mesh.GetVertices();
+            body.EmplaceCollider<Anwill::PolygonCollider>(vs);
+        }  ImGui::SameLine();
+        if (ImGui::RadioButton("Circle", &shape, 1)) {
+            body.EmplaceCollider<Anwill::CircleCollider>(0.5f);
+        }
+        ImGui::Text("Velocity magnitude: %.1f", body.GetVelocity().GetLength());
+    });
+    ArenaRender::s_PlayerIsRound = (bool)shape;
+
+    ImGui::SliderFloat("Movement force", &m_VelocityMagnitude, 1.0f, 200.0f);
+    ImGui::SliderFloat("Friction multiplier", &m_FrictionMultiplier, 0.0f, 500.0f);
+    ImGui::SliderFloat("Coefficient of restitution", &m_CoR, 0.0f, 1.0f);
+
+    ImGui::End();
 }
 
 void ArenaTest::HandleCollisions()
 {
     std::set<std::pair<Anwill::EntityID, Anwill::EntityID>> colSet;
-    Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([&colSet](Anwill::EntityID idA,
+    Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([&colSet, this](Anwill::EntityID idA,
                                                                        Anwill::Math::Mat4f& transformA,
                                                                        Anwill::RBody& bodyA) {
-        Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([&idA, &transformA, &bodyA, &colSet](Anwill::EntityID idB,
+        Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([&idA, &transformA, &bodyA, &colSet, this](Anwill::EntityID idB,
                                                                                                       Anwill::Math::Mat4f& transformB,
                                                                                                       Anwill::RBody& bodyB) {
             if(idA != idB)
@@ -31,6 +55,7 @@ void ArenaTest::HandleCollisions()
                     if (Anwill::Collision::Check(bodyA, transformA,
                                                  bodyB, transformB, data))
                     {
+                        data.e = m_CoR;
                         Anwill::Collision::Resolve(bodyA, transformA, bodyB, transformB,
                                                    data);
                     }
@@ -41,71 +66,48 @@ void ArenaTest::HandleCollisions()
     });
 }
 
-void ArenaTest::SwapShape()
+void ArenaTest::MoveAndRotatePlayer()
 {
-    if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::C))
-    {
-        Anwill::Ecs::ForEntity<Anwill::RBody>(ArenaRender::s_Player, [](Anwill::RBody& body) {
-            body.EmplaceCollider<Anwill::CircleCollider>(0.5f);
-        });
-        ArenaRender::s_PlayerIsRound = true;
-    }
-    if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::R))
-    {
-        Anwill::Ecs::ForEntity<Anwill::RBody>(ArenaRender::s_Player, [this](Anwill::RBody& body) {
-            auto vs = ArenaRender::s_Mesh.GetVertices();
-            body.EmplaceCollider<Anwill::PolygonCollider>(vs);
-        });
-        ArenaRender::s_PlayerIsRound = false;
-    }
-}
-
-void ArenaTest::MoveAndTiltPlayer()
-{
-    Anwill::Ecs::ForEntity<Anwill::Math::Mat4f, Anwill::RBody>(ArenaRender::s_Player, [](Anwill::Math::Mat4f& transform,
+    Anwill::Ecs::ForEntity<Anwill::Math::Mat4f, Anwill::RBody>(ArenaRender::s_Player, [this](Anwill::Math::Mat4f& transform,
                                                                                          Anwill::RBody& pBody) {
-        float speed = 0.1f;
-        float velMag = 100.0f;
         Anwill::Math::Vec3f newVel = {};
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W))
-        {
-            newVel += {0.0f, velMag, 0.0f};
+        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::W)) {
+            newVel += {0.0f, m_VelocityMagnitude, 0.0f};
         }
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::A))
-        {
-            newVel += {-velMag, 0.0f, 0.0f};
+        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::A)) {
+            newVel += {-m_VelocityMagnitude, 0.0f, 0.0f};
         }
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::S))
-        {
-            newVel += {0.0f, -velMag, 0.0f};
+        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::S)) {
+            newVel += {0.0f, -m_VelocityMagnitude, 0.0f};
         }
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D))
-        {
-            newVel += {velMag, 0.0f, 0.0f};
+        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::D)) {
+            newVel += {m_VelocityMagnitude, 0.0f, 0.0f};
         }
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Space))
-        {
+        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Space)) {
             newVel = Anwill::Math::Vec3f();
             pBody.SetVelocity({});
         }
         pBody.ApplyImpulse(newVel);
 
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Q))
-        {
+        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::Q)) {
             transform = Anwill::Math::Mat4f::RotateZ(transform, 1.5f);
         }
-        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::E))
-        {
+        if (Anwill::Input::IsKeyPressed(Anwill::KeyCode::E)) {
             transform = Anwill::Math::Mat4f::RotateZ(transform, -1.5f);
         }
     });
 }
 
-void ArenaTest::WrapBodies()
+void ArenaTest::WrapAndSlowBodies(const Anwill::Timestamp delta)
 {
-    Anwill::Ecs::ForEach<Anwill::RBody>([this](Anwill::EntityID id, Anwill::RBody& body){
+    Anwill::Ecs::ForEach<Anwill::RBody>([this, delta](Anwill::EntityID id, Anwill::RBody& body){
         // We are assuming camera positioning at origin here
         float margin = 10.0f;
+
+        auto vel = body.GetVelocity();
+        vel.Normalize();
+        body.ApplyForce(-vel * m_FrictionMultiplier); // TODO: Apply friction "properly"
+        body.Tick((float)delta.GetSeconds() * 2.0f);
 
         auto pos = body.GetPosition();
         if(pos.X < -margin) {

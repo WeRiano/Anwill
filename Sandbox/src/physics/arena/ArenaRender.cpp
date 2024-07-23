@@ -25,9 +25,6 @@ ArenaRender::ArenaRender(unsigned int ups, const Anwill::WindowSettings& ws)
 
     s_Player = Anwill::Ecs::CreateEntity();
 
-    // TODO: RBody default parameters to 0 vectors
-    // TODO: Change creation of static body to only require mass
-
     auto objTransform = Anwill::Math::Mat4f::Scale({}, {80.0f, 80.0f, 0.0f});
 
     Anwill::Ecs::AddComponent<Anwill::RBody>(s_Player, mass, false,
@@ -59,11 +56,9 @@ ArenaRender::ArenaRender(unsigned int ups, const Anwill::WindowSettings& ws)
 
     Anwill::Ecs::ForEach<Anwill::RBody, Anwill::Math::Mat4f>([](Anwill::EntityID id, Anwill::RBody& body,
             Anwill::Math::Mat4f& transform){
-        if(id % 2 == 0 and id != s_Player)
-        {
+        if(id % 2 == 0 and id != s_Player) {
             body.EmplaceCollider<Anwill::CircleCollider>(0.5f);
-        } else
-        {
+        } else {
             auto vs = s_Mesh.GetVertices();
             body.EmplaceCollider<Anwill::PolygonCollider>(vs);
         }
@@ -79,35 +74,31 @@ void ArenaRender::Update(const Anwill::Timestamp& timestamp)
     Anwill::Renderer2D::BeginScene(m_Camera);
 
     Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([this, delta](Anwill::EntityID id,
-                                                                       Anwill::Math::Mat4f& transform,
-                                                                       Anwill::RBody& body) {
-
+                                                                           Anwill::Math::Mat4f& transform,
+                                                                           Anwill::RBody& body) {
         Anwill::Math::Vec3f pos = body.GetPosition();
         transform.SetTranslation(pos);
 
-        if(id == s_Player)
-        {
+        if(id == s_Player) {
             if(s_PlayerIsRound) {
                 Anwill::Renderer2D::PushCircleToBatch(transform, {1.0f, 0.0f, 0.0f});
             } else {
                 Anwill::Renderer2D::PushQuadToBatch(transform, {0.858f, 0.552f, 0.223f});
             }
         } else {
-            if(id % 2 == 0)
-            {
+            if(id % 2 == 0) {
                 Anwill::Renderer2D::PushCircleToBatch(transform, {1.0f, 1.0f, 0.0f});
             } else {
                 Anwill::Renderer2D::PushQuadToBatch(transform, {0.258f, 0.852f, 0.223f});
             }
         }
-
-        auto vel = body.GetVelocity();
-        vel.Normalize();
-        body.ApplyForce(-vel * 250.0f);
-        body.Tick(delta * 2.0f);
-
         Anwill::Renderer2D::DrawBatch();
     });
 
     Layer::Update(timestamp);
+}
+
+void ArenaRender::ImguiUpdate()
+{
+
 }

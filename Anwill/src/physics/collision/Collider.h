@@ -17,7 +17,7 @@ namespace Anwill {
             : depth(std::numeric_limits<float>::max())
         {}
         Math::Vec3f normal;
-        float depth;
+        float depth, e = 0.8;
     };
 
     class Collider {
