@@ -3,8 +3,11 @@
 SprinklerTest::SprinklerTest(unsigned int ups)
     : Anwill::Layer(ups),
       m_SpawnTimeCount(1000000 * s_SpawnDeltaSeconds),
-      m_ObjSize(20.0f)
+      m_ObjSize(20.0f),
+      m_TimeMultiplier(2.0f)
 {
+    Anwill::Ecs::Reset();
+
     Anwill::Ecs::RegisterComponent<Anwill::RBody>();
     Anwill::Ecs::RegisterComponent<Anwill::Math::Mat4f>();
     Anwill::Ecs::RegisterComponent<Anwill::Mesh>();
@@ -14,13 +17,16 @@ void SprinklerTest::Update(const Anwill::Timestamp& timestamp)
 {
     // Increment a counter and spawn an object when the counter has reached some value,
     // then reset counter.
-    m_SpawnTimeCount += GetUpdateDelta(timestamp);
+    auto delta = GetUpdateDelta(timestamp);
+
+    m_SpawnTimeCount += delta;
     if (m_SpawnTimeCount.GetSeconds() >= s_SpawnDeltaSeconds) {
         m_SpawnTimeCount = Anwill::Timestamp(0);
         SpawnObject();
     }
 
-    // Cleanup all "dead" objects.
+    TickObjects(delta);
+
     KillObjects();
 
     Layer::Update(timestamp);
@@ -113,4 +119,12 @@ void SprinklerTest::KillObjects()
     {
         Anwill::Ecs::RemoveEntity(*it);
     }
+}
+
+void SprinklerTest::TickObjects(Anwill::Timestamp delta)
+{
+    Anwill::Ecs::ForEach<Anwill::RBody>([this, delta]
+    (Anwill::EntityID id, Anwill::RBody& rBody) {
+        rBody.Tick(delta.GetSeconds() * m_TimeMultiplier);
+    });
 }
