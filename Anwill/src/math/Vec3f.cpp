@@ -118,6 +118,12 @@ namespace Anwill::Math {
         return Math::Max(Math::Max(X, Y), Z);
     }
 
+    float Vec3f::ScalarProjection(Vec3f other) const
+    {
+        other.Normalize();
+        return DotProduct(other);
+    }
+
     float Vec3f::DotProduct(const Vec3f& other) const
     {
         return X * other.X + Y * other.Y + Z * other.Z;

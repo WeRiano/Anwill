@@ -1,70 +1,12 @@
 #include <set>
 
 #include "ArenaRender.h"
-
-bool ArenaRender::s_PlayerIsRound = false;
-Anwill::EntityID ArenaRender::s_Player;
-Anwill::Mesh ArenaRender::s_Mesh;
+#include "ArenaTest.h"
 
 ArenaRender::ArenaRender(unsigned int ups, const Anwill::WindowSettings& ws)
     : Anwill::Layer(ups), m_Camera(ws.width, ws.height)
 {
-    s_Mesh = Anwill::Mesh::CreateRectMesh(1.0f, 1.0f);
     m_Camera.Move(ws.width * 0.5f, ws.height * 0.5f);
-
-    Anwill::Ecs::RegisterComponent<Anwill::RBody>(); // TODO: Move to engine(?)
-    Anwill::Ecs::RegisterComponent<Anwill::Math::Mat4f>();
-
-    float mass = 5.0f;
-
-    // Even ids are circles
-    Anwill::EntityID npc1 = Anwill::Ecs::CreateEntity(); // Rect
-    Anwill::EntityID npc2 = Anwill::Ecs::CreateEntity(); // Ellipse
-    Anwill::EntityID npc3 = Anwill::Ecs::CreateEntity(); // Rect
-    Anwill::EntityID npc4 = Anwill::Ecs::CreateEntity(); // Ellipse
-
-    s_Player = Anwill::Ecs::CreateEntity();
-
-    auto objTransform = Anwill::Math::Mat4f::Scale({}, {80.0f, 80.0f, 0.0f});
-
-    Anwill::Ecs::AddComponent<Anwill::RBody>(s_Player, mass, false,
-                                             Anwill::Math::Vec3f(400.0f, 400.0f, 0.0f),
-                                             Anwill::Math::Vec3f(), Anwill::Math::Vec3f(),
-                                             Anwill::Math::Vec3f());
-    Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(s_Player, objTransform);
-
-    Anwill::Ecs::AddComponent<Anwill::RBody>(npc1, mass, false,
-                                             Anwill::Math::Vec3f(800.0f, 600.0f, 0.0f),
-                                             Anwill::Math::Vec3f(), Anwill::Math::Vec3f(),
-                                             Anwill::Math::Vec3f());
-    Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(npc1, objTransform);
-    Anwill::Ecs::AddComponent<Anwill::RBody>(npc2, mass, false,
-                                             Anwill::Math::Vec3f(800.0f, 300.0f, 0.0f),
-                                             Anwill::Math::Vec3f(),Anwill::Math::Vec3f(),
-                                             Anwill::Math::Vec3f());
-    Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(npc2, objTransform);
-    Anwill::Ecs::AddComponent<Anwill::RBody>(npc3, mass, false,
-                                             Anwill::Math::Vec3f(200.0f, 600.0f, 0.0f),
-                                             Anwill::Math::Vec3f(), Anwill::Math::Vec3f(),
-                                             Anwill::Math::Vec3f());
-    Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(npc3, objTransform);
-    Anwill::Ecs::AddComponent<Anwill::RBody>(npc4, mass, true,
-                                             Anwill::Math::Vec3f(200.0f, 300.0f, 0.0f),
-                                             Anwill::Math::Vec3f(), Anwill::Math::Vec3f(),
-                                             Anwill::Math::Vec3f());
-    Anwill::Ecs::AddComponent<Anwill::Math::Mat4f>(npc4, objTransform);
-
-    Anwill::Ecs::ForEach<Anwill::RBody, Anwill::Math::Mat4f>([](Anwill::EntityID id, Anwill::RBody& body,
-            Anwill::Math::Mat4f& transform){
-        if(id % 2 == 0 and id != s_Player) {
-            body.EmplaceCollider<Anwill::CircleCollider>(0.5f);
-        } else {
-            auto vs = s_Mesh.GetVertices();
-            body.EmplaceCollider<Anwill::PolygonCollider>(vs);
-        }
-    });
-
-    Anwill::Renderer::SetClearColor({0.278f, 0.333f, 0.443f});
 }
 
 void ArenaRender::Update(const Anwill::Timestamp& timestamp)
@@ -73,32 +15,33 @@ void ArenaRender::Update(const Anwill::Timestamp& timestamp)
 
     Anwill::Renderer2D::BeginScene(m_Camera);
 
-    Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([this, delta](Anwill::EntityID id,
-                                                                           Anwill::Math::Mat4f& transform,
-                                                                           Anwill::RBody& body) {
+    Anwill::Ecs::ForEach<Anwill::Math::Mat4f, Anwill::RBody>([](Anwill::EntityID id,
+            Anwill::Math::Mat4f& transform, Anwill::RBody& body) {
         Anwill::Math::Vec3f pos = body.GetPosition();
         transform.SetTranslation(pos);
 
-        if(id == s_Player) {
-            if(s_PlayerIsRound) {
-                Anwill::Renderer2D::PushCircleToBatch(transform, {1.0f, 0.0f, 0.0f});
+        if(id == ArenaTest::s_Player) {
+            Anwill::Math::Vec3f playerColor = {0.858f, 0.552f, 0.223f};
+            if(ArenaTest::s_PlayerIsRound) {
+                Anwill::Renderer2D::PushCircleToBatch(transform, playerColor);
             } else {
-                Anwill::Renderer2D::PushQuadToBatch(transform, {0.858f, 0.552f, 0.223f});
+                Anwill::Renderer2D::PushQuadToBatch(transform, playerColor);
             }
         } else {
-            if(id % 2 == 0) {
-                Anwill::Renderer2D::PushCircleToBatch(transform, {1.0f, 1.0f, 0.0f});
-            } else {
-                Anwill::Renderer2D::PushQuadToBatch(transform, {0.258f, 0.852f, 0.223f});
+            if (transform.GetScale().X == transform.GetScale().Y) {
+                Anwill::Math::Vec3f color = {0.258f, 0.852f, 0.223f};
+                if(body.IsStatic()) {
+                    color = {1.0f, 1.0f, 0.0f};
+                }
+                if (id % 2 == 0) {
+                    Anwill::Renderer2D::PushCircleToBatch(transform, color);
+                } else {
+                    Anwill::Renderer2D::PushQuadToBatch(transform, color);
+                }
             }
+            Anwill::Renderer2D::DrawBatch();
         }
-        Anwill::Renderer2D::DrawBatch();
     });
 
     Layer::Update(timestamp);
-}
-
-void ArenaRender::ImguiUpdate()
-{
-
 }

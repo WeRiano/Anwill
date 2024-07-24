@@ -26,21 +26,21 @@ namespace Anwill {
 
         float e = collisionData.e;
         float j = -(1.0f + e) * relVel.DotProduct(normal);
-        j /= (1.0f / body1.GetMass()) + (1.0f / body2.GetMass());
-
-        Math::Vec3f impulse = normal * j;
 
         if(body1.IsStatic() and !body2.IsStatic()) {
-            body2.ApplyImpulse(impulse * 2.0f, false);
-            body2.Move(-normal * (collisionData.depth));
+            j /= (2.0f / body2.GetMass());
+            body2.ApplyImpulse(normal * j * 2.0f, false);
+            body2.Move(-normal * (collisionData.depth + 1));
         } else if(body2.IsStatic() and !body1.IsStatic()) {
-            body1.ApplyImpulse(impulse * 2.0f, true);
-            body1.Move(normal * (collisionData.depth));
+            j /= (2.0f / body1.GetMass());
+            body1.ApplyImpulse(normal * j * 2.0f, true);
+            body1.Move(normal * (collisionData.depth + 1));
         } else if(!body1.IsStatic() and !body2.IsStatic()) {
-            body1.ApplyImpulse(impulse, true);
-            body2.ApplyImpulse(impulse, false);
-            body1.Move(normal * (collisionData.depth / 2.0f));
-            body2.Move(-normal * (collisionData.depth / 2.0f));
+            j /= (1.0f / body1.GetMass()) + (1.0f / body2.GetMass());
+            body1.ApplyImpulse(normal * j, true);
+            body2.ApplyImpulse(normal * j, false);
+            body1.Move(normal * (collisionData.depth / 2.0f + 1));
+            body2.Move(-normal * (collisionData.depth / 2.0f + 1));
         }
         // Two static bodies should not be able to collide, but we account for it anyway
         // just in case we accidentally spawn them within range or something like that :)

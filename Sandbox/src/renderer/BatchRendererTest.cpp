@@ -8,6 +8,8 @@ BatchRendererTest::BatchRendererTest(unsigned int ups,
       m_TextureShader(Anwill::Shader::Create("Sandbox/assets/shaders/RectTexture.glsl")),
       m_PrimitiveSize(20.0f, 20.0f),
       m_NumPrimitives(50),
+      m_IsRenderingQuads(true), m_IsRenderingCircles(true),
+      m_IsBatchRendering(true), m_IsTextureRendering(false),
       m_SpriteSheet(Anwill::SpriteSheet::Create("Sandbox/assets/textures/test_sprite_sheet.png", 64, 48)),
       m_BatchRenderData()
 {}
@@ -16,22 +18,29 @@ void BatchRendererTest::Update(const Anwill::Timestamp& timestamp)
 {
     Anwill::Renderer2D::BeginScene(m_CameraController);
 
+    GetStrategy()();
+
+    MovingCameraBaseLayer::Update(timestamp);
+}
+
+void BatchRendererTest::ImguiUpdate()
+{
+    ImGui::SetNextWindowBgAlpha(0.40f);
     ImGui::Begin("Batch renderer");
 
-    static bool batchRendering = true, textureRendering = true;
-    ImGui::Checkbox("Batch rendering", &batchRendering);
-    ImGui::Checkbox("Texture rendering", &textureRendering);
-    if(!textureRendering) {
+    ImGui::Checkbox("Batch rendering", &m_IsBatchRendering);
+    ImGui::Checkbox("Texture rendering", &m_IsTextureRendering);
+    if(!m_IsTextureRendering) {
         ImGui::Checkbox("Render quads", &m_IsRenderingQuads);
         ImGui::Checkbox("Render circles", &m_IsRenderingCircles);
     }
-    if(!textureRendering) {
+    if(!m_IsTextureRendering) {
         ImGui::Text("Currently rendering n^2 = %d primitives", m_NumPrimitives * m_NumPrimitives);
         ImGui::SliderInt("n", (int*) &m_NumPrimitives, 0, 300);
     }
     ImGui::SliderFloat2("Primitive size", &m_PrimitiveSize.X, 1.0f, 300.0f, "%.0f");
 
-    if(batchRendering) {
+    if(m_IsBatchRendering) {
         ImGui::SeparatorText("Batch render data");
         ImGui::Text("Draw calls: %i", m_BatchRenderData.drawCalls);
         ImGui::Text("Drawn quads: %i", m_BatchRenderData.drawnQuads);
@@ -41,22 +50,18 @@ void BatchRendererTest::Update(const Anwill::Timestamp& timestamp)
     m_CameraController.ShowGuiControls();
 
     ImGui::End();
-
-    GetStrategy(batchRendering, textureRendering)();
-
-    MovingCameraBaseLayer::Update(timestamp);
 }
 
-std::function<void()> BatchRendererTest::GetStrategy(bool batchRendering, bool textureRendering)
+std::function<void()> BatchRendererTest::GetStrategy()
 {
-    if(batchRendering) {
-        if (textureRendering) {
+    if(m_IsBatchRendering) {
+        if (m_IsTextureRendering) {
             return AW_BIND_THIS_MEMBER_FUNC(BatchRenderingTextureQuads);
         } else {
             return AW_BIND_THIS_MEMBER_FUNC(BatchRendering);
         }
     } else {
-        if (textureRendering) {
+        if (m_IsTextureRendering) {
             return AW_BIND_THIS_MEMBER_FUNC(SlowRenderingTextureQuads);
         } else {
             return AW_BIND_THIS_MEMBER_FUNC(SlowRendering);

@@ -35,6 +35,7 @@ void Sandbox::OnStartTestEnvironmentEvent(std::unique_ptr<Anwill::Event>& event)
     auto e = static_cast<SandboxEnvironmentEvent&>(*event);
     if(e.GetEnv() == SandboxEnvironmentEvent::Env::None)
     {
+        Anwill::Renderer::SetClearColor({0.0f, 0.0f, 0.0f});
         EndTestEnvironment();
     } else
     {

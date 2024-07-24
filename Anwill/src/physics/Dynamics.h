@@ -13,16 +13,13 @@ namespace Anwill {
     class RBody {
     public:
         RBody();
-        RBody(float mass, bool isStatic,
-              Math::Vec3f position = {},
-              Math::Vec3f velocity = {},
-              Math::Vec3f force = {},
-              Math::Vec3f gravity = {0.0f, -9.81f, 0.0f}
-              );
+        RBody(float mass, bool isStatic, Math::Vec3f position = {}, Math::Vec3f velocity = {},
+              Math::Vec3f force = {}, Math::Vec3f gravity = {0.0f, -9.81f, 0.0f});
 
+        void ApplyFriction(float mu, float N);
         void ApplyForce(Math::Vec3f force);
         // We are applying a change in momentum == impulse,
-        // but its instantaneous so I'm not sure if its accurate to
+        // but its instantaneous, so I'm not sure if it's accurate to
         // call it an 'impulse'.
         void ApplyImpulse(Math::Vec3f impulse, bool subtract = false);
         void Tick(float deltaSeconds);

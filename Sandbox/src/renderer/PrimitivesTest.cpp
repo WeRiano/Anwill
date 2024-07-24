@@ -29,6 +29,43 @@ void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
 
     Anwill::Renderer::SetClearColor(m_BackgroundColor);
 
+    // Triangle
+    auto transform = Anwill::Math::Mat4f::Scale({}, m_TriangleSize);
+    transform = Anwill::Math::Mat4f::Translate(transform, m_TrianglePos);
+    m_RectShader->Bind();
+    m_RectShader->SetUniformVec3f(m_TriangleColor, "u_Color");
+    Anwill::Renderer2D::SubmitMesh(m_RectShader, m_TriangleMesh, transform);
+    m_RectShader->Unbind();
+
+    // Rectangle
+    transform = Anwill::Math::Mat4f::Scale({}, m_RectangleSize);
+    transform = Anwill::Math::Mat4f::Translate(transform, m_RectanglePos);
+    m_RectShader->Bind();
+    m_RectShader->SetUniformVec3f(m_RectangleColor, "u_Color");
+    Anwill::Renderer2D::SubmitMesh(m_RectShader, m_RectangleMesh, transform);
+    m_RectShader->Unbind();
+
+    // Circle
+    transform = Anwill::Math::Mat4f::Scale({}, m_CircleSize);
+    transform = Anwill::Math::Mat4f::Translate(transform, m_CirclePos);
+    m_CircleShader->Bind();
+    m_CircleShader->SetUniformVec3f(m_CircleColor, "u_Color");
+    Anwill::Renderer2D::SubmitMesh(m_CircleShader, m_RectangleMesh, transform);
+    m_CircleShader->Unbind();
+
+    // Checkmark
+    transform = Anwill::Math::Mat4f::Scale({}, m_CheckmarkSize);
+    transform = Anwill::Math::Mat4f::Translate(transform, m_CheckmarkPos);
+    m_RectShader->Bind();
+    m_RectShader->SetUniformVec3f(m_CheckmarkColor, "u_Color");
+    Anwill::Renderer2D::SubmitMesh(m_RectShader, m_CheckmarkMesh, transform);
+    m_RectShader->Unbind();
+
+    Layer::Update(timestamp);
+}
+
+void PrimitivesTest::ImguiUpdate()
+{
     float maxPos = m_WindowSize.Max() * 0.5f;
 
     ImGui::Begin("Primitives");
@@ -67,40 +104,6 @@ void PrimitivesTest::Update(const Anwill::Timestamp& timestamp)
     ImGui::PopID();
 
     ImGui::End();
-
-    // Triangle
-    auto transform = Anwill::Math::Mat4f::Scale({}, m_TriangleSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, m_TrianglePos);
-    m_RectShader->Bind();
-    m_RectShader->SetUniformVec3f(m_TriangleColor, "u_Color");
-    Anwill::Renderer2D::SubmitMesh(m_RectShader, m_TriangleMesh, transform);
-    m_RectShader->Unbind();
-
-    // Rectangle
-    transform = Anwill::Math::Mat4f::Scale({}, m_RectangleSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, m_RectanglePos);
-    m_RectShader->Bind();
-    m_RectShader->SetUniformVec3f(m_RectangleColor, "u_Color");
-    Anwill::Renderer2D::SubmitMesh(m_RectShader, m_RectangleMesh, transform);
-    m_RectShader->Unbind();
-
-    // Circle
-    transform = Anwill::Math::Mat4f::Scale({}, m_CircleSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, m_CirclePos);
-    m_CircleShader->Bind();
-    m_CircleShader->SetUniformVec3f(m_CircleColor, "u_Color");
-    Anwill::Renderer2D::SubmitMesh(m_CircleShader, m_RectangleMesh, transform);
-    m_CircleShader->Unbind();
-
-    // Checkmark
-    transform = Anwill::Math::Mat4f::Scale({}, m_CheckmarkSize);
-    transform = Anwill::Math::Mat4f::Translate(transform, m_CheckmarkPos);
-    m_RectShader->Bind();
-    m_RectShader->SetUniformVec3f(m_CheckmarkColor, "u_Color");
-    Anwill::Renderer2D::SubmitMesh(m_RectShader, m_CheckmarkMesh, transform);
-    m_RectShader->Unbind();
-
-    Layer::Update(timestamp);
 }
 
 void PrimitivesTest::OnDetach()

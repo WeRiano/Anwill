@@ -10,6 +10,7 @@ public:
     PrimitivesTest(const unsigned int ups, const Anwill::WindowSettings& ws);
 
     virtual void Update(const Anwill::Timestamp &timestamp) override;
+    virtual void ImguiUpdate() override;
     virtual void OnDetach() override;
 
 private:

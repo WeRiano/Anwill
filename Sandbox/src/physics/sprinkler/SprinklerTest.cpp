@@ -28,6 +28,7 @@ void SprinklerTest::Update(const Anwill::Timestamp& timestamp)
 
 void SprinklerTest::ImguiUpdate()
 {
+    ImGui::SetNextWindowBgAlpha(0.40f);
     ImGui::Begin("Sprinkler");
 
     ImGui::SliderFloat("Particle size", &m_ObjSize, 10.0f, 40.0f);

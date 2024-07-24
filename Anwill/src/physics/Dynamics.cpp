@@ -1,4 +1,5 @@
 #include "Dynamics.h"
+#include "core/Log.h"
 
 namespace Anwill {
 
@@ -6,9 +7,17 @@ namespace Anwill {
         : m_Static(false), m_M(1.0f)
     {}
 
-    RBody::RBody(float mass, bool isStatic, Math::Vec3f position, Math::Vec3f velocity, Math::Vec3f force, Math::Vec3f gravity)
+    RBody::RBody(float mass, bool isStatic, Math::Vec3f position, Math::Vec3f velocity, Math::Vec3f force,
+                 Math::Vec3f gravity)
         : m_Static(isStatic), m_M(mass), m_P(position), m_V(velocity), m_F(force), m_G(gravity)
     {}
+
+    void RBody::ApplyFriction(float mu, float N)
+    {
+        Math::Vec3f dirOfMotion = m_V;
+        dirOfMotion.Normalize();
+        m_F += -dirOfMotion * (mu * N);
+    }
 
     void RBody::ApplyForce(Math::Vec3f force)
     {
